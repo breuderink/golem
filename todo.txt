@@ -1,0 +1,3 @@
+- Uniform choice for labels, maybe store type in Data class?
+
+- Write protected Data (properties don't seem two work with list-indexing). Totally write protected data doesn't seem useful?
