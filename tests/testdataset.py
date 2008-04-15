@@ -8,6 +8,7 @@ class TestDatasetConstruction(unittest.TestCase):
     pass
 
   def test_construction_emtpy(self):
+    '''Test the construction of an empty Dataset'''
     d = DataSet()
     d.add_instance((0, 0, 0), 0)
     d.add_instance((1, 1, 1), 1)
@@ -15,6 +16,10 @@ class TestDatasetConstruction(unittest.TestCase):
     self.assertEqual(d.nfeatures, 3)
 
   def test_construction_list(self):
+    '''
+    Test the construction from a list with features and a list with
+    labels
+    '''
     xs = [(0, 0, 0), (1, 1, 1)]
     ys = [0, 1]
     d = DataSet(xs, ys)
@@ -22,11 +27,19 @@ class TestDatasetConstruction(unittest.TestCase):
     self.assertEqual(d.nfeatures, 3)
     
   def test_construction_unequal(self):
+    '''
+    Test that the construction from lists fails for unequal sized feature and
+    label lists.
+    '''
     xs = [(0, 0, 0), (1, 1, 1)]
     ys = [0, 1, 2]
     self.assertRaises(ValueError, DataSet, (xs, ys));
     
   def test_construction_var_length(self):
+    '''
+    Test the construction of a Dataset with instances that vary in the number of
+    features.
+    '''
     xs = [(0, 0), (1, 1, 1)]
     ys = [0, 1]
     d = DataSet(xs, ys)
@@ -35,6 +48,9 @@ class TestDatasetConstruction(unittest.TestCase):
     self.assertRaises(VariableNumberOfFeaturesException, DataSet.nfeatures.fget, d)
 
   def test_construction_array(self):
+    '''
+    Test the construction of a Dataset works from a NumPy array
+    '''
     xs = np.random.random((100, 5))
     ys = np.round(np.random.random((100, 1)))
     d = DataSet(xs, ys)
@@ -43,17 +59,22 @@ class TestDatasetConstruction(unittest.TestCase):
 
 class TestDataset(unittest.TestCase):
   def setUp(self):
+    '''
+    Setup a default Dataset
+    '''
     self.d = d = DataSet()
     d.add_instance((0, 0, 0), 0)
     d.add_instance((1, 1, 1), 1)
       
   def test_iter(self):
+    '''
+    Test the iterator
+    '''
     instances = [(x, y) for (x, y) in self.d]
-    for i in range(len(instances)):
-      (tx, ty) = ((i, i, i), i)
+    for i in xrange(len(instances)):
       (x, y) = instances[i]
-      self.assert_((x == tx).all())
-      self.assert_((y == ty).all())
+      self.assert_(x == (i, i, i))  # features are converted to arrays
+      self.assert_(y == i)          # labels are converted to arrays
   
   def test_ninstances(self):
     d = self.d
