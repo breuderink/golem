@@ -97,10 +97,15 @@ class TestDataset(unittest.TestCase):
   def test_str(self):
     dstr = str(self.d)
     self.assertEqual('DataSet (2 instances, 3 features, 2 unique labels)', dstr)
-    
+
+  def test_var_length(self):
+    d = self.d
+    d.add_instance((1, 2), 3)
+    self.assert_(d.const_feature_len() == False)
+    self.assertRaises(VariableNumberOfFeaturesException, d.get_xs) 
   
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestDatasetConstruction))
-    suite.addTest(unittest.makeSuite(TestDataset))
-    return suite
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(TestDatasetConstruction))
+  suite.addTest(unittest.makeSuite(TestDataset))
+  return suite

@@ -7,6 +7,7 @@ import numpy as np
 # - labels vs regression
 # - is it logical to convert everything to np.array? -> convert everything to
 # np.array when needed.
+# - .get_xs -> rename to get_xs_array?
 
 
 class VariableNumberOfFeaturesException(Exception): pass

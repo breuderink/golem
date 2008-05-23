@@ -42,7 +42,7 @@ Applies different blocks to different Data objects
 
 CV
 --
-Creates multiple Data-objects, one for each fold. Can be used with Map
+Applies a block to multiple datasets, for example created using LOOCV or KFoldCV.
 
 Select
 ------
