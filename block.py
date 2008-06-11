@@ -1,5 +1,4 @@
 from types import *
-class Model: pass
 
 class Block:
   def __init__(self):

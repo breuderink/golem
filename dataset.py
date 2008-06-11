@@ -8,6 +8,7 @@ import numpy as np
 # - is it logical to convert everything to np.array? -> convert everything to
 # np.array when needed.
 # - .get_xs -> rename to get_xs_array?
+# - add label names, to be used for example in plots
 
 
 class VariableNumberOfFeaturesException(Exception): pass
