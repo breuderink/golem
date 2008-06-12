@@ -1,9 +1,9 @@
 from types import *
 
-class Block:
+class Node:
   def __init__(self):
     self.hyperparams = {}
-    self.name = 'Basic block'
+    self.name = 'Basic node'
     self.model = Model()
     self.is_initialized = True
 

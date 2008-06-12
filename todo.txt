@@ -1,5 +1,31 @@
-- Uniform choice for labels, maybe store type in Data class?
-  -> better option is to use different implementations of Data class
-
-- Write protected Data (properties don't seem two work with list-indexing).
+- Add + function for datasets
+- Unit test for scatter_plot
+- Design different DataSet classes (for variable length, regression etc)
+- Write protected DataSet (properties don't seem two work with list-indexing)
   Totally write protected data doesn't seem useful?
+- How to handle copy-ing (for example in a cross-validation Node?)
+- Automated tests for derivatives of Node
+
+
+Helper wish-list
+================
+1 generate_gaussian_dataset
+
+Node wish-list
+==============
+1 chain
+1 cross-val
+1 csp
+1 group
+1 knn
+1 lda
+1 loss-mse
+1 z-score
+2 center
+2 featsel
+2 loss-auc
+2 loss-binary
+2 pca
+3 roc
+3 save
+

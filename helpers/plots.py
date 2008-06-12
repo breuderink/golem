@@ -1,8 +1,11 @@
+# TODO:
+# - add markers to the legend
+# - use class names if provided
 import pylab
 import numpy
 
 markers = ['o', 'o', 's', 'd', 'v']
-colors = ['w', 'k', 'r', 'y', 'g']
+colors = ['w', 'k', 'r', 'y', 'b']
 
 def scatterplot(dataset, fname = None):
   '''
@@ -35,8 +38,8 @@ sys.path.append('..')
 import dataset
 
 d = dataset.DataSet()
-for y in range(4):
-  for i in range(3):
+for y in range(5):
+  for i in range(30):
     d.add_instance([random.random() for x in range(2)], y)
 scatterplot(d)
 scatterplot(d, 'test.svg')
