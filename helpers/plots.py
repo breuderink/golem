@@ -7,7 +7,7 @@ import numpy
 markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']
 
-def scatterplot(dataset, fname = None):
+def scatter_plot(dataset, fname = None):
   '''
   Display the dataset with a scatterplot using Matplotlib/pylab. The user is
   responsible for calling pylab.show() to display the plot.
@@ -31,19 +31,6 @@ def scatterplot(dataset, fname = None):
   if fname:
     pylab.savefig(fname)
     pylab.close()
+  else:
+    pylab.show()
 
-import random
-import sys
-sys.path.append('..')
-import dataset
-
-d = dataset.DataSet()
-for y in range(5):
-  for i in range(30):
-    d.add_instance([random.random() for x in range(2)], y)
-scatterplot(d)
-scatterplot(d, 'test.svg')
-scatterplot(d, 'test.eps')
-scatterplot(d, 'test.png')
-
-pylab.show()

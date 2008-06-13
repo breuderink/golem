@@ -56,6 +56,14 @@ class DataSet:
     state_str = 'DataSet (%d instances, %d features, %d unique labels)' % \
       (self.ninstances, self.nfeatures, len(self.labels))
     return state_str
+
+  def __add__(a, b):
+    '''Create a new DataSet by adding the instance of b to a'''
+    result = DataSet()
+    for d in [a, b]:
+      for (x, y) in d:
+        result.add_instance(x, y)
+    return result
     
   @property
   def labels(self):
