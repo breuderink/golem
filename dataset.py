@@ -40,6 +40,14 @@ class DataSet:
   def get_ys(self):
     '''Return the labels as a numpy-array'''
     return np.array(self.__ys)
+
+  def feature_label(self, n):
+    '''Return the name of a feature (not implemented)'''
+    return 'feature %d' % n
+
+  def class_label(self, n):
+    '''Return the name of a class (not implemented)'''
+    return 'class %d' % n
     
   def const_feature_len(self):
     lens = [len(x) for x in self.__xs]

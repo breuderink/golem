@@ -8,9 +8,9 @@ markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']
 
 def scatter_plot(dataset, fname = None):
-  '''
-  Display the dataset with a scatterplot using Matplotlib/pylab. The user is
+  ''' Display the dataset with a scatterplot using Matplotlib/pylab. The user is
   responsible for calling pylab.show() to display the plot.
+
   '''
   assert(dataset.nfeatures == 2)
   labels = dataset.labels 
@@ -26,8 +26,12 @@ def scatter_plot(dataset, fname = None):
     f0 = [x[0] for x in xs]
     f1 = [x[1] for x in xs]
     pylab.scatter(f0, f1, c = color, marker = marker, 
-      label = 'class %s' % labels[yi])
+      label = dataset.class_label(yi))
+  pylab.axis('equal') # otherwise the scale is hardly visible
   pylab.legend()
+  pylab.xlabel(dataset.feature_label(0))
+  pylab.ylabel(dataset.feature_label(1))
+
   if fname:
     pylab.savefig(fname)
     pylab.close()
