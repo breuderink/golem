@@ -16,17 +16,17 @@ def scatter_plot(dataset, fname = None):
   labels = dataset.labels 
   pylab.figure()
   # loop over classes
-  for yi in range(len(labels)):
-    color, marker = colors[yi], markers[yi]
+  for ci in range(len(labels)):
+    color, marker = colors[ci], markers[ci]
 
     # extract relevant instances
-    xs = [x for (x, y) in dataset if y == labels[yi]]
+    xs = [x for (x, y) in dataset if y == labels[ci]]
 
     # plot features
     f0 = [x[0] for x in xs]
     f1 = [x[1] for x in xs]
     pylab.scatter(f0, f1, c = color, marker = marker, 
-      label = dataset.class_label(yi))
+      label = dataset.class_label(ci))
   pylab.axis('equal') # otherwise the scale is hardly visible
   pylab.legend()
   pylab.xlabel(dataset.feature_label(0))

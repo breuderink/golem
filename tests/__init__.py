@@ -1,1 +1,1 @@
-__all__ = ['testdataset', 'testgaussdata']
+__all__ = ['testdataset', 'testartificialdata']

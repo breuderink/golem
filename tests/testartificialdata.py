@@ -16,24 +16,18 @@ class TestGaussianData(unittest.TestCase):
   
   def test_means_cov(self):
     '''Test if the means and covariance of GaussianData are correct.'''
-    mus = [\
-      [0, 0], 
-      [2, 1],
-      [5, 6]]
+    mus = [[0, 0], [2, 1], [5, 6]]
     sigmas = [\
       [[1, 2], [2, 5]],
       [[1, 2], [2, 5]],
       [[1, -1], [-1, 2]]]
 
     d = self.d
-    xs = d.get_xs()
-    ys = d.get_ys()
-    for cli in range(len(d.labels)):
-      cl_instances = scipy.array([xs[i] for i in range(d.ninstances)\
-        if ys[i] == d.labels[cli]])
-      mean_diff = scipy.mean(cl_instances, axis=0) - mus[cli]
+    for ci in range(len(d.labels)):
+      xs = [x for (x, y) in d if y == d.labels[ci]]
+      mean_diff = scipy.mean(xs, axis=0) - mus[ci]
       self.assert_((abs(mean_diff) < 0.5).all())
-      cov_diff = scipy.cov(cl_instances, rowvar=0) - sigmas[cli]
+      cov_diff = scipy.cov(xs, rowvar=0) - sigmas[ci]
       self.assert_((abs(cov_diff) < 0.5).all())
 
 def suite():
