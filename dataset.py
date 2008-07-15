@@ -2,7 +2,12 @@ import itertools
 import numpy as np
 
 # @@TODO:
-# - add support for ids (for time etc)
+# Make this class a lot simpeler. Complexity can always added later.
+# For now make a basic DataSet class, with no support for variable length
+# features. To support segments create a derived class. Also make the interface
+# simpeler; only NP arrays. This should shorten the length of unittests.  
+
+#- add support for ids (for time etc)
 # - what about 2d and 3d instances?
 # - labels vs regression
 # - is it logical to convert everything to np.array? -> convert everything to
