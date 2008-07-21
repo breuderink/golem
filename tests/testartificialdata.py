@@ -15,7 +15,7 @@ class TestGaussianData(unittest.TestCase):
       'test_gaussian_3_classes.eps'))
   
   def test_means_cov(self):
-    '''Test if the means and covariance of GaussianData are correct.'''
+    '''Test if the means and covariance of gaussian_data are correct.'''
     mus = [[0, 0], [2, 1], [5, 6]]
     sigmas = [\
       [[1, 2], [2, 5]],
