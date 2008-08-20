@@ -8,7 +8,7 @@ import numpy as np
 # simpeler; only NP arrays. This should shorten the length of unittests.  
 
 #- add support for ids (for time etc)
-# - what about 2d and 3d instances?
+# - what about 2d and 3d instances? -> make special class
 # - labels vs regression
 # - is it logical to convert everything to np.array? -> convert everything to
 # np.array when needed.
