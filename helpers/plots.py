@@ -32,9 +32,41 @@ def scatter_plot(dataset, fname = None):
   pylab.xlabel(dataset.feature_label(0))
   pylab.ylabel(dataset.feature_label(1))
 
+def classifier_grid(classifier):
+  # add contours
+  resolution = 50
+  axes = pylab.gca()
+  xlim = axes.get_xlim()
+  ylim = axes.get_ylim()
+
+  x = np.arange(xlim[0], xlim[1], (xlim[1]-xlim[0])/resolution)
+  y = np.arange(ylim[0], ylim[1], (ylim[1]-ylim[0])/resolution)
+  X, Y = np.meshgrid(x, y)
+  xs = np.array([X.flatten(), Y.flatten()]).T
+  #Z = classifier(xs).reshape(X.shape)
+  ys = classifier.test(xs)
+  ys = ys[:, 0] - ys[:, 1]
+  Z = ys.reshape(X.shape)
+  return (X, Y, Z)
+
+def plot_classifier_hyperplane(classifier, contour_label=False, heat_map=True, 
+  heat_map_alpha = 0.8):
+  '''Plot the decision-function of a classifier. The labels of the contours can
+  be enabled with contour_label, plotting the heatmap can be disabled with the
+  heat_map argument.
+
+  '''
+  (X, Y, Z) = classifier_grid(classifier)
+  contour = pylab.contour(X, Y, Z, [-1, 0, 1], linewidths=[1, 2, 1], colors='k')
+  if contour_label:
+    pylab.clabel(contour)
+  if heat_map:
+    pylab.imshow(Z, origin='lower', alpha=heat_map_alpha, 
+    extent=[X.min(), X.max(), Y.min(), Y.max()])
   if fname:
     pylab.savefig(fname)
     pylab.close()
   else:
     pylab.show()
+
 
