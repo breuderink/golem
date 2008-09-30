@@ -14,7 +14,6 @@ def scatter_plot(dataset, fname = None):
   '''
   assert(dataset.nfeatures == 2)
   labels = dataset.labels 
-  pylab.figure()
   # loop over classes
   for ci in range(len(labels)):
     color, marker = colors[ci], markers[ci]
@@ -27,22 +26,18 @@ def scatter_plot(dataset, fname = None):
     f1 = [x[1] for x in xs]
     pylab.scatter(f0, f1, c = color, marker = marker, 
       label = dataset.class_label(ci))
-  pylab.axis('equal') # otherwise the scale is hardly visible
   pylab.legend()
   pylab.xlabel(dataset.feature_label(0))
   pylab.ylabel(dataset.feature_label(1))
   if fname:
     pylab.savefig(fname)
     pylab.close()
-  else:
-    pylab.show()
 
 def classifier_grid(classifier):
   # add contours
   resolution = 50
-  axes = pylab.gca()
-  xlim = axes.get_xlim()
-  ylim = axes.get_ylim()
+  xlim = pylab.xlim()
+  ylim = pylab.ylim()
 
   x = np.arange(xlim[0], xlim[1], (xlim[1]-xlim[0])/resolution)
   y = np.arange(ylim[0], ylim[1], (ylim[1]-ylim[0])/resolution)
@@ -66,12 +61,8 @@ def plot_classifier_hyperplane(classifier, contour_label=False, heat_map=True,
   if contour_label:
     pylab.clabel(contour)
   if heat_map:
-    pylab.imshow(Z, origin='lower', alpha=heat_map_alpha, 
-    extent=[X.min(), X.max(), Y.min(), Y.max()])
+    pylab.imshow(Z, origin='lower', alpha=heat_map_alpha, aspect='auto',
+      extent=[X.min(), X.max(), Y.min(), Y.max()])
   if fname:
     pylab.savefig(fname)
     pylab.close()
-  else:
-    pylab.show()
-
-

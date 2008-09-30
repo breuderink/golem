@@ -1,9 +1,11 @@
 import unittest
 import os
+import random
 import numpy as np
 import numpy.linalg as la
 
 from algorithms.svm import *
+from helpers import *
 
 class TestSVM(unittest.TestCase):
   def setUp(self):
@@ -69,27 +71,22 @@ class TestSVM(unittest.TestCase):
 class SVMPlot(unittest.TestCase):
   def test_svm_plot(self):
     '''Create hyperplane plot for SVM'''
-    # Load Dataset
-    data = pickle.load(open('linsep.bin'))
-    xs = np.vstack((np.array(data['X']).transpose(), 
-      np.array(data['Y']).transpose()))
-    ys = np.array([-1. for i in range(data['X'].size[1])] + \
-      [1. for i in range(data['Y'].size[1])])
-    ys = ys.reshape(ys.size, 1) # make column-vector
+    random.seed(1) # use same seed to make this test reproducible
+    d = artificialdata.gaussian_dataset([50, 50])
+    xs = d.get_xs()
+    ys = d.get_ys()
+    ys = np.where(ys > 0, np.ones(ys.shape), -np.ones(ys.shape))
 
-    svm = SupportVectorMachine(C=100, kernel='rbf', sigma=2.9, 
+    svm = SupportVectorMachine(C=1e2, kernel='rbf', sigma=1.5, 
       sign_output=False)
     svm.train(xs, ys)
 
-    # add scatter
+    # Plot SVs and scatter
     SVs = svm.model['SVs']
-    pylab.scatter(SVs[:,0], SVs[:,1], s=70, c='w')
-    class1 = xs[[i for i in range(len(ys)) if ys[i] == -1], :]
-    class2 = xs[[i for i in range(len(ys)) if ys[i] == 1], :]
-    pylab.scatter(class1[:, 0], class1[:, 1], c='k', s = 20)
-    pylab.scatter(class2[:, 0], class2[:, 1], c='w', s = 20)
+    pylab.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
+    scatter_plot(d)
 
-    plot_classifier_hyperplane(svm, heat_map_alpha = 0.9, 
+    plot_classifier_hyperplane(svm, heat_map=True, heat_map_alpha=0.9, 
       fname=os.path.join('tests', 'plots', 'test_nonlinear_svm.eps'))
 
 def suite():
