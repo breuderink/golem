@@ -1,4 +1,5 @@
 import unittest
+import os
 import numpy as np
 import numpy.linalg as la
 
@@ -65,9 +66,36 @@ class TestSVM(unittest.TestCase):
     self.assert_((0 < svm.model['alphas']).all())
     self.assert_((svm.model['alphas'] < C/xs.shape[0]).all())
 
+class SVMPlot(unittest.TestCase):
+  def test_svm_plot(self):
+    '''Create hyperplane plot for SVM'''
+    # Load Dataset
+    data = pickle.load(open('linsep.bin'))
+    xs = np.vstack((np.array(data['X']).transpose(), 
+      np.array(data['Y']).transpose()))
+    ys = np.array([-1. for i in range(data['X'].size[1])] + \
+      [1. for i in range(data['Y'].size[1])])
+    ys = ys.reshape(ys.size, 1) # make column-vector
+
+    svm = SupportVectorMachine(C=100, kernel='rbf', sigma=2.9, 
+      sign_output=False)
+    svm.train(xs, ys)
+
+    # add scatter
+    SVs = svm.model['SVs']
+    pylab.scatter(SVs[:,0], SVs[:,1], s=70, c='w')
+    class1 = xs[[i for i in range(len(ys)) if ys[i] == -1], :]
+    class2 = xs[[i for i in range(len(ys)) if ys[i] == 1], :]
+    pylab.scatter(class1[:, 0], class1[:, 1], c='k', s = 20)
+    pylab.scatter(class2[:, 0], class2[:, 1], c='w', s = 20)
+
+    plot_classifier_hyperplane(svm, heat_map_alpha = 0.9, 
+      fname=os.path.join('tests', 'plots', 'test_nonlinear_svm.eps'))
+
 def suite():
   suite = unittest.TestSuite()
   suite.addTest(unittest.makeSuite(TestSVM))
+  suite.addTest(unittest.makeSuite(SVMPlot))
   return suite
 
 if __name__ == '__main__':

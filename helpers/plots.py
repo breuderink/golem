@@ -2,7 +2,7 @@
 # - add markers to the legend
 # - use class names if provided
 import pylab
-import numpy
+import numpy as np
 
 markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']
@@ -31,6 +31,11 @@ def scatter_plot(dataset, fname = None):
   pylab.legend()
   pylab.xlabel(dataset.feature_label(0))
   pylab.ylabel(dataset.feature_label(1))
+  if fname:
+    pylab.savefig(fname)
+    pylab.close()
+  else:
+    pylab.show()
 
 def classifier_grid(classifier):
   # add contours
@@ -50,7 +55,7 @@ def classifier_grid(classifier):
   return (X, Y, Z)
 
 def plot_classifier_hyperplane(classifier, contour_label=False, heat_map=True, 
-  heat_map_alpha = 0.8):
+  heat_map_alpha = 0.8, fname=None):
   '''Plot the decision-function of a classifier. The labels of the contours can
   be enabled with contour_label, plotting the heatmap can be disabled with the
   heat_map argument.
