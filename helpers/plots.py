@@ -13,22 +13,21 @@ def scatter_plot(dataset, fname = None):
 
   '''
   assert(dataset.nfeatures == 2)
-  labels = dataset.labels 
   # loop over classes
-  for ci in range(len(labels)):
+  for ci in range(dataset.nclasses):
     color, marker = colors[ci], markers[ci]
 
     # extract relevant instances
-    xs = [x for (x, y) in dataset if y == labels[ci]]
+    xs = dataset.xs[dataset.ys[:, ci] == 1]
 
     # plot features
     f0 = [x[0] for x in xs]
     f1 = [x[1] for x in xs]
     pylab.scatter(f0, f1, c = color, marker = marker, 
-      label = dataset.class_label(ci))
+      label = dataset.class_labels[ci])
   pylab.legend()
-  pylab.xlabel(dataset.feature_label(0))
-  pylab.ylabel(dataset.feature_label(1))
+  pylab.xlabel(dataset.feature_labels[0])
+  pylab.ylabel(dataset.feature_labels[1])
   if fname:
     pylab.savefig(fname)
     pylab.close()

@@ -7,6 +7,7 @@ import numpy.linalg as la
 from algorithms.svm import *
 from helpers import *
 
+EPSILON = 1e-8
 class TestSVM(unittest.TestCase):
   def setUp(self):
     pass
@@ -14,11 +15,10 @@ class TestSVM(unittest.TestCase):
   def test_linear(self): 
     '''Test simple linear SVM'''
     # Make data
-    data = np.array([[-1, 0, 1], [-1, 1, 1], [0, 0, 1], [0, 1, 1],
-                     [1, 0, -1], [1, 1, -1], [2, 0, -1], [2, 1, -1]]
-                     ).astype(np.float64)
-    xs = data[:, :2]
-    ys = data[:, -1].reshape(data.shape[0], 1)
+    xs = np.array([[-1, 0], [-1, 1], [0, 0], [0, 1], 
+      [1, 0], [1, 1], [2, 0], [2, 1]]).astype(np.float64)
+    ys = np.array([[1, 0], [1, 0], [1, 0], [1, 0], 
+      [0, 1], [0, 1], [0, 1], [0, 1]])
 
     # Train SVM
     C = 100
@@ -26,7 +26,7 @@ class TestSVM(unittest.TestCase):
     svm.train(xs, ys)
     
     # Test if the instances are correctly classified
-    ys2 = svm.test(xs)[:,0].reshape(xs.shape[0], 1)
+    ys2 = svm.test(xs)
     self.assert_((ys2 == ys).all())
     
     # Check if the right Support Vectors are found
@@ -35,21 +35,20 @@ class TestSVM(unittest.TestCase):
     # Check if the alphas satisfy the contraints
     # 0 < all alphas < C/m where m is the number of instances
     self.assert_((0 < svm.model['alphas']).all())
-    self.assert_((svm.model['alphas'] < C/data.shape[0]).all())
+    self.assert_((svm.model['alphas'] < C/xs.shape[0]).all())
 
     # Test b in f(x) = ax + b
-    self.assert_((svm.test(np.array([[.5, 0], [.5, 1]])) == 
-      np.zeros((2, 1))).all())
-    self.assert_((svm.test(xs[2:6])[:, 0].flatten() == 
-      np.array([1., 1, -1, -1])).all())
+    svm.sign_output = False
+    hyperplane_ys = svm.test(np.array([[.5, 0], [.5, 1]]))
+    sv_ys = svm.test(xs[2:6])[:, 0].flatten()
+    self.assert_((hyperplane_ys == np.zeros((2, 1))).all())
+    self.assert_((sv_ys - np.array([1., 1, -1, -1]) < EPSILON).all())
   
   def test_nonlinear(self): 
     '''Test simple RBF SVM on a XOR problem'''
     # Make data
-    data = np.array([[0, 0, 1], [0, 1, -1], [1, 0, -1], 
-      [1, 1, 1]]).astype(np.float64)
-    xs = data[:, :2]
-    ys = data[:, -1].reshape(data.shape[0], 1)
+    xs = np.array([[0, 0], [1, 0], [0, 1], [1, 1]]).astype(np.float64)
+    ys = np.array([[1, 0], [0, 1], [0, 1], [1, 0]])
 
     # Train SVM
     C = 100
@@ -57,8 +56,7 @@ class TestSVM(unittest.TestCase):
     svm.train(xs, ys)
 
     # Test if the instances are correctly classified
-    ys2 = svm.test(xs)[:,0].reshape(xs.shape[0], 1)
-    self.assert_((ys2 == ys).all())
+    self.assert_((svm.test(xs) == ys).all())
     
     # Check if all instances are support vectors
     self.assert_(len(svm.model['SVs']) == 4)
@@ -73,9 +71,8 @@ class SVMPlot(unittest.TestCase):
     '''Create hyperplane plot for SVM'''
     random.seed(1) # use same seed to make this test reproducible
     d = artificialdata.gaussian_dataset([50, 50])
-    xs = d.get_xs()
-    ys = d.get_ys()
-    ys = np.where(ys > 0, np.ones(ys.shape), -np.ones(ys.shape))
+    xs = d.xs
+    ys = d.ys
 
     svm = SupportVectorMachine(C=1e2, kernel='rbf', sigma=1.5, 
       sign_output=False)

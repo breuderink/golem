@@ -23,8 +23,9 @@ class TestGaussianData(unittest.TestCase):
       [[1, -1], [-1, 2]]]
 
     d = self.d
-    for ci in range(len(d.labels)):
-      xs = [x for (x, y) in d if y == d.labels[ci]]
+    for ci in range(d.nclasses):
+      indices = d.ys[:, ci] == 1
+      xs = d.xs[indices, :]
       mean_diff = scipy.mean(xs, axis=0) - mus[ci]
       self.assert_((abs(mean_diff) < 0.5).all())
       cov_diff = scipy.cov(xs, rowvar=0) - sigmas[ci]

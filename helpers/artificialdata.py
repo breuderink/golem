@@ -14,11 +14,12 @@ def gaussian_dataset(ninstances = [50, 50]):
 
   result = dataset.DataSet()
 
-  for y in range(len(ninstances)):
+  nclasses = len(ninstances)
+  for y in range(nclasses):
     cl_instances = ninstances[y]
     xs = sp.random.multivariate_normal(mus[y], sigmas[y], cl_instances)
-    ys = y * sp.ones((cl_instances, 1), int)
+    ys = sp.zeros((cl_instances, nclasses))
+    ys[:, y] = 1.
     d = dataset.DataSet(xs, ys) 
     result += d
   return result
-

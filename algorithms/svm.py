@@ -33,8 +33,9 @@ class SupportVectorMachine:
     log.debug('Creating QP-target')
     # (4) min W(a) = -sum(a_i) + (1/2) * a' * Q * a
     # -sum(a_i) = q'a
-    label_matrix = np.dot(ys, ys.T).astype('d') # Could be made sparse?
-    Q = cvx.matrix(kernel_matrix * label_matrix) # Only lower triangular part is needed
+    labels = (ys[:,0] - ys[:,1]).reshape(m, 1).astype('d')
+    label_matrix = np.dot(labels, labels.T)
+    Q = cvx.matrix(kernel_matrix * label_matrix)
     q = cvx.matrix([-1. for i in range(m)])
 
     log.debug('Creating QP-constraints')
@@ -46,7 +47,7 @@ class SupportVectorMachine:
     G2 = cvx.spmatrix(1, range(m), range(m))
     G = cvx.sparse([G1, G2])
     h = cvx.matrix([0. for i in range(m)] + [float(self.C)/m for i in range(m)])
-    A = cvx.matrix(ys.T.copy()) # The deep copy is needed to prevent a TypeError
+    A = cvx.matrix(labels.T) # The deep copy is needed to prevent a TypeError
     b = cvx.matrix(0.)
 
     log.debug('Solving QP')
@@ -66,26 +67,27 @@ class SupportVectorMachine:
     model = {}
     model['alphas'] = alphas[sv_ids]
     model['SVs'] = np.array(xs)[sv_ids, :]
-    model['ys'] = np.array(ys)[sv_ids, :]
+    model['labels'] = np.array(labels)[sv_ids, :]
     
     # Calculate b in f(x) = <w, x> + b
     sv_kernel = np.array(kernel_matrix)[sv_ids,:][:, sv_ids]
-    model['b'] = np.mean(
-      model['ys'] - np.dot(sv_kernel, (model['ys'] * model['alphas'])).T)
+    model['b'] = np.mean(model['labels'] - 
+      np.dot(sv_kernel, (model['labels'] * model['alphas'])).T)
     self.model = model
 
   def test(self, xs):
     model = self.model
-    SVs, alphas, ys, b = model['SVs'], model['alphas'], model['ys'], model['b']
-    kernel_matrix = build_kernel_matrix(xs, SVs, 
-      self.kernel, **self.params)
+    SVs, alphas = model['SVs'], model['alphas']
+    labels, b = model['labels'], model['b']
+
+    kernel_matrix = build_kernel_matrix(xs, SVs, self.kernel, **self.params)
     # Eq. 7.25: f(x) = sign(sum_i(y_i a_i k(x, x_i) + b)
-    ys = np.dot(kernel_matrix, (alphas * ys)) + b
+    labels = np.dot(kernel_matrix, (alphas * labels)) + b
 
     # Transform into two-colum positive hyperplane distance format
-    ys = ys.reshape(ys.size, 1)
-    ys = np.hstack([ys, -ys])
+    labels = labels.reshape(labels.size, 1)
+    ys = np.hstack([labels, -labels])
     if self.sign_output:
-      ys = np.sign(ys)
+      ys = np.where(ys > 0, np.ones(ys.shape), np.zeros(ys.shape))
     return ys
 
