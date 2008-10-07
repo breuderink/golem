@@ -40,13 +40,14 @@ class TestDataset(unittest.TestCase):
     '''Setup a default DataSet.'''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
     ys = np.array([[0, 1], [1, 0]])
-    self.d = DataSet(xs, ys)
+    self.d = DataSet(xs, ys, ['f1', 'f2', 'f3'], ['A', 'B'])
       
   def test_equality(self):
     d = self.d
     self.assert_(d == d)
-    self.assert_(d == DataSet(d.xs, d.ys))
-    self.assert_(d == DataSet(d.xs.copy(), d.ys.copy()))
+    self.assert_(d == DataSet(d.xs, d.ys, d.feature_labels, d.class_labels))
+    self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.feature_labels, 
+      d.class_labels))
     self.assert_(d <> 3)
     self.assert_(d <> DataSet(np.zeros((2, 3)), np.zeros((2, 2))))
 
@@ -58,6 +59,13 @@ class TestDataset(unittest.TestCase):
     self.assert_(d[:-1] == d[0])
     self.assert_(d[0].nclasses == 2)
     self.assert_(d[0].nfeatures == 3)
+
+  def test_class_extraction(self):
+    d = self.d
+    dA = d.get_class(0)
+    dB = d.get_class(1)
+    self.assert_(dA == d[1])
+    self.assert_(dB == d[0])
  
   def test_iter(self):
     '''Test the iterator of DataSet.'''
@@ -69,13 +77,14 @@ class TestDataset(unittest.TestCase):
   
   def test_str(self):
     '''Test string representation.'''
-    dstr = str(self.d)
-    self.assertEqual('DataSet (2 instances, 3 features, 2 classes)', dstr)
+    self.assertEqual("DataSet (2 instances, 3 features, classes: ['A', 'B'])",
+      str(self.d))
 
   def test_add(self):
     '''Test the creation of compound datasets using the add-operator.'''
     d1 = self.d
-    d2 = DataSet(np.array([[3, 3, 3], [4, 4, 4]]), np.array([[0, 1], [1, 0]]))
+    d2 = DataSet(np.array([[3, 3, 3], [4, 4, 4]]), np.array([[0, 1], [1, 0]]), 
+      d1.feature_labels, d1.class_labels)
     d3 = d1 + d2
     self.assert_(d1.nfeatures == d2.nfeatures)
     self.assert_(d1.nclasses == d2.nclasses)
