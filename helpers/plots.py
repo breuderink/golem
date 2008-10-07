@@ -17,9 +17,7 @@ def scatter_plot(dataset, fname = None):
   # loop over classes
   for ci in range(dataset.nclasses):
     color, marker = colors[ci], markers[ci]
-
-    # extract relevant instances
-    xs = dataset.xs[dataset.ys[:, ci] == 1]
+    xs = dataset.get_class(ci).xs
 
     # plot features
     f0 = [x[0] for x in xs]

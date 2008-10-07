@@ -35,7 +35,6 @@ class DataSet:
     if xs.ndim == 1:
       xs = xs.reshape((1, xs.size))
       ys = ys.reshape((1, ys.size))
-    print xs.ndim
     return DataSet(xs, ys, self.feature_labels, self.class_labels)
     
   def __getitem__(self, i):
