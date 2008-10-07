@@ -1,15 +1,7 @@
 import itertools
 import numpy as np
 
-# Make this class a lot simpeler. Complexity can always added later.
-# For now make a basic DataSet class, with no support for variable length
-# features. To support segments create a derived class. Also make the interface
-# simpeler; only NP arrays. This should shorten the length of unittests.  
-
 # - add support for ids (for time etc)
-
-
-class VariableNumberOfFeaturesException(Exception): pass
 
 class DataSet:
   def __init__(self, xs=None, ys=None):
@@ -20,7 +12,7 @@ class DataSet:
     elif not (isinstance(xs, np.ndarray) and isinstance(ys, np.ndarray)):
       raise ValueError, 'Only numpy.ndarray is supported for xs and ys.'
     elif xs.ndim <> 2 or ys.ndim <> 2:
-      raise ValueError, 'Incorrect number of dimensions for xs or ys'
+      raise ValueError, 'Arguments xs and ys should be *2D* numpy arrays'
     elif xs.shape[0] <> ys.shape[0]:
       raise ValueError, 'The #instances does not match #labels'
    
@@ -32,11 +24,19 @@ class DataSet:
 
     
   def __getitem__(self, i):
-    return (self.xs[i, :], self.ys[i,:])
+    if isinstance(i, slice):
+      return DataSet(self.xs[i, :], self.ys[i,:])
+    else:
+      if i < 0 or i > self.ninstances: raise ValueError
+      return DataSet(self.xs[i, :].reshape((1, self.nfeatures)), 
+        self.ys[i,:].reshape((1, self.nclasses)))
+
+  def __len__(self):
+    return self.ninstances
  
   def __iter__(self):
     for i in range(self.ninstances):
-      yield self[i]
+      yield (self.xs[i], self.ys[i])
 
   def __str__(self):
     state_str = 'DataSet (%d instances, %d features, %d classes)' % \
@@ -57,6 +57,14 @@ class DataSet:
     if (a.nfeatures <> b.nfeatures) or (a.nclasses <> b.nclasses):
       raise ValueError, 'The #features or #classes do not match'
     return DataSet(np.vstack([a.xs, b.xs]), np.vstack([a.ys, b.ys]))
+
+  def __eq__(a, b):
+    if isinstance(b, DataSet):
+      return (a.xs == b.xs).all() and (a.ys == b.ys).all()
+    return False
+    
+  def __ne__(a, b):
+    return not a == b
     
   @property
   def nclasses(self):

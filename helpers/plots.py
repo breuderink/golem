@@ -3,6 +3,7 @@
 # - use class names if provided
 import pylab
 import numpy as np
+from dataset import *
 
 markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']
@@ -33,19 +34,19 @@ def scatter_plot(dataset, fname = None):
     pylab.close()
 
 def classifier_grid(classifier):
-  # add contours
   resolution = 50
   xlim = pylab.xlim()
   ylim = pylab.ylim()
 
+  # Build grid
   x = np.arange(xlim[0], xlim[1], (xlim[1]-xlim[0])/resolution)
   y = np.arange(ylim[0], ylim[1], (ylim[1]-ylim[0])/resolution)
   X, Y = np.meshgrid(x, y)
   xs = np.array([X.flatten(), Y.flatten()]).T
-  #Z = classifier(xs).reshape(X.shape)
-  ys = classifier.test(xs)
-  ys = ys[:, 0] - ys[:, 1]
-  Z = ys.reshape(X.shape)
+
+  # Get scores
+  dz = classifier.test(DataSet(xs, np.zeros((xs.shape[0], 2))))
+  Z = (dz.xs[:, 0] - dz.xs[:, 1]).reshape(X.shape)
   return (X, Y, Z)
 
 def plot_classifier_hyperplane(classifier, contour_label=False, heat_map=True, 

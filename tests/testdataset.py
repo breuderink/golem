@@ -42,6 +42,23 @@ class TestDataset(unittest.TestCase):
     ys = np.array([[0, 1], [1, 0]])
     self.d = DataSet(xs, ys)
       
+  def test_equality(self):
+    d = self.d
+    self.assert_(d == d)
+    self.assert_(d == DataSet(d.xs, d.ys))
+    self.assert_(d == DataSet(d.xs.copy(), d.ys.copy()))
+    self.assert_(d <> 3)
+    self.assert_(d <> DataSet(np.zeros((2, 3)), np.zeros((2, 2))))
+
+  def test_indexing(self):
+    '''Test the indexing of DataSet.'''
+    d = self.d
+    self.assert_(d[:] == d)
+    self.assert_(d[0] + d[1] == d)
+    self.assert_(d[:-1] == d[0])
+    self.assert_(d[0].nclasses == 2)
+    self.assert_(d[0].nfeatures == 3)
+ 
   def test_iter(self):
     '''Test the iterator of DataSet.'''
     instances = [(x, y) for (x, y) in self.d]

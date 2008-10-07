@@ -6,8 +6,10 @@ import numpy.linalg as la
 
 from algorithms.svm import *
 from helpers import *
+from dataset import *
 
 EPSILON = 1e-8
+
 class TestSVM(unittest.TestCase):
   def setUp(self):
     pass
@@ -19,15 +21,15 @@ class TestSVM(unittest.TestCase):
       [1, 0], [1, 1], [2, 0], [2, 1]]).astype(np.float64)
     ys = np.array([[1, 0], [1, 0], [1, 0], [1, 0], 
       [0, 1], [0, 1], [0, 1], [0, 1]])
+    d = DataSet(xs, ys)
 
     # Train SVM
     C = 100
     svm = SupportVectorMachine(C=C)
-    svm.train(xs, ys)
+    svm.train(d)
     
     # Test if the instances are correctly classified
-    ys2 = svm.test(xs)
-    self.assert_((ys2 == ys).all())
+    self.assert_((svm.test(d).xs == ys).all())
     
     # Check if the right Support Vectors are found
     self.assert_((svm.model['SVs'] == xs[2:6]).all())
@@ -39,24 +41,26 @@ class TestSVM(unittest.TestCase):
 
     # Test b in f(x) = ax + b
     svm.sign_output = False
-    hyperplane_ys = svm.test(np.array([[.5, 0], [.5, 1]]))
-    sv_ys = svm.test(xs[2:6])[:, 0].flatten()
-    self.assert_((hyperplane_ys == np.zeros((2, 1))).all())
-    self.assert_((sv_ys - np.array([1., 1, -1, -1]) < EPSILON).all())
+    hyperplane_d = DataSet(np.array([[.5, 0], [.5, 1]]), np.zeros((2, 2)))
+    self.assert_((svm.test(hyperplane_d).xs == hyperplane_d.ys).all())
+
+    sv_d = d[2:6]
+    self.assert_(((svm.test(sv_d).xs - sv_d.ys) < EPSILON).all())
   
   def test_nonlinear(self): 
     '''Test simple RBF SVM on a XOR problem'''
     # Make data
     xs = np.array([[0, 0], [1, 0], [0, 1], [1, 1]]).astype(np.float64)
     ys = np.array([[1, 0], [0, 1], [0, 1], [1, 0]])
+    d = DataSet(xs, ys)
 
     # Train SVM
     C = 100
     svm = SupportVectorMachine(C=C, kernel='rbf', sigma=0.5)
-    svm.train(xs, ys)
+    svm.train(d)
 
     # Test if the instances are correctly classified
-    self.assert_((svm.test(xs) == ys).all())
+    self.assert_((svm.test(d).xs == ys).all())
     
     # Check if all instances are support vectors
     self.assert_(len(svm.model['SVs']) == 4)
@@ -71,12 +75,10 @@ class SVMPlot(unittest.TestCase):
     '''Create hyperplane plot for SVM'''
     random.seed(1) # use same seed to make this test reproducible
     d = artificialdata.gaussian_dataset([50, 50])
-    xs = d.xs
-    ys = d.ys
 
     svm = SupportVectorMachine(C=1e2, kernel='rbf', sigma=1.5, 
       sign_output=False)
-    svm.train(xs, ys)
+    svm.train(d)
 
     # Plot SVs and scatter
     SVs = svm.model['SVs']

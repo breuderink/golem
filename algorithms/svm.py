@@ -10,6 +10,7 @@ import cvxopt.solvers
 
 from kernel import *
 from helpers.plots import *
+from dataset import *
 
 log = logging.getLogger('SVM')
 QP_ACCURACY = 1e-8
@@ -21,7 +22,11 @@ class SupportVectorMachine:
     self.params = params
     self.sign_output = sign_output
 
-  def train(self, xs, ys):
+  def train(self, data_set):
+    assert(data_set.nclasses == 2)
+    xs = data_set.xs
+    ys = data_set.ys
+
     # See "Learning with Kernels", Schölkopf and Smola, p205
     log.info('Start SVM')
     log.debug('Calculate kernel matrix')
@@ -75,7 +80,8 @@ class SupportVectorMachine:
       np.dot(sv_kernel, (model['labels'] * model['alphas'])).T)
     self.model = model
 
-  def test(self, xs):
+  def test(self, data_set):
+    xs = data_set.xs
     model = self.model
     SVs, alphas = model['SVs'], model['alphas']
     labels, b = model['labels'], model['b']
@@ -89,5 +95,5 @@ class SupportVectorMachine:
     ys = np.hstack([labels, -labels])
     if self.sign_output:
       ys = np.where(ys > 0, np.ones(ys.shape), np.zeros(ys.shape))
-    return ys
+    return DataSet(ys, data_set.ys)
 
