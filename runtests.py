@@ -8,5 +8,6 @@ if __name__== '__main__':
   suite.addTest(testartificialdata.suite())
   suite.addTest(testkernel.suite())
   suite.addTest(testsvm.suite())
+  suite.addTest(testloss.suite())
 
   unittest.TextTestRunner(verbosity = 2).run(suite)
