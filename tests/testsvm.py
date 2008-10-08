@@ -7,6 +7,7 @@ import numpy.linalg as la
 from algorithms.svm import *
 from helpers import *
 from dataset import *
+import loss
 
 EPSILON = 1e-8
 
@@ -29,12 +30,12 @@ class TestSVM(unittest.TestCase):
     svm.train(d)
     
     # Test if the instances are correctly classified
-    self.assert_((svm.test(d).xs == ys).all())
+    self.assert_(loss.accuracy(svm.test(d)) == 1)
     
     # Check if the right Support Vectors are found
     self.assert_((svm.model['SVs'] == xs[2:6]).all())
 
-    # Check if the alphas satisfy the contraints
+    # Check if the alphas satisfy the constraints
     # 0 < all alphas < C/m where m is the number of instances
     self.assert_((0 < svm.model['alphas']).all())
     self.assert_((svm.model['alphas'] < C/xs.shape[0]).all())
@@ -60,7 +61,7 @@ class TestSVM(unittest.TestCase):
     svm.train(d)
 
     # Test if the instances are correctly classified
-    self.assert_((svm.test(d).xs == ys).all())
+    self.assert_(loss.accuracy(svm.test(d)) == 1)
     
     # Check if all instances are support vectors
     self.assert_(len(svm.model['SVs']) == 4)
