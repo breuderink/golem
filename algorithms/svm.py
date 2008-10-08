@@ -4,12 +4,10 @@ import pickle
 import math
 
 import numpy as np
-import pylab
 import cvxopt.base as cvx
 import cvxopt.solvers
 
 from kernel import *
-from helpers.plots import *
 from dataset import *
 
 log = logging.getLogger('SVM')

@@ -3,9 +3,11 @@ import os
 import random
 import numpy as np
 import numpy.linalg as la
+import pylab
 
-from algorithms.svm import *
+from algorithms import SupportVectorMachine
 from helpers import *
+from helpers.plots import *
 from dataset import *
 import loss
 
@@ -85,7 +87,6 @@ class SVMPlot(unittest.TestCase):
     SVs = svm.model['SVs']
     pylab.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
     scatter_plot(d)
-
     plot_classifier_hyperplane(svm, heat_map=True, heat_map_alpha=0.9, 
       fname=os.path.join('tests', 'plots', 'test_nonlinear_svm.eps'))
 
