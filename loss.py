@@ -1,10 +1,7 @@
 import numpy as np
+from helpers import hard_max
 from dataset import *
 
-def hard_max(xs):
-  result = np.zeros(xs.shape)
-  result[range(xs.shape[0]), np.argmax(xs, axis=1)] = 1
-  return result
 
 def class_loss(dataset):
   hm = hard_max(dataset.xs)
