@@ -9,5 +9,6 @@ if __name__== '__main__':
   suite.addTest(testkernel.suite())
   suite.addTest(testsvm.suite())
   suite.addTest(testloss.suite())
+  suite.addTest(testcrossvalidation.suite())
 
   unittest.TextTestRunner(verbosity = 2).run(suite)

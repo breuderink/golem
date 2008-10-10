@@ -1,5 +1,5 @@
-import scipy as sp
-import scipy.linalg as la
+import numpy as np
+import numpy.linalg as la
 import dataset
 
 def gaussian_dataset(ninstances = [50, 50]):
@@ -17,8 +17,8 @@ def gaussian_dataset(ninstances = [50, 50]):
   nclasses = len(ninstances)
   for y in range(nclasses):
     cl_instances = ninstances[y]
-    xs = sp.random.multivariate_normal(mus[y], sigmas[y], cl_instances)
-    ys = sp.zeros((cl_instances, nclasses))
+    xs = np.random.multivariate_normal(mus[y], sigmas[y], cl_instances)
+    ys = np.zeros((cl_instances, nclasses))
     ys[:, y] = 1.
     d = dataset.DataSet(xs, ys) 
     result += d

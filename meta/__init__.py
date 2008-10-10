@@ -7,3 +7,4 @@ class Group:
     
   def test(self, data):
     return [n.test(data) for n in self.node_list]
+

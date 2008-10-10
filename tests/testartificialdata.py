@@ -1,7 +1,7 @@
 import unittest
 import os.path
-import scipy
-from scipy import random
+import numpy
+from numpy import random
 from helpers import *
 
 class TestGaussianData(unittest.TestCase):
@@ -26,9 +26,9 @@ class TestGaussianData(unittest.TestCase):
     for ci in range(d.nclasses):
       indices = d.ys[:, ci] == 1
       xs = d.xs[indices, :]
-      mean_diff = scipy.mean(xs, axis=0) - mus[ci]
+      mean_diff = numpy.mean(xs, axis=0) - mus[ci]
       self.assert_((abs(mean_diff) < 0.5).all())
-      cov_diff = scipy.cov(xs, rowvar=0) - sigmas[ci]
+      cov_diff = numpy.cov(xs, rowvar=0) - sigmas[ci]
       self.assert_((abs(cov_diff) < 0.5).all())
 
 def suite():

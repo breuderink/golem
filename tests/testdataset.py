@@ -77,7 +77,7 @@ class TestDataset(unittest.TestCase):
   
   def test_str(self):
     '''Test string representation.'''
-    self.assertEqual("DataSet (2 instances, 3 features, classes: ['A', 'B'])",
+    self.assertEqual('DataSet with 2 instances, 3 features, 2 classes: [1, 1]',
       str(self.d))
 
   def test_add(self):

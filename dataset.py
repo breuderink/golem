@@ -1,6 +1,6 @@
 import itertools
 import numpy as np
-
+import helpers
 # - add support for ids (for time etc)
 
 class DataSet:
@@ -38,16 +38,19 @@ class DataSet:
     return DataSet(xs, ys, self.feature_labels, self.class_labels)
     
   def __getitem__(self, i):
-    if isinstance(i, slice):
+    if isinstance(i, slice) or isinstance(i, list) or isinstance(i, np.ndarray):
       return DataSet(self.xs[i, :], self.ys[i,:], self.feature_labels, 
         self.class_labels)
-    else:
-      if i < 0 or i > self.ninstances: raise ValueError
+    elif isinstance(i, int):
+      if i < 0 or i > self.ninstances: 
+        raise ValueError, 'Out of bounds.'
       return DataSet(
         xs=self.xs[i, :].reshape((1, self.nfeatures)), 
         ys=self.ys[i,:].reshape((1, self.nclasses)), 
         feature_labels=self.feature_labels,
         class_labels=self.class_labels)
+    else:
+      raise ValueError, 'Unkown indexing type.'
 
   def __len__(self):
     return self.ninstances
@@ -57,8 +60,9 @@ class DataSet:
       yield (self.xs[i], self.ys[i])
 
   def __str__(self):
-    return 'DataSet (%d instances, %d features, classes: %s)' % \
-      (self.ninstances, self.nfeatures, repr(self.class_labels))
+    return 'DataSet with %d instances, %d features, %d classes: %s' % \
+      (self.ninstances, self.nfeatures, self.nclasses, 
+      repr(self.ninstances_per_class))
 
   def __add__(a, b):
     '''Create a new DataSet by adding the instances of b to a'''
@@ -103,10 +107,13 @@ class DataSet:
     if self.xs.ndim == 0:
       return 0
     return self.xs.shape[0]
+    
+  @property
+  def ninstances_per_class(self):
+    return np.sum(helpers.hard_max(self.ys), axis=0).astype(int).tolist()
 
   @property
   def nfeatures(self):
     if self.xs.ndim == 0:
       return 0
     return self.xs.shape[1]
-
