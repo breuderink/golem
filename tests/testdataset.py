@@ -40,16 +40,20 @@ class TestDataset(unittest.TestCase):
     '''Setup a default DataSet.'''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
     ys = np.array([[0, 1], [1, 0]])
-    self.d = DataSet(xs, ys, ['f1', 'f2', 'f3'], ['A', 'B'])
+    self.d = DataSet(xs, ys, feature_labels=['f1', 'f2', 'f3'], 
+      class_labels=['A', 'B'], ids=[[3], [4]])
       
   def test_equality(self):
     d = self.d
     self.assert_(d == d)
-    self.assert_(d == DataSet(d.xs, d.ys, d.feature_labels, d.class_labels))
-    self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.feature_labels, 
+    self.assert_(d == DataSet(d.xs, d.ys, d.ids, d.feature_labels, 
       d.class_labels))
+    self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
+      d.feature_labels, d.class_labels))
     self.assert_(d <> 3)
     self.assert_(d <> DataSet(np.zeros((2, 3)), np.zeros((2, 2))))
+    self.assert_(d <> DataSet(d.xs, d.ys, None, d.feature_labels, 
+      d.class_labels))
 
   def test_indexing(self):
     '''Test the indexing of DataSet.'''
@@ -59,6 +63,7 @@ class TestDataset(unittest.TestCase):
     self.assert_(d[:-1] == d[0])
     self.assert_(d[0].nclasses == 2)
     self.assert_(d[0].nfeatures == 3)
+    self.assert_(d[-1] == d[d.nclasses - 1])
 
   def test_class_extraction(self):
     d = self.d
@@ -84,7 +89,7 @@ class TestDataset(unittest.TestCase):
     '''Test the creation of compound datasets using the add-operator.'''
     d1 = self.d
     d2 = DataSet(np.array([[3, 3, 3], [4, 4, 4]]), np.array([[0, 1], [1, 0]]), 
-      d1.feature_labels, d1.class_labels)
+      feature_labels=d1.feature_labels, class_labels=d1.class_labels)
     d3 = d1 + d2
     self.assert_(d1.nfeatures == d2.nfeatures)
     self.assert_(d1.nclasses == d2.nclasses)

@@ -4,9 +4,10 @@ import helpers
 # - add support for ids (for time etc)
 
 class DataSet:
-  def __init__(self, xs=None, ys=None, feature_labels=None, class_labels=None):
+  def __init__(self, xs=None, ys=None, ids=None, feature_labels=None, 
+    class_labels=None):
     '''Create a new dataset.'''
-    if xs == None:
+    if xs == None and ys == None:
       xs = np.array(None)
       ys = np.array(None)
     elif not (isinstance(xs, np.ndarray) and isinstance(ys, np.ndarray)):
@@ -29,24 +30,22 @@ class DataSet:
     if len(self.class_labels) <> self.nclasses:
       raise ValueError, 'The number of class labels does not match #classes'
 
+    self.ids = np.asarray(ids).reshape(self.ninstances, 1) if ids <> None\
+      else np.arange(self.ninstances).reshape(self.ninstances, 1)
+
   def get_class(self, i):
-    xs = self.xs[self.ys[:, i] == 1]
-    ys = self.ys[self.ys[:, i] == 1]
-    if xs.ndim == 1:
-      xs = xs.reshape((1, xs.size))
-      ys = ys.reshape((1, ys.size))
-    return DataSet(xs, ys, self.feature_labels, self.class_labels)
+    return self[self.ys[:, i] == 1]
     
   def __getitem__(self, i):
     if isinstance(i, slice) or isinstance(i, list) or isinstance(i, np.ndarray):
-      return DataSet(self.xs[i, :], self.ys[i,:], self.feature_labels, 
-        self.class_labels)
-    elif isinstance(i, int):
-      if i < 0 or i > self.ninstances: 
-        raise ValueError, 'Out of bounds.'
       return DataSet(
-        xs=self.xs[i, :].reshape((1, self.nfeatures)), 
-        ys=self.ys[i,:].reshape((1, self.nclasses)), 
+        xs=self.xs[i, :], ys=self.ys[i,:], ids=self.ids[i, :], 
+        feature_labels=self.feature_labels, class_labels=self.class_labels)
+    elif isinstance(i, int):
+      return DataSet(
+        xs=self.xs[i, :].reshape(1, self.nfeatures), 
+        ys=self.ys[i,:].reshape(1, self.nclasses), 
+        ids=self.ids[i,:].reshape(1, 1),
         feature_labels=self.feature_labels,
         class_labels=self.class_labels)
     else:
@@ -84,13 +83,15 @@ class DataSet:
       raise ValueError, 'The class labels do not match'
 
     return DataSet(np.vstack([a.xs, b.xs]), np.vstack([a.ys, b.ys]),
-      feature_labels=a.feature_labels, class_labels=a.class_labels)
+      feature_labels=a.feature_labels, class_labels=a.class_labels, 
+      ids=np.vstack([a.ids, b.ids]))
 
   def __eq__(a, b):
     if isinstance(b, DataSet):
       return (a.xs == b.xs).all() and (a.ys == b.ys).all() and \
         a.feature_labels == b.feature_labels and \
-        a.class_labels == b.class_labels
+        a.class_labels == b.class_labels and\
+        (a.ids == b.ids).all()
     return False
     
   def __ne__(a, b):

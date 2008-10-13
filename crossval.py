@@ -1,9 +1,8 @@
 import unittest
-
+import copy
 import numpy as np
 from dataset import *
 from helpers import *
-from pprint import pprint
 
 def stratified_split(d, K=10):
   subsets = []
@@ -28,8 +27,10 @@ def cross_validation_sets(subsets):
 
 def cross_validate(subsets, node):
   for (tr, te) in cross_validation_sets(subsets):
-    node.train(tr)
-    yield node.test(te)
+    tnode = copy.deepcopy(node) # To be sure we don't cheat
+    tnode.train(tr)
+    yield tnode.test(te)
+    del tnode
 
 if __name__ == '__main__':
   #unittest.main()
@@ -40,8 +41,10 @@ if __name__ == '__main__':
   d = artificialdata.gaussian_dataset([300, 200])
   K = 5
   
-  svm = algorithms.SupportVectorMachine(C=10)
+  svm = algorithms.SupportVectorMachine(C=100)
   test_folds = [d for d in cross_validate(stratified_split(d, K), svm)]
+  #for t in test_folds:
+  #  print loss.format_confmat(t)
   accuracy = [loss.accuracy(d) for d in test_folds]
-  print np.mean(accuracy), np.std(accuracy)
+  print '%.3f (%.3f)' % (np.mean(accuracy), np.std(accuracy))
 
