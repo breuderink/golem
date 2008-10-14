@@ -1,2 +1,2 @@
 __all__ = ['testdataset', 'testartificialdata', 'testkernel', 'testsvm', 
-  'testloss', 'testcrossvalidation']
+  'testloss', 'testcrossvalidation', 'testonevsrest']

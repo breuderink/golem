@@ -9,6 +9,7 @@ def stratified_split(d, K=10):
   evenly over the subsets.
   '''
   subsets = []
+  assert(K <= max(d.ninstances_per_class))
   # Loop over classes
   for ci in range(d.nclasses):
     cid = d.get_class(ci)
@@ -28,6 +29,7 @@ def sequential_split(d, K=10):
   from the first Kth part of d, the second subset from thet second Kth part of
   d etc.
   '''
+  assert(K <= d.ninstances)
   indices = np.floor(np.linspace(0, K, d.ninstances, endpoint=False))
   result = []
   for i in range(K):
