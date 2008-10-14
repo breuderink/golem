@@ -1,4 +1,3 @@
-import unittest
 import copy
 import numpy as np
 from dataset import *
