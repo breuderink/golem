@@ -32,9 +32,16 @@ class DataSet:
 
     self.ids = np.asarray(ids).reshape(self.ninstances, 1) if ids <> None\
       else np.arange(self.ninstances).reshape(self.ninstances, 1)
+    assert(np.unique(self.ids).size == self.ids.size)
 
   def get_class(self, i):
     return self[self.ys[:, i] == 1]
+
+  def sort(self):
+    '''
+    Sort by id
+    '''
+    return self[np.argsort(self.ids.flatten())]
     
   def __getitem__(self, i):
     if isinstance(i, slice) or isinstance(i, list) or isinstance(i, np.ndarray):

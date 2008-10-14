@@ -65,12 +65,26 @@ class TestDataset(unittest.TestCase):
     self.assert_(d[0].nfeatures == 3)
     self.assert_(d[-1] == d[d.nclasses - 1])
 
+    indices = np.arange(d.ninstances)
+    self.assert_(d[indices==1] == d[1])
+
   def test_class_extraction(self):
+    '''Test the extraction of a single class from DataSet'''
     d = self.d
     dA = d.get_class(0)
     dB = d.get_class(1)
     self.assert_(dA == d[1])
     self.assert_(dB == d[0])
+
+  def test_sort(self):
+    '''Test sorting the DataSet'''
+    d = self.d
+    ds = d.sort()
+    # Test if ids are sorted
+    self.assert_((np.sort(ds.ids.flatten()) == ds.ids.flatten()).all())
+    # Test if dataset is the same but differently ordered
+    self.assert_(d[np.lexsort(d.xs.T)] == ds[np.lexsort(ds.xs.T)])
+
  
   def test_iter(self):
     '''Test the iterator of DataSet.'''

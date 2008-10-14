@@ -5,19 +5,41 @@ from dataset import *
 from helpers import *
 
 def stratified_split(d, K=10):
+  '''
+  Splits a dataset in K non-overlapping subsets. The classes are distributed
+  evenly over the subsets.
+  '''
   subsets = []
+  # Loop over classes
   for ci in range(d.nclasses):
     cid = d.get_class(ci)
     ind = np.arange(cid.ninstances) % K
     for si in range(K):
+      # Loop over future subsets
       indices = np.where(ind == si)[0].copy().tolist()
       if si < len(subsets):
-        subsets[si] += cid[indices]
+        subsets[si] += cid[indices] # Grow subset
       else:
-        subsets.append(cid[indices])
+        subsets.append(cid[indices]) # Create subset
   return subsets
 
+def sequential_split(d, K=10):
+  '''
+  Splits a dataset in K non-overlapping subsets. The first subset is created
+  from the first Kth part of d, the second subset from thet second Kth part of
+  d etc.
+  '''
+  indices = np.floor(np.linspace(0, K, d.ninstances, endpoint=False))
+  result = []
+  for i in range(K):
+    result.append(d[indices==i])
+  return result
+
 def cross_validation_sets(subsets):
+  '''
+  Generete training and testsets from a list with DataSets. The trainingset
+  is created from the subsets after isolating a testset.
+  '''
   K = len(subsets)
   for ki in range(K):
     training_set = (reduce(lambda a, b: a + b, 
@@ -26,6 +48,10 @@ def cross_validation_sets(subsets):
     yield training_set, test_set
 
 def cross_validate(subsets, node):
+  '''
+  Crossvalidate on subsets using node. Returns a list with the output of node
+  on the testsets.
+  '''
   for (tr, te) in cross_validation_sets(subsets):
     tnode = copy.deepcopy(node) # To be sure we don't cheat
     tnode.train(tr)
@@ -39,9 +65,10 @@ if __name__ == '__main__':
 
   np.random.seed(1)
   d = artificialdata.gaussian_dataset([300, 200])
-  K = 5
+  K = 10
   
   svm = algorithms.SupportVectorMachine(C=100)
+  print d
   test_folds = [d for d in cross_validate(stratified_split(d, K), svm)]
   #for t in test_folds:
   #  print loss.format_confmat(t)
