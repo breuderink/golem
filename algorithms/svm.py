@@ -1,7 +1,5 @@
 # coding: utf8
 import logging
-import pickle
-import math
 
 import numpy as np
 import cvxopt.base as cvx
@@ -14,16 +12,16 @@ log = logging.getLogger('SVM')
 QP_ACCURACY = 1e-8
 
 class SupportVectorMachine:
-  def __init__(self, C=2, kernel=None, sign_output=True, **params):
+  def __init__(self, C=2, kernel=None, sign_output=False, **params):
     self.C = C
     self.kernel = kernel
     self.params = params
     self.sign_output = sign_output
 
-  def train(self, data_set):
-    assert(data_set.nclasses == 2)
-    xs = data_set.xs
-    ys = data_set.ys
+  def train(self, d):
+    assert(d.nclasses == 2)
+    xs = d.xs
+    ys = d.ys
 
     # See "Learning with Kernels", Schölkopf and Smola, p205
     log.info('Start SVM')
@@ -78,8 +76,8 @@ class SupportVectorMachine:
       np.dot(sv_kernel, (model['labels'] * model['alphas'])).T)
     self.model = model
 
-  def test(self, data_set):
-    xs = data_set.xs
+  def test(self, d):
+    xs = d.xs
     model = self.model
     SVs, alphas = model['SVs'], model['alphas']
     labels, b = model['labels'], model['b']
@@ -93,5 +91,9 @@ class SupportVectorMachine:
     ys = np.hstack([labels, -labels])
     if self.sign_output:
       ys = np.where(ys > 0, np.ones(ys.shape), np.zeros(ys.shape))
-    return DataSet(ys, data_set.ys)
+    return DataSet(xs=ys, ys=d.ys, ids=d.ids, 
+      class_labels=d.class_labels)
 
+  def __str__(self):
+    return 'SVM (C=%d, kernel=%s, params=%s)' % (self.C, self.kernel, 
+      str(self.params))

@@ -49,9 +49,3 @@ class TestCrossValidation(unittest.TestCase):
     for (tr, te) in cross_validation_sets(subsets):
       intersection = sets.Set(tr.ids.flatten()).intersection(te.ids.flatten()) 
       self.assert_(len(intersection) == 0)
-
-def suite():
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestCrossValidation))
-  return suite
-

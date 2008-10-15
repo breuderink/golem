@@ -90,11 +90,5 @@ class TestSVMPlot(unittest.TestCase):
     plot_classifier_hyperplane(svm, heat_map=True, heat_map_alpha=0.9, 
       fname=os.path.join('tests', 'plots', 'test_nonlinear_svm.eps'))
 
-def suite():
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestSVM))
-  suite.addTest(unittest.makeSuite(TestSVMPlot))
-  return suite
-
 if __name__ == '__main__':
   unittest.main()

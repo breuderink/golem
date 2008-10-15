@@ -35,11 +35,6 @@ class TestLoss(unittest.TestCase):
   def testFormatConfusionMatrix(self):
     c  = loss.format_confmat(self.d)
     self.assert_(hash(c) == 630198187)
-
-def suite():
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestLoss))
-  return suite
     
 if __name__ == '__main__':
   unittest.main()

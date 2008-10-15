@@ -20,10 +20,5 @@ class TestOneVsRest(unittest.TestCase):
       cross_validate(stratified_split(d, 2), cl)]
     self.assert_(np.mean(accs) == 1)
 
-def suite():
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestOneVsRest))
-  return suite
-
 if __name__ == '__main__':
   unittest.main()

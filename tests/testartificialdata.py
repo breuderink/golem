@@ -30,8 +30,3 @@ class TestGaussianData(unittest.TestCase):
       self.assert_((abs(mean_diff) < 0.5).all())
       cov_diff = numpy.cov(xs, rowvar=0) - sigmas[ci]
       self.assert_((abs(cov_diff) < 0.5).all())
-
-def suite():
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestGaussianData))
-  return suite

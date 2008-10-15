@@ -119,9 +119,3 @@ class TestDataSet(unittest.TestCase):
     
     self.assert_(d1.nclasses <> d5.nclasses)
     self.assertRaises(ValueError, DataSet.__add__, d1, d5)
-   
-def suite():
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestDataSetConstruction))
-  suite.addTest(unittest.makeSuite(TestDataSet))
-  return suite

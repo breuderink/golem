@@ -91,11 +91,6 @@ class TestKernel(unittest.TestCase):
       x1, x1, 'poly', degree = 0)
     self.assertRaises(Exception, build_kernel_matrix, 
       x1, x1, 'poly', degree = 1.5)
-      
-def suite():
-  suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestKernel))
-  return suite
 
 if __name__ == '__main__':
   unittest.main()
