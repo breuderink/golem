@@ -25,7 +25,7 @@ class TestZScore(unittest.TestCase):
     # Test with d.nfeatures == d.ninstances
     # Broadcasting could change behaviour. Test that it does not.
     xs = np.random.random((4, 4))
-    d = DataSet(xs, np.ones((4, 1)))
+    d = DataSet(xs, np.ones((4, 1)), None)
     z = alg.ZScore()
     z.train(d)
     zd = z.test(d)

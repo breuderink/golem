@@ -19,7 +19,7 @@ class OneVsRest:
       ys[:, 0] = d.ys[:, ci]
       ys[:, 1] = 1 - d.ys[:, ci]
 
-      curr_d = DataSet(xs=d.xs, ys=ys, feature_labels=d.feature_labels, 
+      curr_d = DataSet(d.xs, ys, d.ids, feature_labels=d.feature_labels, 
         class_labels=['target', 'rest'])
 
       log.debug(str(curr_d))

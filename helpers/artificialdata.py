@@ -12,7 +12,7 @@ def gaussian_dataset(ninstances = [50, 50]):
     [[1, 2], [2, 5]],
     [[1, -1], [-1, 2]]]
 
-  result = dataset.DataSet()
+  result = dataset.DataSet(None, None, None)
 
   nclasses = len(ninstances)
   for y in range(nclasses):
@@ -21,6 +21,6 @@ def gaussian_dataset(ninstances = [50, 50]):
     ys = np.zeros((cl_instances, nclasses))
     ys[:, y] = 1.
     cids = range(result.ninstances, result.ninstances + cl_instances)
-    d = dataset.DataSet(xs, ys, ids=cids)
+    d = dataset.DataSet(xs, ys, cids)
     result += d
   return result

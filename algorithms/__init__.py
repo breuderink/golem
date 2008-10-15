@@ -1,7 +1,7 @@
 __all__ = ['kernel', 'svm', 'one_vs_rest']
 
 import numpy as np
-from svm import SupportVectorMachine
+from svm import SVM
 from one_vs_rest import OneVsRest
 from dataset import *
 

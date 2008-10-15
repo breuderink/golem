@@ -16,7 +16,7 @@ def accuracy(dataset):
 def confusion_matrix(dataset):
   '''Make a confusion matrix. Rows contain the label, columns the prediction.'''
   result = []
-  hmd = DataSet(hard_max(dataset.xs), dataset.ys)
+  hmd = DataSet(hard_max(dataset.xs), dataset.ys, None)
   for ci in range(dataset.nclasses):
     cid = hmd.get_class(ci)
     result.append(np.sum(cid.xs, axis=0))

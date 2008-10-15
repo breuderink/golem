@@ -4,7 +4,7 @@ import helpers
 # - add support for ids (for time etc)
 
 class DataSet:
-  def __init__(self, xs=None, ys=None, ids=None, feature_labels=None, 
+  def __init__(self, xs, ys, ids, feature_labels=None, 
     class_labels=None):
     '''Create a new dataset.'''
     if xs == None and ys == None:

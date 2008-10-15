@@ -5,7 +5,7 @@ import numpy as np
 import numpy.linalg as la
 import pylab
 
-from algorithms import SupportVectorMachine
+from algorithms import SVM
 from helpers import *
 from helpers.plots import *
 from dataset import *
@@ -24,11 +24,11 @@ class TestSVM(unittest.TestCase):
       [1, 0], [1, 1], [2, 0], [2, 1]]).astype(np.float64)
     ys = np.array([[1, 0], [1, 0], [1, 0], [1, 0], 
       [0, 1], [0, 1], [0, 1], [0, 1]])
-    d = DataSet(xs, ys)
+    d = DataSet(xs, ys, None)
 
     # Train SVM
     C = 100
-    svm = SupportVectorMachine(C=C)
+    svm = SVM(C=C)
     svm.train(d)
     
     # Test if the instances are correctly classified
@@ -44,7 +44,7 @@ class TestSVM(unittest.TestCase):
 
     # Test b in f(x) = ax + b
     svm.sign_output = False
-    hyperplane_d = DataSet(np.array([[.5, 0], [.5, 1]]), np.zeros((2, 2)))
+    hyperplane_d = DataSet(np.array([[.5, 0], [.5, 1]]), np.zeros((2, 2)), None)
     self.assert_((svm.test(hyperplane_d).xs == hyperplane_d.ys).all())
 
     sv_d = d[2:6]
@@ -55,11 +55,11 @@ class TestSVM(unittest.TestCase):
     # Make data
     xs = np.array([[0, 0], [1, 0], [0, 1], [1, 1]]).astype(np.float64)
     ys = np.array([[1, 0], [0, 1], [0, 1], [1, 0]])
-    d = DataSet(xs, ys)
+    d = DataSet(xs, ys, None)
 
     # Train SVM
     C = 100
-    svm = SupportVectorMachine(C=C, kernel='rbf', sigma=0.5)
+    svm = SVM(C=C, kernel='rbf', sigma=0.5)
     svm.train(d)
 
     # Test if the instances are correctly classified
@@ -79,7 +79,7 @@ class TestSVMPlot(unittest.TestCase):
     random.seed(1) # use same seed to make this test reproducible
     d = artificialdata.gaussian_dataset([50, 50])
 
-    svm = SupportVectorMachine(C=1e2, kernel='rbf', sigma=1.5, 
+    svm = SVM(C=1e2, kernel='rbf', sigma=1.5, 
       sign_output=False)
     svm.train(d)
 

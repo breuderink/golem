@@ -11,11 +11,10 @@ class TestDataSetConstruction(unittest.TestCase):
   def test_construction_list(self):
     '''Test the construction from a list with features and a list with
     labels.
-
     '''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
     ys = np.array([[0, 1], [1, 0]])
-    d = DataSet(xs, ys)
+    d = DataSet(xs, ys, None)
     self.assertEqual(d.ninstances, 2)
     self.assertEqual(d.nfeatures, 3)
     self.assertEqual(d.nclasses, 2)
@@ -26,22 +25,22 @@ class TestDataSetConstruction(unittest.TestCase):
     '''Raise if number of instances does not match '''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
     ys = np.array([0, 1, 2]).reshape(3, 1)
-    self.assertRaises(ValueError, DataSet, xs, ys);
+    self.assertRaises(ValueError, DataSet, xs, ys, None);
   
   def test_construction_dims(self):
     '''Raise if number of instances does not match '''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
     ys = np.array([0, 1]).reshape(2, 1)
-    self.assertRaises(ValueError, DataSet, xs.flatten(), ys);
-    self.assertRaises(ValueError, DataSet, xs, ys.flatten());
+    self.assertRaises(ValueError, DataSet, xs.flatten(), ys, None);
+    self.assertRaises(ValueError, DataSet, xs, ys.flatten(), None);
     
 class TestDataSet(unittest.TestCase):
   def setUp(self):
     '''Setup a default DataSet.'''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
     ys = np.array([[0, 1], [1, 0]])
-    self.d = DataSet(xs, ys, feature_labels=['f1', 'f2', 'f3'], 
-      class_labels=['A', 'B'], ids=[[3], [4]])
+    self.d = DataSet(xs, ys, [[3], [4]], feature_labels=['f1', 'f2', 'f3'], 
+      class_labels=['A', 'B'])
       
   def test_equality(self):
     d = self.d
@@ -51,7 +50,7 @@ class TestDataSet(unittest.TestCase):
     self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
       d.feature_labels, d.class_labels))
     self.assert_(d <> 3)
-    self.assert_(d <> DataSet(np.zeros((2, 3)), np.zeros((2, 2))))
+    self.assert_(d <> DataSet(np.zeros((2, 3)), np.zeros((2, 2)), None))
     self.assert_(d <> DataSet(d.xs, d.ys, None, d.feature_labels, 
       d.class_labels))
 
@@ -103,19 +102,19 @@ class TestDataSet(unittest.TestCase):
     '''Test the creation of compound datasets using the add-operator.'''
     d1 = self.d
     d2 = DataSet(np.array([[3, 3, 3], [4, 4, 4]]), np.array([[0, 1], [1, 0]]), 
-      feature_labels=d1.feature_labels, class_labels=d1.class_labels)
+      None, feature_labels=d1.feature_labels, class_labels=d1.class_labels)
     d3 = d1 + d2
     self.assert_(d1.nfeatures == d2.nfeatures)
     self.assert_(d1.nclasses == d2.nclasses)
     self.assert_((np.vstack([d1.xs, d2.xs]) == d3.xs).all())
     self.assert_((np.vstack([d1.ys, d2.ys]) == d3.ys).all())
 
-    d4 = DataSet(np.array([[3, 3], [4, 4]]), np.array([[0, 1], [1, 0]]))
+    d4 = DataSet(np.array([[3, 3], [4, 4]]), np.array([[0, 1], [1, 0]]), None)
     self.assert_(d1.nfeatures <> d4.nfeatures)
     self.assertRaises(ValueError, DataSet.__add__, d1, d4)
     
     d5 = DataSet(np.array([[3, 3, 3], [4, 4, 4]]), 
-      np.array([[0, 1, 0], [1, 0, 0]]))
+      np.array([[0, 1, 0], [1, 0, 0]]), None)
     
     self.assert_(d1.nclasses <> d5.nclasses)
     self.assertRaises(ValueError, DataSet.__add__, d1, d5)

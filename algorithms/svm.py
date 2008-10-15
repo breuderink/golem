@@ -11,7 +11,7 @@ from dataset import *
 log = logging.getLogger('SVM')
 QP_ACCURACY = 1e-8
 
-class SupportVectorMachine:
+class SVM:
   def __init__(self, C=2, kernel=None, sign_output=False, **params):
     self.C = C
     self.kernel = kernel

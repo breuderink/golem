@@ -6,8 +6,8 @@ import helpers
 class TestLoss(unittest.TestCase):
   def setUp(self):
     self.d = DataSet(
-      xs = helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]),
-      ys = helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]))
+      helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]),
+      helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]), None)
 
   def testHardMax(self):
     self.assert_((loss.hard_max(self.d.xs) == self.d.xs).all())

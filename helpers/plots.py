@@ -43,7 +43,7 @@ def classifier_grid(classifier):
   xs = np.array([X.flatten(), Y.flatten()]).T
 
   # Get scores
-  dxy = DataSet(xs, np.zeros((xs.shape[0], 2)))
+  dxy = DataSet(xs, np.zeros((xs.shape[0], 2)), None)
   dz = classifier.test(dxy)
   Zs = []
   for ci in range(dz.nfeatures):
