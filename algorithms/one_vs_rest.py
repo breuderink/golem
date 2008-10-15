@@ -9,6 +9,7 @@ log = logging.getLogger('OneVsRest')
 class OneVsRest:
   def __init__(self, node):
     self.base_node = node
+    self.nodes = None
 
   def train(self, d):
     self.nodes = []
@@ -35,3 +36,9 @@ class OneVsRest:
     xs = [txs[:,0].reshape(d.ninstances, 1) for txs in xs] # Get target column
     xs = np.hstack(xs)
     return DataSet(xs=xs, ys=d.ys, ids=d.ids, class_labels=d.class_labels)
+
+  def __str__(self):
+    if self.nodes == None:
+      return 'OneVsRest (%s)' % self.base_node
+    else:
+      return 'OneVsRest (%s)' % ', '.join([str(n) for n in self.nodes])

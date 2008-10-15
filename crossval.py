@@ -1,8 +1,10 @@
 import copy
+import logging
 import numpy as np
 from dataset import *
 from helpers import *
 
+log = logging.getLogger('CV')
 def stratified_split(d, K=10):
   '''
   Splits a dataset in K non-overlapping subsets. The classes are distributed
@@ -46,6 +48,7 @@ def cross_validation_sets(subsets):
     training_set = (reduce(lambda a, b: a + b, 
       [subsets[i] for i in range(len(subsets)) if i <> ki]))
     test_set = subsets[ki]
+    log.info('Building training and testset %d of %d' % (ki, K))
     yield training_set, test_set
 
 def cross_validate(subsets, node):

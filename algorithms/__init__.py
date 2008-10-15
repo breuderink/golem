@@ -20,7 +20,12 @@ class Chain:
       d = n.test(d)
     return d
 
+  def __str__(self):
+    return 'Chain %s' % ', '.join([str(n) for n in self.nodes])
+
 class ZScore:
+  def __init__(self):
+    self.mean = self.std = None
   def train(self, d):
     self.mean = np.mean(d.xs, axis=0)
     self.std = np.std(d.xs, axis=0)
@@ -30,6 +35,9 @@ class ZScore:
     return DataSet(xs=zxs, ys=d.ys, ids=d.ids, class_labels=d.class_labels)
 
   def __str__(self):
-    return 'ZScore (mean=%s, std=%s)' % (self.mean, self.std)
+    if self.mean <> None:
+      return 'ZScore (mean=%s, std=%s)' % (self.mean, self.std)
+    else:
+      return 'ZScore (untrained)'
 
 
