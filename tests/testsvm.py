@@ -73,7 +73,7 @@ class TestSVM(unittest.TestCase):
     self.assert_((0 < svm.model['alphas']).all())
     self.assert_((svm.model['alphas'] < C/xs.shape[0]).all())
 
-class SVMPlot(unittest.TestCase):
+class TestSVMPlot(unittest.TestCase):
   def test_svm_plot(self):
     '''Create hyperplane plot for SVM'''
     random.seed(1) # use same seed to make this test reproducible
@@ -93,7 +93,7 @@ class SVMPlot(unittest.TestCase):
 def suite():
   suite = unittest.TestSuite()
   suite.addTest(unittest.makeSuite(TestSVM))
-  suite.addTest(unittest.makeSuite(SVMPlot))
+  suite.addTest(unittest.makeSuite(TestSVMPlot))
   return suite
 
 if __name__ == '__main__':

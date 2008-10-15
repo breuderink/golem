@@ -4,7 +4,7 @@ import numpy as np
 
 from dataset import *
 
-class TestDatasetConstruction(unittest.TestCase):
+class TestDataSetConstruction(unittest.TestCase):
   def setUp(self):
     pass
 
@@ -35,7 +35,7 @@ class TestDatasetConstruction(unittest.TestCase):
     self.assertRaises(ValueError, DataSet, xs.flatten(), ys);
     self.assertRaises(ValueError, DataSet, xs, ys.flatten());
     
-class TestDataset(unittest.TestCase):
+class TestDataSet(unittest.TestCase):
   def setUp(self):
     '''Setup a default DataSet.'''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
@@ -122,6 +122,6 @@ class TestDataset(unittest.TestCase):
    
 def suite():
   suite = unittest.TestSuite()
-  suite.addTest(unittest.makeSuite(TestDatasetConstruction))
-  suite.addTest(unittest.makeSuite(TestDataset))
+  suite.addTest(unittest.makeSuite(TestDataSetConstruction))
+  suite.addTest(unittest.makeSuite(TestDataSet))
   return suite

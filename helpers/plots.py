@@ -32,7 +32,7 @@ def scatter_plot(dataset, fname = None):
     pylab.close()
 
 def classifier_grid(classifier):
-  resolution = 50
+  resolution = 80
   xlim = pylab.xlim()
   ylim = pylab.ylim()
 
@@ -43,22 +43,30 @@ def classifier_grid(classifier):
   xs = np.array([X.flatten(), Y.flatten()]).T
 
   # Get scores
-  dz = classifier.test(DataSet(xs, np.zeros((xs.shape[0], 2))))
-  Z = (dz.xs[:, 0] - dz.xs[:, 1]).reshape(X.shape)
-  return (X, Y, Z)
+  dxy = DataSet(xs, np.zeros((xs.shape[0], 2)))
+  dz = classifier.test(dxy)
+  Zs = []
+  for ci in range(dz.nfeatures):
+    pt = dz.xs[:, ci]
+    prest = np.vstack([dz.xs[:, i] for i in range(dz.nfeatures) if i <> ci]).T
+    Z = pt - np.max(prest, axis=1)
+    Z = Z.reshape(X.shape)
+    Zs.append(Z)
+  return (X, Y, Zs)
 
-def plot_classifier_hyperplane(classifier, contour_label=False, heat_map=True, 
-  heat_map_alpha = 0.8, fname=None):
-  '''Plot the decision-function of a classifier. The labels of the contours can
+def plot_classifier_hyperplane(classifier, fname=None, heat_map=False, 
+  heat_map_alpha=0.8):
+  '''
+  Plot the decision-function of a classifier. The labels of the contours can
   be enabled with contour_label, plotting the heatmap can be disabled with the
   heat_map argument.
 
   '''
-  (X, Y, Z) = classifier_grid(classifier)
-  contour = pylab.contour(X, Y, Z, [-1, 0, 1], linewidths=[1, 2, 1], colors='k')
-  if contour_label:
-    pylab.clabel(contour)
+  (X, Y, Zs) = classifier_grid(classifier)
+  for Z in Zs:
+    pylab.contour(X, Y, Z, [0, .5, 1], linewidths=[2, .5, .5], colors='k')
   if heat_map:
+    if len(Zs) > 2: raise ValueError, 'Cannot draw a heat map for nclasses > 2'
     pylab.imshow(Z, origin='lower', alpha=heat_map_alpha, aspect='auto',
       extent=[X.min(), X.max(), Y.min(), Y.max()])
   if fname:
