@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from dataset import *
-import algorithms as alg
+from nodes import ZScore
 
 class TestZScore(unittest.TestCase):
   def setUp(self):
@@ -9,7 +9,7 @@ class TestZScore(unittest.TestCase):
     self.d = helpers.artificialdata.gaussian_dataset([40, 40, 40])
     
   def test_zscore(self):
-    z = alg.ZScore()
+    z = ZScore()
     z.train(self.d)
     zd = z.test(self.d)
 
@@ -26,7 +26,7 @@ class TestZScore(unittest.TestCase):
     # Broadcasting could change behaviour. Test that it does not.
     xs = np.random.random((4, 4))
     d = DataSet(xs, np.ones((4, 1)), None)
-    z = alg.ZScore()
+    z = ZScore()
     z.train(d)
     zd = z.test(d)
 

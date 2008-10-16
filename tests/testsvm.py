@@ -5,7 +5,7 @@ import numpy as np
 import numpy.linalg as la
 import pylab
 
-from algorithms import SVM
+from nodes import SVM
 from helpers import *
 from helpers.plots import *
 from dataset import *

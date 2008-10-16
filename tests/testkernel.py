@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import numpy.linalg as la
 
-from algorithms.kernel import *
+from nodes.kernel import *
 
 def test_kernel_function(kernel_matrix, kernel, x1, x2):
   '''Test if kernel-matrix is built with the correct kernel function'''

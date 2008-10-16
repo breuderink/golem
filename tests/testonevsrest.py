@@ -1,6 +1,6 @@
 import numpy as np
 from helpers import *
-import algorithms as alg
+import nodes
 from crossval import *
 import loss
 
@@ -15,7 +15,7 @@ class TestOneVsRest(unittest.TestCase):
     self.assert_(d.nclasses == 4)
     
     # Cross-validate and test for perfect classification
-    cl = alg.OneVsRest(alg.SVM(sign_output=False))
+    cl = nodes.OneVsRest(nodes.SVM())
     accs = [loss.accuracy(r) for r in 
       cross_validate(stratified_split(d, 2), cl)]
     self.assert_(np.mean(accs) == 1)
