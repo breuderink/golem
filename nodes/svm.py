@@ -95,5 +95,5 @@ class SVM:
       class_labels=d.class_labels)
 
   def __str__(self):
-    return 'SVM (C=%d, kernel=%s, params=%s)' % (self.C, self.kernel, 
+    return 'SVM (C=%g, kernel=%s, params=%s)' % (self.C, self.kernel, 
       str(self.params))
