@@ -1,31 +1,19 @@
-- Add + function for datasets
-- Unit test for scatter_plot
-- Design different DataSet classes (for variable length, regression etc)
-- Write protected DataSet (properties don't seem two work with list-indexing)
-  Totally write protected data doesn't seem useful?
-- How to handle copy-ing (for example in a cross-validation Node?)
 - Automated tests for derivatives of Node
+- Test ModelSelect
+- Add shuffle to crossvalidation
+
+Unit-test wish-list
+===================
+- ModelSelect
+- Chain
 
 
-Helper wish-list
-================
-1 generate_gaussian_dataset
-1 plot_classifier_boundary
+
 
 Node wish-list
 ==============
 
-1 chain
-1 cross-val
-1 loss-binary
-1 loss-mse
 1 SMLR
-1 SVM
-1 test
-1 z-score
-2 center
-2 center_data
-2 center_row (of CAR?)
 2 csp
 2 featsel
 2 group
