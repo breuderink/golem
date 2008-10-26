@@ -4,22 +4,17 @@
 
 Unit-test wish-list
 ===================
-- ModelSelect
 - Chain
-
-
-
 
 Node wish-list
 ==============
-
+1 pca
+1 save/cache
 1 SMLR
 2 csp
 2 featsel
 2 group
 2 loss-auc
-2 pca
 3 knn
 3 lda
 3 roc
-3 save/cache

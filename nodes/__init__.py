@@ -3,6 +3,7 @@ __all__ = ['kernel', 'svm', 'one_vs_rest']
 import numpy as np
 from svm import SVM
 from one_vs_rest import OneVsRest
+from one_vs_one import OneVsOne
 from model_select import *
 from dataset import *
 

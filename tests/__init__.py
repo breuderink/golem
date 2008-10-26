@@ -8,5 +8,7 @@ from testsvm import TestSVM, TestSVMPlot
 from testloss import TestLoss
 from testcrossvalidation import TestCrossValidation
 from testonevsrest import TestOneVsRest
+from testonevsone import TestOneVsOne
 from testzscore import TestZScore
 from testmodelselect import TestModelSelection
+
