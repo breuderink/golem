@@ -1,5 +1,6 @@
 import numpy as np
-from helpers import *
+from dataset import *
+import helpers
 import nodes
 from crossval import *
 import loss
