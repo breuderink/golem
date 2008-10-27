@@ -27,10 +27,11 @@ if __name__ == '__main__':
   logging.getLogger('PCA').setLevel(logging.DEBUG)
  
   xs = np.random.rand(100, 3)
-  xs = np.hstack([xs, -xs]) # make correlated
+  xs = np.hstack([xs, -xs, np.zeros((100, 2))]) # make correlated
   d = DataSet(xs, np.ones((100, 1)), None)
 
-  n = nodes.PCA()
+  #n = nodes.PCA(retain=.99)
+  n = nodes.PCA(ndims=4)
   print n
   n.train(d)
   print n

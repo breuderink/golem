@@ -3,9 +3,12 @@ import numpy as np
 from dataset import *
 
 log = logging.getLogger('PCA')
+
 class PCA:
-  def __init__(self):
+  def __init__(self, retain=None, ndims=None):
     self.eigen_cols = None
+    self.retain = retain
+    self.ndims = ndims
 
   def train(self, d):
     self.mean = np.mean(d.xs, axis=0)
@@ -14,9 +17,12 @@ class PCA:
     self.eigen_cols = U
     self.eigen_vals = s
     
-    var_explained = np.cumsum(self.eigen_vals) / np.sum(self.eigen_vals)
-    log.debug(self.eigen_vals)
-    log.debug(var_explained)
+    if self.ndims <> None:
+      self.eigen_cols = self.eigen_cols[:, :self.ndims]
+    elif self.retain <> None:
+      var_explained = np.cumsum(self.eigen_vals) / np.sum(self.eigen_vals)
+      last_component = np.where(var_explained >= self.retain)[0][0]
+      self.eigen_cols = self.eigen_cols[:, :last_component + 1]
   
   def test(self, d):
     xs = d.xs - np.mean(d.xs, axis=0)
@@ -28,4 +34,4 @@ class PCA:
     W = self.eigen_cols
     if W == None:
       return 'PCA (untrained)'
-    return 'PCA (%dD -> %dD)' % (W.shape[1], W.shape[0])
+    return 'PCA (%dD -> %dD)' % (W.shape[0], W.shape[1])
