@@ -4,7 +4,8 @@ import numpy as np
 from svm import SVM
 from one_vs_rest import OneVsRest
 from one_vs_one import OneVsOne
-from model_select import *
+from model_select import ModelSelect
+from pca import PCA
 from dataset import *
 
 class Chain:

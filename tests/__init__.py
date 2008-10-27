@@ -11,4 +11,4 @@ from testonevsrest import TestOneVsRest
 from testonevsone import TestOneVsOne
 from testzscore import TestZScore
 from testmodelselect import TestModelSelection
-
+from testpca import TestPCA

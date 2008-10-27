@@ -2,6 +2,7 @@ import unittest
 import copy
 import logging
 import numpy as np
+import pylab 
 
 from helpers import *
 from crossval import *
@@ -23,24 +24,21 @@ def cv_acc_critic(d, node):
 if __name__ == '__main__':
   np.random.seed(1)
   logging.basicConfig(level=logging.WARNING)
-  #logging.getLogger('OneVsOne').setLevel(logging.INFO)
-  d = helpers.artificialdata.gaussian_dataset([60, 60, 60])  
-  n = nodes.ModelSelect(gen_svms(), cv_acc_critic)
+  logging.getLogger('PCA').setLevel(logging.DEBUG)
  
-  results = [r for r in cross_validate(stratified_split(d, 5), n)]
-  accs = [loss.accuracy(r) for r in results]
-  print np.mean(accs)
-  print loss.format_confmat(reduce(lambda a, b: a + b, results))
+  xs = np.random.rand(100, 3)
+  xs = np.hstack([xs, -xs]) # make correlated
+  d = DataSet(xs, np.ones((100, 1)), None)
 
-  n.train(d) 
-  print n.test(d)
+  n = nodes.PCA()
   print n
-  helpers.plots.scatter_plot(d)
-  helpers.plots.plot_classifier_hyperplane(n.best_node.nodes[(0, 1)], '01.png')
-  helpers.plots.scatter_plot(d)
-  helpers.plots.plot_classifier_hyperplane(n.best_node.nodes[(0, 2)], '02.png')
-  helpers.plots.scatter_plot(d)
-  helpers.plots.plot_classifier_hyperplane(n.best_node.nodes[(1, 2)], '12.png')
-  
-  helpers.plots.scatter_plot(d)
-  helpers.plots.plot_classifier_hyperplane(n, 'mclass.png')
+  n.train(d)
+  print n
+  d2 = n.test(d)
+
+  cov = np.cov(d2.xs, rowvar=False)
+  cov_target=np.diag(np.diag(cov)) # construct a diagonal uncorrelated cov
+  assert(((cov - cov_target) ** 2 < 1e-8).all())
+
+  pylab.matshow(cov)
+  pylab.show()
