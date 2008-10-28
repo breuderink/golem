@@ -7,6 +7,7 @@ from one_vs_one import OneVsOne
 from model_select import ModelSelect
 from pca import PCA
 from dataset import *
+from lsreg import LSReg
 
 class Chain:
   def __init__(self, nodes):

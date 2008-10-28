@@ -24,22 +24,10 @@ def cv_acc_critic(d, node):
 if __name__ == '__main__':
   np.random.seed(1)
   logging.basicConfig(level=logging.WARNING)
-  logging.getLogger('PCA').setLevel(logging.DEBUG)
- 
-  xs = np.random.rand(100, 3)
-  xs = np.hstack([xs, -xs, np.zeros((100, 2))]) # make correlated
-  d = DataSet(xs, np.ones((100, 1)), None)
+  logging.getLogger('LSReg').setLevel(logging.DEBUG)
 
-  #n = nodes.PCA(retain=.99)
-  n = nodes.PCA(ndims=4)
-  print n
-  n.train(d)
-  print n
-  d2 = n.test(d)
+  unittest.main()
+  d = artificialdata.gaussian_dataset([400, 400, 300])
 
-  cov = np.cov(d2.xs, rowvar=False)
-  cov_target=np.diag(np.diag(cov)) # construct a diagonal uncorrelated cov
-  assert(((cov - cov_target) ** 2 < 1e-8).all())
-
-  pylab.matshow(cov)
-  pylab.show()
+  #plots.scatter_plot(d)
+  #plots.plot_classifier_hyperplane(n, fname='lsreg.png')
