@@ -4,8 +4,8 @@ import helpers
 # - add support for ids (for time etc)
 
 class DataSet:
-  def __init__(self, xs, ys, ids, feature_labels=None, 
-    class_labels=None):
+  def __init__(self, xs, ys, ids, class_labels=None, feature_labels=None, 
+    feature_shape=None):
     '''Create a new dataset.'''
     if xs == None and ys == None:
       xs = np.array(None)
@@ -34,13 +34,13 @@ class DataSet:
       else np.arange(self.ninstances).reshape(self.ninstances, 1)
     assert(np.unique(self.ids).size == self.ids.size)
 
+    self.feature_shape = feature_shape
+
   def get_class(self, i):
     return self[self.ys[:, i] == 1]
 
   def sort(self):
-    '''
-    Sort by id
-    '''
+    '''Sort by id'''
     return self[np.argsort(self.ids.flatten())]
     
   def __getitem__(self, i):
@@ -57,6 +57,12 @@ class DataSet:
         class_labels=self.class_labels)
     else:
       raise ValueError, 'Unkown indexing type.'
+
+  def nd_xs(self):
+    '''Return N-dimensional view of xs'''
+    if self.feature_shape <> None:
+      return self.xs.reshape([self.ninstances] + self.feature_shape)
+    raise Exception, 'Feature shape is unknown'
 
   def __len__(self):
     return self.ninstances

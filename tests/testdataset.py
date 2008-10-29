@@ -45,14 +45,14 @@ class TestDataSet(unittest.TestCase):
   def test_equality(self):
     d = self.d
     self.assert_(d == d)
-    self.assert_(d == DataSet(d.xs, d.ys, d.ids, d.feature_labels, 
-      d.class_labels))
+    self.assert_(d == DataSet(d.xs, d.ys, d.ids, 
+      feature_labels=d.feature_labels, class_labels=d.class_labels))
     self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
-      d.feature_labels, d.class_labels))
+      class_labels=d.class_labels, feature_labels=d.feature_labels))
     self.assert_(d <> 3)
     self.assert_(d <> DataSet(np.zeros((2, 3)), np.zeros((2, 2)), None))
-    self.assert_(d <> DataSet(d.xs, d.ys, None, d.feature_labels, 
-      d.class_labels))
+    self.assert_(d <> DataSet(d.xs, d.ys, None, 
+      feature_labels=d.feature_labels, class_labels=d.class_labels))
 
   def test_indexing(self):
     '''Test the indexing of DataSet.'''
@@ -74,6 +74,19 @@ class TestDataSet(unittest.TestCase):
     dB = d.get_class(1)
     self.assert_(dA == d[1])
     self.assert_(dB == d[0])
+
+  def test_ndxs(self):
+    '''Test multidimensional xs'''
+    xs = np.arange(100).reshape(10, 10)
+    ys = np.ones((10, 1))
+    d = DataSet(xs, ys, None, feature_shape=[2, 5])
+    self.assert_((d.xs == xs).all())
+    ndxs = d.nd_xs()
+    self.assert_((ndxs[0,:,:] == np.arange(10).reshape(2, 5)).all())
+    self.assert_((ndxs[2,:,:] == np.arange(20, 30).reshape(2, 5)).all())
+    ndxs[0, 0, 0] = 1000
+    self.assert_(d.xs[0, 0] == 1000)
+
 
   def test_sort(self):
     '''Test sorting the DataSet'''
