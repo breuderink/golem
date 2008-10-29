@@ -1,7 +1,6 @@
 import unittest
-from dataset import *
-import loss
-import helpers
+import numpy as np
+from golem import DataSet, loss, helpers
 
 class TestLoss(unittest.TestCase):
   def setUp(self):

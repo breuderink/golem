@@ -1,11 +1,6 @@
-import numpy as np
-from dataset import *
-import helpers
-import nodes
-from crossval import *
-import loss
-
 import unittest
+import numpy as np
+from golem import DataSet, helpers, nodes, loss, crossval
 
 class TestOneVsRest(unittest.TestCase):
   def testOVR(self):
@@ -18,7 +13,7 @@ class TestOneVsRest(unittest.TestCase):
     # Cross-validate and test for perfect classification
     cl = nodes.OneVsRest(nodes.SVM())
     accs = [loss.accuracy(r) for r in 
-      cross_validate(stratified_split(d, 2), cl)]
+      crossval.cross_validate(crossval.stratified_split(d, 2), cl)]
     self.assert_(np.mean(accs) == 1)
 
 if __name__ == '__main__':

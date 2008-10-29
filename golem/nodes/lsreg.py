@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 
-from dataset import DataSet
+from golem import DataSet
 
 log = logging.getLogger('LSReg')
 class LSReg:

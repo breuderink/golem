@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
-from dataset import *
-from nodes import ZScore
+from golem import DataSet, helpers
+from golem.nodes import ZScore
 
 class TestZScore(unittest.TestCase):
   def setUp(self):

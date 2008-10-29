@@ -1,13 +1,11 @@
 import unittest
-from dataset import *
-from helpers import artificialdata
-import nodes
-import loss
+import numpy as np
+from golem import DataSet, helpers, nodes, loss
 
 class TestLSReg(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
-    self.d = artificialdata.gaussian_dataset([200, 200, 200])
+    self.d = helpers.artificialdata.gaussian_dataset([200, 200, 200])
 
   def test_perf(self):
     '''Test LSReg'''

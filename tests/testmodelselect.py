@@ -3,10 +3,7 @@ import copy
 import logging
 import numpy as np
 
-from helpers import *
-from crossval import *
-import nodes
-import loss
+from golem import nodes, helpers, crossval, loss
 
 def svm_critic(d, node):
   return 1 if isinstance(node, nodes.SVM) else 0

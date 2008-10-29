@@ -2,7 +2,7 @@ import unittest
 import os.path
 import numpy
 from numpy import random
-from helpers import *
+from golem.helpers import *
 
 class TestGaussianData(unittest.TestCase):
   def setUp(self):

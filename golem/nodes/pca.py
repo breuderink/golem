@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from dataset import *
+from golem import DataSet
 
 log = logging.getLogger('PCA')
 

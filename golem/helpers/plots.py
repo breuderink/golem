@@ -3,7 +3,7 @@
 # - use class names if provided
 import pylab
 import numpy as np
-from dataset import *
+from golem import DataSet
 
 markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']

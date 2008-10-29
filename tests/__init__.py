@@ -1,6 +1,3 @@
-__all__ = ['testdataset', 'testartificialdata', 'testkernel', 'testsvm', 
-  'testloss', 'testcrossvalidation', 'testonevsrest', 'testzscore']
-
 from testdataset import TestDataSet, TestDataSetConstruction
 from testartificialdata import TestGaussianData
 from testkernel import TestKernel

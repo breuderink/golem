@@ -1,9 +1,7 @@
 import logging
 import copy
 import numpy as np
-from dataset import *
-import helpers
-
+from golem import DataSet, helpers
 log = logging.getLogger('OneVsOne')
 
 class OneVsOne:
