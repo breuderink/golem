@@ -3,7 +3,7 @@ import copy
 import logging
 import numpy as np
 
-from golem import nodes, helpers, crossval, loss
+from golem import nodes, data
 
 def svm_critic(d, node):
   return 1 if isinstance(node, nodes.SVM) else 0
@@ -11,7 +11,7 @@ def svm_critic(d, node):
 class TestModelSelection(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
-    self.d = helpers.artificialdata.gaussian_dataset([60, 60])  
+    self.d = data.gaussian_dataset([60, 60])  
 
   def test_select_best(self):
     n = nodes.ModelSelect([nodes.PriorClassifier(), nodes.SVM()], svm_critic)

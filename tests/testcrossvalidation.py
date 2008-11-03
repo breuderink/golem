@@ -1,11 +1,11 @@
 import unittest
 import sets
 import numpy as np
-from golem import crossval, helpers
+from golem import crossval, data
 
 class TestCrossValidation(unittest.TestCase):
   def setUp(self):
-    self.d = helpers.artificialdata.gaussian_dataset([30, 20, 10])
+    self.d = data.gaussian_dataset([30, 20, 10])
 
   def test_stratified_split(self):
     '''Test stratified splitting of a DataSet'''

@@ -1,7 +1,6 @@
 import itertools
 import numpy as np
 import helpers
-# - add support for ids (for time etc)
 
 class DataSet:
   def __init__(self, xs, ys, ids, class_labels=None, feature_labels=None, 

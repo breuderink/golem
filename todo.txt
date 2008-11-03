@@ -1,20 +1,19 @@
 - Automated tests for derivatives of Node
-- Test ModelSelect
 - Add shuffle to crossvalidation
 
 Unit-test wish-list
 ===================
-- Chain
+1 CSP
 
 Node wish-list
 ==============
-1 pca
-1 save/cache
-1 SMLR
-2 csp
-2 featsel
-2 group
-2 loss-auc
-3 knn
-3 lda
-3 roc
+1 CSP
+2 CacheNode
+2 CombineFeatures
+2 ForwardFeatSel
+2 Group
+2 loss.AUC
+3 KNN
+3 NaiveBayes
+3 ROC
+3 SMLR

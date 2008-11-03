@@ -2,12 +2,12 @@ import unittest
 import os.path
 import numpy
 from numpy import random
-from golem.helpers import *
+from golem import data, plots
 
 class TestGaussianData(unittest.TestCase):
   def setUp(self):
     random.seed(1) # use same seed to make this test reproducible
-    self.d = artificialdata.gaussian_dataset([200, 200, 50])
+    self.d = data.gaussian_dataset([200, 200, 50])
 
   def test_scatterplot(self):
     '''Test Gaussian distribution by writing a scatterplot to a file'''

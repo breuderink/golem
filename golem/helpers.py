@@ -1,5 +1,3 @@
-__all__ = ['plots', 'artificialdata']
-
 import numpy as np
 
 def to_one_of_n(ints, nclasses=None):

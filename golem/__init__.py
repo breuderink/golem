@@ -1,5 +1,8 @@
 from dataset import DataSet
-from loss import *
 import nodes
+import data
+import helpers
+from plots import *
+from loss import *
 from crossval import *
 

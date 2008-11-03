@@ -1,12 +1,12 @@
 import unittest
 import numpy as np
-from golem import DataSet, helpers
+from golem import DataSet, data
 from golem.nodes import ZScore
 
 class TestZScore(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
-    self.d = helpers.artificialdata.gaussian_dataset([40, 40, 40])
+    self.d = data.gaussian_dataset([40, 40, 40])
     
   def test_zscore(self):
     z = ZScore()

@@ -5,9 +5,9 @@ import numpy as np
 import numpy.linalg as la
 import pylab
 
-from golem import DataSet, loss
+from golem import DataSet, loss, data, plots
 from golem.nodes import SVM
-from golem.helpers import *
+
 
 EPSILON = 1e-8
 
@@ -75,7 +75,7 @@ class TestSVMPlot(unittest.TestCase):
   def test_svm_plot(self):
     '''Create hyperplane plot for SVM'''
     random.seed(1) # use same seed to make this test reproducible
-    d = artificialdata.gaussian_dataset([50, 50])
+    d = data.gaussian_dataset([50, 50])
 
     svm = SVM(C=1e2, kernel='rbf', sigma=1.5, 
       sign_output=False)
