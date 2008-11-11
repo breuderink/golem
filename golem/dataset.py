@@ -4,12 +4,9 @@ import helpers
 
 class DataSet:
   def __init__(self, xs, ys, ids, class_labels=None, feature_labels=None, 
-    feature_shape=None):
+    feature_shape=None, default_from=None):
     '''Create a new dataset.'''
-    if xs == None and ys == None:
-      xs = np.array(None)
-      ys = np.array(None)
-    elif not (isinstance(xs, np.ndarray) and isinstance(ys, np.ndarray)):
+    if not (isinstance(xs, np.ndarray) and isinstance(ys, np.ndarray)):
       raise ValueError, 'Only numpy.ndarray is supported for xs and ys.'
     elif xs.ndim <> 2 or ys.ndim <> 2:
       raise ValueError, 'Arguments xs and ys should be *2D* numpy arrays'

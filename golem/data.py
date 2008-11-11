@@ -12,15 +12,15 @@ def gaussian_dataset(ninstances = [50, 50]):
     [[1, 2], [2, 5]],
     [[1, -1], [-1, 2]]]
 
-  result = DataSet(None, None, None)
-
+  result = []
   nclasses = len(ninstances)
+  last_id = 0
   for y in range(nclasses):
     cl_instances = ninstances[y]
     xs = np.random.multivariate_normal(mus[y], sigmas[y], cl_instances)
     ys = np.zeros((cl_instances, nclasses))
     ys[:, y] = 1.
-    cids = range(result.ninstances, result.ninstances + cl_instances)
-    d = DataSet(xs, ys, cids)
-    result += d
+    result.append(DataSet(xs, ys, range(last_id, last_id + cl_instances)))
+    last_id += cl_instances 
+  result = reduce(lambda a, b: a + b, result)
   return result

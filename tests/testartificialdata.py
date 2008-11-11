@@ -1,12 +1,11 @@
 import unittest
 import os.path
-import numpy
-from numpy import random
+import numpy as np
 from golem import data, plots
 
 class TestGaussianData(unittest.TestCase):
   def setUp(self):
-    random.seed(1) # use same seed to make this test reproducible
+    np.random.seed(1) # use same seed to make this test reproducible
     self.d = data.gaussian_dataset([200, 200, 50])
 
   def test_scatterplot(self):
@@ -14,6 +13,14 @@ class TestGaussianData(unittest.TestCase):
     plots.scatter_plot(self.d, os.path.join('tests', 'plots',\
       'test_gaussian_3_classes.eps'))
   
+  def test_ninstances(self):
+    d = self.d
+    self.assert_(d.ninstances_per_class == [200, 200, 50])
+  
+  def test_ids(self):
+    d = self.d
+    self.assert_((d.ids == np.arange(450).reshape(-1, 1)).all())
+ 
   def test_means_cov(self):
     '''Test if the means and covariance of gaussian_data are correct.'''
     mus = [[0, 0], [2, 1], [5, 6]]
@@ -24,9 +31,8 @@ class TestGaussianData(unittest.TestCase):
 
     d = self.d
     for ci in range(d.nclasses):
-      indices = d.ys[:, ci] == 1
-      xs = d.xs[indices, :]
-      mean_diff = numpy.mean(xs, axis=0) - mus[ci]
+      xs = d.get_class(ci).xs
+      mean_diff = np.mean(xs, axis=0) - mus[ci]
       self.assert_((abs(mean_diff) < 0.5).all())
-      cov_diff = numpy.cov(xs, rowvar=0) - sigmas[ci]
+      cov_diff = np.cov(xs, rowvar=0) - sigmas[ci]
       self.assert_((abs(cov_diff) < 0.5).all())
