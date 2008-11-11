@@ -6,7 +6,7 @@ from golem import DataSet
 def class_loss(dataset):
   hm = hard_max(dataset.xs)
   ys = dataset.ys
-  loss = np.where(np.sum(np.abs(hm - ys), axis=1).reshape(ys.shape[0], 1), 
+  loss = np.where(np.sum(np.abs(hm - ys), axis=1).reshape(-1, 1), 
     np.ones((ys.shape[0], 1)), np.zeros((ys.shape[0], 1)))
   return loss
 

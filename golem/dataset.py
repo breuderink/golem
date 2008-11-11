@@ -29,8 +29,8 @@ class DataSet:
     if len(self.class_labels) <> self.nclasses:
       raise ValueError, 'The number of class labels does not match #classes'
 
-    self.ids = np.asarray(ids).reshape(self.ninstances, 1) if ids <> None\
-      else np.arange(self.ninstances).reshape(self.ninstances, 1)
+    self.ids = np.asarray(ids).reshape(-1, 1) if ids <> None\
+      else np.arange(self.ninstances).reshape(-1, 1)
     assert(np.unique(self.ids).size == self.ids.size)
 
     self.feature_shape = feature_shape
@@ -49,9 +49,9 @@ class DataSet:
         feature_labels=self.feature_labels, class_labels=self.class_labels)
     elif isinstance(i, int):
       return DataSet(
-        xs=self.xs[i, :].reshape(1, self.nfeatures), 
-        ys=self.ys[i,:].reshape(1, self.nclasses), 
-        ids=self.ids[i,:].reshape(1, 1),
+        xs=self.xs[i, :].reshape(1, -1),
+        ys=self.ys[i,:].reshape(1, -1),
+        ids=self.ids[i,:].reshape(1, -1),
         feature_labels=self.feature_labels,
         class_labels=self.class_labels)
     else:

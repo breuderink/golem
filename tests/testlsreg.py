@@ -16,7 +16,7 @@ class TestLSReg(unittest.TestCase):
   def test_1feature(self):
     '''Test LSReg with 1 feature'''
     d = self.d
-    d = DataSet(d.xs[:, 0].reshape(d.ninstances, 1), d.ys, d.ids)
+    d = DataSet(d.xs[:, 0].reshape(-1, 1), d.ys, d.ids)
     n = nodes.LSReg()
     n.train(d)
     self.assert_(loss.accuracy(n.test(d)) > 0.6)

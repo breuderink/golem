@@ -87,7 +87,7 @@ class SVM:
     labels = np.dot(kernel_matrix, (alphas * labels)) + b
 
     # Transform into two-colum positive hyperplane distance format
-    labels = labels.reshape(labels.size, 1)
+    labels = labels.reshape(-1, 1)
     ys = np.hstack([labels, -labels])
     if self.sign_output:
       ys = np.where(ys > 0, np.ones(ys.shape), np.zeros(ys.shape))
