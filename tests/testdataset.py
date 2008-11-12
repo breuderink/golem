@@ -13,19 +13,30 @@ class TestDataSetConstruction(unittest.TestCase):
     ys = np.array([[0, 1], [1, 0]])
     d = DataSet(xs, ys)
     self.assertEqual(d.ninstances, 2)
+    self.assertEqual(d.ninstances_per_class, [1, 1])
+    self.assert_((d.nd_xs == d.xs).all())
     self.assertEqual(d.nfeatures, 3)
     self.assertEqual(d.nclasses, 2)
     self.assert_((d.xs == xs).all())
     self.assert_((d.ys == ys).all())
     
-  def test_construction_unequal_ninstances(self):
-    '''Raise if number of instances does not match '''
-    xs = np.array([[0, 0, 0], [1, 1, 1]])
-    ys = np.array([0, 1, 2]).reshape(3, 1)
-    self.assertRaises(ValueError, DataSet, xs, ys, None);
-  
+  def test_construction_types(self):
+    xs = np.arange(12).reshape(-1, 1)
+    ys = np.arange(12).reshape(-1, 1)
+    ids = np.arange(12).reshape(-1, 1)
+
+    d = DataSet(xs, ys, ids)
+
+    # raise with wrong types
+    self.assertRaises(ValueError, DataSet, xs.tolist(), ys, ids)
+    self.assertRaises(ValueError, DataSet, xs, ys.tolist(), ids)
+    self.assertRaises(ValueError, DataSet, xs, ys, ids.tolist())
+    
+    self.assertRaises(AssertionError, DataSet, xs, ys, ids, cl_lab = 'c0')
+    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_lab = 'f0')
+    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_shape = (1, 1))
+    
   def test_construction_dims(self):
-    '''Raise if number of instances does not match '''
     xs = np.arange(12).reshape(-1, 1)
     ys = np.arange(12).reshape(-1, 1)
     ids = np.arange(12).reshape(-1, 1)
@@ -101,6 +112,16 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assert_(d.feat_shape <> d2.feat_shape)
     d2 = DataSet(feat_shape=None, default=d)
     self.assert_(d.feat_shape == d2.feat_shape)
+  
+  def test_integrity(self):
+    xs = np.arange(12).reshape(-1, 1)
+    ys = np.arange(12).reshape(-1, 1)
+    ids = np.arange(12).reshape(-1, 1)
+
+    self.assertRaises(AssertionError, DataSet, xs, ys, np.zeros(ids.shape))
+    self.assertRaises(ValueError, DataSet, xs, ys, feat_lab=['f0', 'f1'])
+    self.assertRaises(ValueError, DataSet, xs, ys, cl_lab=['c0', 'c1'])
+
 
 class TestDataSet(unittest.TestCase):
   def setUp(self):
@@ -150,7 +171,7 @@ class TestDataSet(unittest.TestCase):
     ys = np.ones((10, 1))
     d = DataSet(xs, ys, None, feat_shape=[2, 5])
     self.assert_((d.xs == xs).all())
-    ndxs = d.nd_xs()
+    ndxs = d.nd_xs
     self.assert_((ndxs[0,:,:] == np.arange(10).reshape(2, 5)).all())
     self.assert_((ndxs[2,:,:] == np.arange(20, 30).reshape(2, 5)).all())
     ndxs[0, 0, 0] = 1000

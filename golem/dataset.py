@@ -43,14 +43,14 @@ class DataSet:
       raise ValueError, 'Only np.ndarray is supported for ids'
     if self.ids.ndim <> 2:
       raise ValueError, 'Only 2d arrays are supported for ids.'
+    if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
+      raise ValueError, 'Number of rows does not match'
     
     assert(isinstance(self.cl_lab, list))
     assert(isinstance(self.feat_lab, list))
     assert(isinstance(self.feat_shape, list))
 
     # Final integrity test
-    if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
-      raise ValueError, 'Number of rows does not match'
     assert(np.unique(self.ids).size == self.ids.size)
     if len(self.feat_lab) <> self.nfeatures:
       raise ValueError, '"%s" does not match #features' % self.feat_lab
@@ -79,6 +79,7 @@ class DataSet:
     else:
       raise ValueError, 'Unkown indexing type.'
 
+  @property
   def nd_xs(self):
     '''Return N-dimensional view of xs'''
     if self.feat_shape <> None:
