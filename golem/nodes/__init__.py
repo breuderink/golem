@@ -37,7 +37,7 @@ class ZScore:
 
   def test(self, d):
     zxs = (d.xs - self.mean) / self.std # Careful, uses broadcasting!
-    return DataSet(xs=zxs, ys=d.ys, ids=d.ids, class_labels=d.class_labels)
+    return DataSet(zxs, None, default=d)
 
   def __str__(self):
     if self.mean <> None:
@@ -56,7 +56,7 @@ class PriorClassifier:
   def test(self, d):
     xs = np.zeros((d.ninstances, self.nclasses))
     xs[:, self.mfc] = 1
-    return DataSet(xs, d.ys, d.ids, class_labels=d.class_labels)
+    return DataSet(xs, default=d)
 
   def __str__(self): 
     if self.mfc <> None:
@@ -70,7 +70,7 @@ class RandomClassifier:
 
   def test(self, d):
     xs = np.random.random((d.ninstances, self.nclasses))
-    return DataSet(xs, d.ys, d.ids, class_labels=d.class_labels)
+    return DataSet(xs, default=d)
 
   def __str__(self): return 'RandomClassifier ()'
 

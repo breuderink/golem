@@ -23,10 +23,10 @@ def scatter_plot(dataset, fname = None):
     f0 = [x[0] for x in xs]
     f1 = [x[1] for x in xs]
     pylab.scatter(f0, f1, c = color, marker = marker, 
-      label = dataset.class_labels[ci])
+      label = dataset.cl_lab[ci])
   pylab.legend()
-  pylab.xlabel(dataset.feature_labels[0])
-  pylab.ylabel(dataset.feature_labels[1])
+  pylab.xlabel(dataset.feat_lab[0])
+  pylab.ylabel(dataset.feat_lab[1])
   if fname:
     pylab.savefig(fname)
     pylab.close()

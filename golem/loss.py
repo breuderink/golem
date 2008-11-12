@@ -26,7 +26,7 @@ def format_confmat(dataset):
   c = confusion_matrix(dataset)
   formatter = lambda items : '%10s' % items[0][:10] + '|' + \
     ''.join(['%8s' % i[:8] for i in items[1:]]) 
-  labels = [label[:6] for label in dataset.class_labels]
+  labels = [label[:6] for label in dataset.cl_lab]
   hline = '-' * len(formatter([''] + labels))
   result = []
   

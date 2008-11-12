@@ -3,34 +3,59 @@ import numpy as np
 import helpers
 
 class DataSet:
-  def __init__(self, xs, ys, ids, class_labels=None, feature_labels=None, 
-    feature_shape=None, default_from=None):
+  def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
+    feat_shape=None, default=None):
     '''Create a new dataset.'''
-    if not (isinstance(xs, np.ndarray) and isinstance(ys, np.ndarray)):
-      raise ValueError, 'Only numpy.ndarray is supported for xs and ys.'
-    elif xs.ndim <> 2 or ys.ndim <> 2:
-      raise ValueError, 'Arguments xs and ys should be *2D* numpy arrays'
-    elif xs.shape[0] <> ys.shape[0]:
-      raise ValueError, 'The #instances does not match #labels'
-   
+    if default <> None:
+      # Fill in blanks from default DataSet
+      assert(isinstance(default, DataSet))
+      xs = xs if xs <> None else default.xs
+      ys = ys if ys <> None else default.ys
+      ids = ids if ids <> None else default.ids
+      cl_lab = cl_lab if cl_lab <> None else default.cl_lab
+      feat_lab = feat_lab if feat_lab <> None else default.feat_lab
+      feat_shape = feat_shape if feat_shape <> None else default.feat_shape
+      
+    if not isinstance(xs, np.ndarray):
+      raise ValueError, 'Only np.ndarray is supported for xs'
+    if xs.ndim <> 2:
+      raise ValueError, 'Only 2d arrays are supported for xs. See feat_shape.'
+    if not isinstance(ys, np.ndarray):
+      raise ValueError, 'Only np.ndarray is supported for ys'
+    if ys.ndim <> 2:
+      raise ValueError, 'Only 2d arrays are supported for ys.'
+
     self.xs = xs
     self.ys = ys
-
-    self.feature_labels = feature_labels if feature_labels else \
-      ['feat%d' % i for i in range(self.nfeatures)]
-    self.class_labels = class_labels if class_labels else \
-      ['class%d' % i for i in range(self.nclasses)]
     
-    if len(self.feature_labels) <> self.nfeatures:
-      raise ValueError, 'The number of feature labels does not match #features'
-    if len(self.class_labels) <> self.nclasses:
-      raise ValueError, 'The number of class labels does not match #classes'
+    self.ids = ids if ids <> None else \
+      np.arange(self.ninstances).reshape(-1, 1)
+    self.cl_lab = cl_lab if cl_lab <> None \
+      else ['class%d' % i for i in range(self.nclasses)]
+    self.feat_lab = feat_lab if feat_lab <> None \
+      else ['feat%d' % i for i in range(self.nfeatures)]
+    self.feat_shape = feat_shape if feat_shape <> None \
+      else [self.nfeatures]
 
-    self.ids = np.asarray(ids).reshape(-1, 1) if ids <> None\
-      else np.arange(self.ninstances).reshape(-1, 1)
+    del xs, ys, ids, cl_lab, feat_lab, feat_shape
+      
+    if not isinstance(self.ids, np.ndarray):
+      raise ValueError, 'Only np.ndarray is supported for ids'
+    if self.ids.ndim <> 2:
+      raise ValueError, 'Only 2d arrays are supported for ids.'
+    
+    assert(isinstance(self.cl_lab, list))
+    assert(isinstance(self.feat_lab, list))
+    assert(isinstance(self.feat_shape, list))
+
+    # Final integrity test
+    if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
+      raise ValueError, 'Number of rows does not match'
     assert(np.unique(self.ids).size == self.ids.size)
-
-    self.feature_shape = feature_shape
+    if len(self.feat_lab) <> self.nfeatures:
+      raise ValueError, '"%s" does not match #features' % self.feat_lab
+    if len(self.cl_lab) <> self.nclasses:
+      raise ValueError, 'The number of class labels does not match #classes'
 
   def get_class(self, i):
     return self[self.ys[:, i] == 1]
@@ -43,21 +68,21 @@ class DataSet:
     if isinstance(i, slice) or isinstance(i, list) or isinstance(i, np.ndarray):
       return DataSet(
         xs=self.xs[i, :], ys=self.ys[i,:], ids=self.ids[i, :], 
-        feature_labels=self.feature_labels, class_labels=self.class_labels)
+        feat_lab=self.feat_lab, cl_lab=self.cl_lab)
     elif isinstance(i, int):
       return DataSet(
         xs=self.xs[i, :].reshape(1, -1),
         ys=self.ys[i,:].reshape(1, -1),
         ids=self.ids[i,:].reshape(1, -1),
-        feature_labels=self.feature_labels,
-        class_labels=self.class_labels)
+        feat_lab=self.feat_lab,
+        cl_lab=self.cl_lab)
     else:
       raise ValueError, 'Unkown indexing type.'
 
   def nd_xs(self):
     '''Return N-dimensional view of xs'''
-    if self.feature_shape <> None:
-      return self.xs.reshape([self.ninstances] + self.feature_shape)
+    if self.feat_shape <> None:
+      return self.xs.reshape([self.ninstances] + self.feat_shape)
     raise Exception, 'Feature shape is unknown'
 
   def __len__(self):
@@ -86,20 +111,18 @@ class DataSet:
     # Check shape and labels
     if (a.nfeatures <> b.nfeatures) or (a.nclasses <> b.nclasses):
       raise ValueError, 'The #features or #classes do not match'
-    if a.feature_labels <> b.feature_labels:
+    if a.feat_lab <> b.feat_lab:
       raise ValueError, 'The feature labels do not match'
-    if a.class_labels <> b.class_labels:
+    if a.cl_lab <> b.cl_lab:
       raise ValueError, 'The class labels do not match'
 
     return DataSet(np.vstack([a.xs, b.xs]), np.vstack([a.ys, b.ys]),
-      feature_labels=a.feature_labels, class_labels=a.class_labels, 
-      ids=np.vstack([a.ids, b.ids]))
+      ids=np.vstack([a.ids, b.ids]), default=a)
 
   def __eq__(a, b):
     if isinstance(b, DataSet):
       return (a.xs == b.xs).all() and (a.ys == b.ys).all() and \
-        a.feature_labels == b.feature_labels and \
-        a.class_labels == b.class_labels and\
+        a.feat_lab == b.feat_lab and a.cl_lab == b.cl_lab and\
         (a.ids == b.ids).all()
     return False
     

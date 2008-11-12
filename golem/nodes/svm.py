@@ -75,6 +75,7 @@ class SVM:
     model['b'] = np.mean(model['labels'] - 
       np.dot(sv_kernel, (model['labels'] * model['alphas'])).T)
     self.model = model
+    self.cl_lab = d.cl_lab
 
   def test(self, d):
     xs = d.xs
@@ -88,11 +89,10 @@ class SVM:
 
     # Transform into two-colum positive hyperplane distance format
     labels = labels.reshape(-1, 1)
-    ys = np.hstack([labels, -labels])
+    xs = np.hstack([labels, -labels])
     if self.sign_output:
-      ys = np.where(ys > 0, np.ones(ys.shape), np.zeros(ys.shape))
-    return DataSet(xs=ys, ys=d.ys, ids=d.ids, 
-      class_labels=d.class_labels)
+      xs = np.where(ys > 0, np.ones(ys.shape), np.zeros(ys.shape))
+    return DataSet(xs, feat_lab=self.cl_lab, default=d)
 
   def __str__(self):
     return 'SVM (C=%g, kernel=%s, params=%s)' % (self.C, self.kernel, 

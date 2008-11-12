@@ -28,8 +28,7 @@ class PCA:
     xs = d.xs - np.mean(d.xs, axis=0)
     xs = np.dot(xs, self.eigen_cols)
     feature_labels = ['PC%d' % i for i in range(xs.shape[1])]
-    return DataSet(xs, d.ys, d.ids, feature_labels=feature_labels, 
-      class_labels=d.class_labels)
+    return DataSet(xs, feat_lab=feature_labels, default=d)
 
   def __str__(self):
     W = self.eigen_cols

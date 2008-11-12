@@ -39,20 +39,21 @@ class TestDataSet(unittest.TestCase):
     '''Setup a default DataSet.'''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
     ys = np.array([[0, 1], [1, 0]])
-    self.d = DataSet(xs, ys, [[3], [4]], feature_labels=['f1', 'f2', 'f3'], 
-      class_labels=['A', 'B'])
+    ids = np.array([[3], [4]])
+    self.d = DataSet(xs, ys, ids, feat_lab=['f1', 'f2', 'f3'], 
+      cl_lab=['A', 'B'])
       
   def test_equality(self):
     d = self.d
     self.assert_(d == d)
     self.assert_(d == DataSet(d.xs, d.ys, d.ids, 
-      feature_labels=d.feature_labels, class_labels=d.class_labels))
+      feat_lab=d.feat_lab, cl_lab=d.cl_lab))
     self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
-      class_labels=d.class_labels, feature_labels=d.feature_labels))
+      cl_lab=d.cl_lab, feat_lab=d.feat_lab))
     self.assert_(d <> 3)
     self.assert_(d <> DataSet(np.zeros((2, 3)), np.zeros((2, 2)), None))
     self.assert_(d <> DataSet(d.xs, d.ys, None, 
-      feature_labels=d.feature_labels, class_labels=d.class_labels))
+      feat_lab=d.feat_lab, cl_lab=d.cl_lab))
 
   def test_indexing(self):
     '''Test the indexing of DataSet.'''
@@ -79,7 +80,7 @@ class TestDataSet(unittest.TestCase):
     '''Test multidimensional xs'''
     xs = np.arange(100).reshape(10, 10)
     ys = np.ones((10, 1))
-    d = DataSet(xs, ys, None, feature_shape=[2, 5])
+    d = DataSet(xs, ys, None, feat_shape=[2, 5])
     self.assert_((d.xs == xs).all())
     ndxs = d.nd_xs()
     self.assert_((ndxs[0,:,:] == np.arange(10).reshape(2, 5)).all())
@@ -115,7 +116,7 @@ class TestDataSet(unittest.TestCase):
     '''Test the creation of compound datasets using the add-operator.'''
     d1 = self.d
     d2 = DataSet(np.array([[3, 3, 3], [4, 4, 4]]), np.array([[0, 1], [1, 0]]), 
-      None, feature_labels=d1.feature_labels, class_labels=d1.class_labels)
+      None, feat_lab=d1.feat_lab, cl_lab=d1.cl_lab)
     d3 = d1 + d2
     self.assert_(d1.nfeatures == d2.nfeatures)
     self.assert_(d1.nclasses == d2.nclasses)

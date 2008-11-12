@@ -5,7 +5,7 @@ from golem import DataSet
 log = logging.getLogger('CSP')
 
 # TODO:
-# 1 Use Fisher criterion for feature selection
+# 1 Use Fisher criterion for feature selection, or AUC?
 class CSP:
   def __init__(self, m=2, axis=-1):
     self.W = None
@@ -35,7 +35,6 @@ class CSP:
     U, s, V = np.linalg.svd(cov)
     P = np.dot(U, np.linalg.pinv(np.diag(s)) ** (.5))
     self.P = P[:, :np.rank(P)]
-    
 
     # Calc class-diagonalization matrix B
     d0 = d.get_class(0)
@@ -51,12 +50,13 @@ class CSP:
     else:
       log.warning('Rank to low to select %d components.' % self.m)
 
+    self.cl_lab = d.cl_lab
+
   def test(self, d):
     xs = d.xs - np.mean(d.xs, axis=0)
     xs = np.dot(xs, self.W)
     feature_labels = ['CSP_Comp%d' % i for i in range(xs.shape[1])]
-    return DataSet(xs, d.ys, d.ids, feature_labels=feature_labels, 
-      class_labels=d.class_labels)
+    return DataSet(xs, feat_lab=self.cl_lab, default=d)
 
   def __str__(self):
     W = self.eigen_cols
