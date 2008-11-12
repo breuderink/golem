@@ -213,21 +213,29 @@ class TestDataSet(unittest.TestCase):
 
   def test_add(self):
     '''Test the creation of compound datasets using the add-operator.'''
-    d1 = self.d
-    d2 = DataSet(np.array([[3, 3, 3], [4, 4, 4]]), np.array([[0, 1], [1, 0]]), 
-      None, feat_lab=d1.feat_lab, cl_lab=d1.cl_lab)
-    d3 = d1 + d2
-    self.assert_(d1.nfeatures == d2.nfeatures)
-    self.assert_(d1.nclasses == d2.nclasses)
-    self.assert_((np.vstack([d1.xs, d2.xs]) == d3.xs).all())
-    self.assert_((np.vstack([d1.ys, d2.ys]) == d3.ys).all())
+    ids = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]]).T
+    xs, ys = np.random.random((6, 3)), np.ones((6, 3)) 
+    d = DataSet(xs, ys, ids)
 
-    d4 = DataSet(np.array([[3, 3], [4, 4]]), np.array([[0, 1], [1, 0]]), None)
-    self.assert_(d1.nfeatures <> d4.nfeatures)
-    self.assertRaises(ValueError, DataSet.__add__, d1, d4)
+    da, db = d[:3], d[3:]
+    self.assert_(da + db == d)
+
+    # different nfeatures
+    self.assertRaises(ValueError, da.__add__,
+      DataSet(xs=db.xs[:,:-1], feat_lab=d.feat_lab[:-1], default=db))
     
-    d5 = DataSet(np.array([[3, 3, 3], [4, 4, 4]]), 
-      np.array([[0, 1, 0], [1, 0, 0]]), None)
+    # different feat_lab
+    self.assertRaises(ValueError, da.__add__,
+      DataSet(feat_lab=['f0', 'f1', 'f2'], default=db))
+
+    # different feat_shape
+    self.assertRaises(ValueError, da.__add__,
+      DataSet(feat_shape=[3, 1], default=db))
+
+    # different nclasses
+    self.assertRaises(ValueError, da.__add__,
+      DataSet(ys=db.ys[:,:-1], cl_lab=d.cl_lab[:-1], default=db))
     
-    self.assert_(d1.nclasses <> d5.nclasses)
-    self.assertRaises(ValueError, DataSet.__add__, d1, d5)
+    # different cl_lab
+    self.assertRaises(ValueError, da.__add__,
+      DataSet(cl_lab=['c0', 'c1', 'c2'], default=db))

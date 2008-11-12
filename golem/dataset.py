@@ -99,6 +99,8 @@ class DataSet:
       raise ValueError, 'The #features or #classes do not match'
     if a.feat_lab <> b.feat_lab:
       raise ValueError, 'The feature labels do not match'
+    if a.feat_shape <> b.feat_shape:
+      raise ValueError, 'The feature shapes do not match'
     if a.cl_lab <> b.cl_lab:
       raise ValueError, 'The class labels do not match'
 
