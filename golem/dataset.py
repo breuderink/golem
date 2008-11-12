@@ -77,10 +77,6 @@ class DataSet:
 
   def __len__(self):
     return self.ninstances
- 
-  def __iter__(self):
-    for i in range(self.ninstances):
-      yield (self.xs[i], self.ys[i])
 
   def __str__(self):
     return 'DataSet with %d instances, %d features, %d classes: %s' % \

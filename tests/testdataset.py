@@ -206,14 +206,6 @@ class TestDataSet(unittest.TestCase):
     self.assert_(d1d == d1ds)
     self.assert_(d2d == d2ds)
 
-  def test_iter(self):
-    '''Test the iterator of DataSet.'''
-    instances = [(x, y) for (x, y) in self.d]
-    for i in xrange(len(instances)):
-      (x, y) = instances[i]
-      self.assert_((x == self.d.xs[i,:]).all())
-      self.assert_((y == self.d.ys[i,:]).all())
-  
   def test_str(self):
     '''Test string representation.'''
     self.assertEqual('DataSet with 2 instances, 3 features, 2 classes: [1, 1]',
