@@ -181,23 +181,30 @@ class TestDataSet(unittest.TestCase):
     ys = np.ones((10, 1))
     d = DataSet(xs, ys, None, feat_shape=[2, 5])
     self.assert_((d.xs == xs).all())
-    ndxs = d.nd_xs
-    self.assert_((ndxs[0,:,:] == np.arange(10).reshape(2, 5)).all())
-    self.assert_((ndxs[2,:,:] == np.arange(20, 30).reshape(2, 5)).all())
-    ndxs[0, 0, 0] = 1000
+    self.assert_((d.nd_xs[0,:,:] == np.arange(10).reshape(2, 5)).all())
+    self.assert_((d.nd_xs[2,:,:] == np.arange(20, 30).reshape(2, 5)).all())
+    d.nd_xs[0, 0, 0] = 1000
     self.assert_(d.xs[0, 0] == 1000)
-
-
-  def test_sort(self):
+  
+  def test_sorted(self):
     '''Test sorting the DataSet'''
-    d = self.d
-    ds = d.sort()
-    # Test if ids are sorted
-    self.assert_((np.sort(ds.ids.flatten()) == ds.ids.flatten()).all())
-    # Test if dataset is the same but differently ordered
-    self.assert_(d[np.lexsort(d.xs.T)] == ds[np.lexsort(ds.xs.T)])
+    ids = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]]).T
+    xs, ys = np.random.random((6, 2)), np.ones((6, 1)) 
+    d1d = DataSet(xs, ys, ids[:, 0].reshape(-1, 1))
+    d2d = DataSet(xs, ys, ids)
 
- 
+    # shuffle and sort
+    shuf_i = np.arange(d1d.ninstances)
+    np.random.shuffle(shuf_i)
+    d1ds, d2ds = d1d[shuf_i], d2d[shuf_i]
+    d1ds = d1ds.sorted()
+    d2ds = d2ds.sorted()
+    
+    # Test if ids are sorted
+    self.assert_(d1d == d1ds)
+    self.assert_(d2d == d2ds)
+
+
   def test_iter(self):
     '''Test the iterator of DataSet.'''
     instances = [(x, y) for (x, y) in self.d]

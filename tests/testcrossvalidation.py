@@ -19,7 +19,7 @@ class TestCrossValidation(unittest.TestCase):
     self.check_disjoint(subsets)
 
     d2 = reduce(lambda a, b : a + b, subsets)
-    self.assert_(d.sort() == d2.sort())
+    self.assert_(d.sorted() == d2.sorted())
   
   def test_sequential_split(self):
     '''Test sequentially splitting of a DataSet'''
@@ -33,7 +33,7 @@ class TestCrossValidation(unittest.TestCase):
       
       self.check_disjoint(subsets)
       d2 = reduce(lambda a, b : a + b, subsets)
-      self.assert_(d.sort() == d2.sort())
+      self.assert_(d.sorted() == d2.sorted())
   
   def test_crossvalidation_sets(self):
     '''Test the generation of cross-validation training and test sets'''
@@ -41,7 +41,7 @@ class TestCrossValidation(unittest.TestCase):
     cv_sets = [tu for tu in crossval.cross_validation_sets(subsets)]
     self.assert_(len(cv_sets) == 8)
     for (tr, te) in cv_sets:
-      self.assert_((tr + te).sort() == self.d.sort()) # tr + te == d
+      self.assert_((tr + te).sorted() == self.d.sorted()) # tr + te == d
 
   def check_disjoint(self, subsets):
     '''Test that subsets are disjoint datasets'''

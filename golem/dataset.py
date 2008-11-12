@@ -51,7 +51,7 @@ class DataSet:
     assert(isinstance(self.feat_shape, list))
 
     # Final integrity test
-    assert(np.unique(self.ids).size == self.ids.size)
+    assert(np.unique(self.ids[:,0]).size == self.ninstances)
     if len(self.feat_lab) <> self.nfeatures:
       raise ValueError, '"%s" does not match #features' % self.feat_lab
     if len(self.cl_lab) <> self.nclasses:
@@ -60,9 +60,9 @@ class DataSet:
   def get_class(self, i):
     return self[self.ys[:, i] == 1]
 
-  def sort(self):
+  def sorted(self):
     '''Sort by id'''
-    return self[np.argsort(self.ids.flatten())]
+    return self[np.argsort(self.ids[:,0])] # sort on first col of .ids
     
   def __getitem__(self, i):
     if isinstance(i, slice) or isinstance(i, list) or isinstance(i, np.ndarray):
