@@ -157,12 +157,15 @@ class TestDataSet(unittest.TestCase):
     self.assert_(d[:] == d)
     self.assert_(d[0] + d[1] == d)
     self.assert_(d[:-1] == d[0])
-    self.assert_(d[0].nclasses == 2)
-    self.assert_(d[0].nfeatures == 3)
+    self.assert_(d[0].ninstances == 1)
+    self.assert_(d[0].nclasses == d.nclasses)
+    self.assert_(d[0].nfeatures == d.nfeatures)
     self.assert_(d[-1] == d[d.nclasses - 1])
 
     indices = np.arange(d.ninstances)
     self.assert_(d[indices==1] == d[1])
+    self.assert_(d[indices.tolist()] == d)
+    self.assert_(d[[1]] == d[1])
 
   def test_class_extraction(self):
     '''Test the extraction of a single class from DataSet'''
