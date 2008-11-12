@@ -66,25 +66,14 @@ class DataSet:
     
   def __getitem__(self, i):
     if isinstance(i, slice) or isinstance(i, list) or isinstance(i, np.ndarray):
-      return DataSet(
-        xs=self.xs[i, :], ys=self.ys[i,:], ids=self.ids[i, :], 
-        feat_lab=self.feat_lab, cl_lab=self.cl_lab)
+      return DataSet(xs=self.xs[i, :], ys=self.ys[i,:], ids=self.ids[i, :], 
+        default=self)
     elif isinstance(i, int):
-      return DataSet(
-        xs=self.xs[i, :].reshape(1, -1),
-        ys=self.ys[i,:].reshape(1, -1),
-        ids=self.ids[i,:].reshape(1, -1),
-        feat_lab=self.feat_lab,
-        cl_lab=self.cl_lab)
+      return DataSet(xs=self.xs[i, :].reshape(1, -1), 
+        ys=self.ys[i,:].reshape(1, -1), ids=self.ids[i,:].reshape(1, -1),
+        default=self)
     else:
       raise ValueError, 'Unkown indexing type.'
-
-  @property
-  def nd_xs(self):
-    '''Return N-dimensional view of xs'''
-    if self.feat_shape <> None:
-      return self.xs.reshape([self.ninstances] + self.feat_shape)
-    raise Exception, 'Feature shape is unknown'
 
   def __len__(self):
     return self.ninstances
@@ -123,8 +112,9 @@ class DataSet:
   def __eq__(a, b):
     if isinstance(b, DataSet):
       return (a.xs == b.xs).all() and (a.ys == b.ys).all() and \
-        a.feat_lab == b.feat_lab and a.cl_lab == b.cl_lab and\
-        (a.ids == b.ids).all()
+        (a.ids == b.ids).all() and a.feat_lab == b.feat_lab and \
+        a.cl_lab == b.cl_lab and a.feat_shape == b.feat_shape
+
     return False
     
   def __ne__(a, b):
@@ -150,4 +140,12 @@ class DataSet:
   def nfeatures(self):
     if self.xs.ndim == 0:
       return 0
+    return self.xs.shape[1]
+  
+  @property
+  def nd_xs(self):
+    '''Return N-dimensional view of xs'''
+    if self.feat_shape <> None:
+      return self.xs.reshape([self.ninstances] + self.feat_shape)
+    raise Exception, 'Feature shape is unknown'
     return self.xs.shape[1]

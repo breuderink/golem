@@ -130,19 +130,26 @@ class TestDataSet(unittest.TestCase):
     ys = np.array([[0, 1], [1, 0]])
     ids = np.array([[3], [4]])
     self.d = DataSet(xs, ys, ids, feat_lab=['f1', 'f2', 'f3'], 
-      cl_lab=['A', 'B'])
+      cl_lab=['A', 'B'], feat_shape=[3, 1])
       
   def test_equality(self):
     d = self.d
     self.assert_(d == d)
-    self.assert_(d == DataSet(d.xs, d.ys, d.ids, 
-      feat_lab=d.feat_lab, cl_lab=d.cl_lab))
+    self.assert_(d == DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
+      cl_lab=d.cl_lab, feat_shape=d.feat_shape))
+
+    # test all kinds of differences
+    self.assert_(d <> DataSet(xs=d.xs+1, default=d))
+    self.assert_(d <> DataSet(ys=d.ys+1, default=d))
+    self.assert_(d <> DataSet(ids=d.ids+1, default=d))
+    self.assert_(d <> DataSet(cl_lab=['a', 'b'], default=d))
+    self.assert_(d <> DataSet(feat_lab=['F1', 'F2', 'F3'], default=d))
+    self.assert_(d <> DataSet(feat_shape=[1, 3], default=d))
+    
+    # test special cases
     self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
-      cl_lab=d.cl_lab, feat_lab=d.feat_lab))
+      default=d))
     self.assert_(d <> 3)
-    self.assert_(d <> DataSet(np.zeros((2, 3)), np.zeros((2, 2)), None))
-    self.assert_(d <> DataSet(d.xs, d.ys, None, 
-      feat_lab=d.feat_lab, cl_lab=d.cl_lab))
 
   def test_indexing(self):
     '''Test the indexing of DataSet.'''
