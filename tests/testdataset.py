@@ -197,13 +197,14 @@ class TestDataSet(unittest.TestCase):
     shuf_i = np.arange(d1d.ninstances)
     np.random.shuffle(shuf_i)
     d1ds, d2ds = d1d[shuf_i], d2d[shuf_i]
+    self.failIf(d1d == d1ds)
+    self.failIf(d2d == d2ds)
     d1ds = d1ds.sorted()
     d2ds = d2ds.sorted()
     
     # Test if ids are sorted
     self.assert_(d1d == d1ds)
     self.assert_(d2d == d2ds)
-
 
   def test_iter(self):
     '''Test the iterator of DataSet.'''
