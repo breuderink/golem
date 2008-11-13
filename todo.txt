@@ -1,5 +1,7 @@
-- Automated tests for derivatives of Node
-- Add shuffle to crossvalidation
+1 Add default copy-option for DataSet (-> properties?)
+1 Add unittests for different featureshapes to DataSet
+2 Add shuffle to crossvalidation
+3 Automated tests for derivatives of Node
 
 Unit-test wish-list
 ===================

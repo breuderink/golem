@@ -35,7 +35,7 @@ class CSP:
     U, s, V = np.linalg.svd(cov)
     P = np.dot(U, np.linalg.pinv(np.diag(s)) ** (.5))
     self.P = P[:, :np.rank(P)]
-
+    
     # Calc class-diagonalization matrix B
     d0 = d.get_class(0)
     xs0 = np.dot(self.axis_xs(d0), self.P)
@@ -48,14 +48,16 @@ class CSP:
       log.debug('Selecting components %s' % comps)
       self.W = self.W[:, comps]
     else:
-      log.warning('Rank to low to select %d components.' % self.m)
+      log.warning('Rank to low to select %d components. W.shape = %s' %
+        (self.m * 2, self.W.shape))
 
     self.cl_lab = d.cl_lab
 
   def test(self, d):
-    xs = d.xs - np.mean(d.xs, axis=0)
+    xs = self.axis_xs(d) - self.mean
     xs = np.dot(xs, self.W)
     feature_labels = ['CSP_Comp%d' % i for i in range(xs.shape[1])]
+    #@@PUT SHAPE BACK 
     return DataSet(xs, feat_lab=self.cl_lab, default=d)
 
   def __str__(self):
