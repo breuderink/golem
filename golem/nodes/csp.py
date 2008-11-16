@@ -4,29 +4,18 @@ from golem import DataSet
 
 log = logging.getLogger('CSP')
 
-# TODO:
-# 1 Use Fisher criterion for feature selection, or AUC?
 class CSP:
-  def __init__(self, m=2, axis=-1):
+  def __init__(self, m=2):
+    assert(m % 2 == 0)
     self.W = None
     self.m = m
-    assert(axis in [-1, 0])
-    self.axis = axis
-
-  def axis_xs(self, d):
-    '''Create 2D array to work with depending on axis'''
-    if self.axis <> -1:
-      xs = np.concatenate(d.nd_xs, axis=self.axis)
-    else:
-      xs = d.xs
-    assert(xs.ndim == 2)
-    return xs
 
   def train(self, d):
     assert(d.nclasses == 2)
+    assert(len(d.feat_shape) == 2) # only work with 2D features, time*channels
     
     # Store mean
-    xs = self.axis_xs(d)
+    xs = np.concatenate(d.nd_xs, axis=0)
     self.mean = np.mean(xs, axis=0)
 
     # Calc whitening matrix P
@@ -38,30 +27,33 @@ class CSP:
     
     # Calc class-diagonalization matrix B
     d0 = d.get_class(0)
-    xs0 = np.dot(self.axis_xs(d0), self.P)
+    xs0 = np.dot(np.concatenate(d0.nd_xs, axis=0) - self.mean, self.P)
     self.B, s0, V0 = np.linalg.svd(np.cov(xs0, rowvar=False))
 
-    # Construct final transormation matrix W
+    # Construct final transformation matrix W
     self.W = np.dot(self.P, self.B)
-    if self.W.shape[1] > self.m * 2:
-      comps = range(self.m) + range(-1, -self.m -1, -1)
+    if self.W.shape[1] >= self.m:
+      comps = range(self.m / 2) + range(-self.m / 2, 0)
       log.debug('Selecting components %s' % comps)
       self.W = self.W[:, comps]
     else:
       log.warning('Rank to low to select %d components. W.shape = %s' %
         (self.m * 2, self.W.shape))
+      self.m = self.W.shape[1]
 
     self.cl_lab = d.cl_lab
 
   def test(self, d):
-    xs = self.axis_xs(d) - self.mean
-    xs = np.dot(xs, self.W)
-    feature_labels = ['CSP_Comp%d' % i for i in range(xs.shape[1])]
-    #@@PUT SHAPE BACK 
-    return DataSet(xs, feat_lab=self.cl_lab, default=d)
+    assert(len(d.feat_shape) == 2)
+    xs = np.concatenate(d.nd_xs, axis=0) - self.mean
+    xs = np.dot(xs, self.W).reshape(d.ninstances, -1)
+    feat_shape = [d.feat_shape[0], self.m]
+    feat_lab = ['csp_f%d' % i for i in range(np.prod(feat_shape))]
+    return DataSet(xs, feat_lab=feat_lab, feat_shape=feat_shape, 
+      cl_lab=self.cl_lab, default=d)
 
   def __str__(self):
     W = self.eigen_cols
     if W == None:
       return 'CSP (untrained)'
-    return 'CSP (%dD -> %dD)' % (W.shape[0], W.shape[1])
+    return 'CSP (%dD -> %dD)' % (W.shape[0], m)

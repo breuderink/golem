@@ -179,10 +179,12 @@ class TestDataSet(unittest.TestCase):
     '''Test multidimensional xs'''
     xs = np.arange(100).reshape(10, 10)
     ys = np.ones((10, 1))
-    d = DataSet(xs, ys, None, feat_shape=[2, 5])
+    d = DataSet(xs, ys, None, feat_shape=[2, 1, 5])
     self.assert_((d.xs == xs).all())
-    self.assert_((d.nd_xs[0,:,:] == np.arange(10).reshape(2, 5)).all())
-    self.assert_((d.nd_xs[2,:,:] == np.arange(20, 30).reshape(2, 5)).all())
+    self.assert_(d.ninstances == 10)
+    self.assert_(d.nfeatures == 10)
+    self.assert_((d.nd_xs[0,:,:] == np.arange(10).reshape(2, 1, 5)).all())
+    self.assert_((d.nd_xs[2,:,:] == np.arange(20, 30).reshape(2, 1, 5)).all())
     d.nd_xs[0, 0, 0] = 1000
     self.assert_(d.xs[0, 0] == 1000)
   
