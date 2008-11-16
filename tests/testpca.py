@@ -9,8 +9,8 @@ class TestPCA(unittest.TestCase):
     xs = np.hstack([xs, -xs, np.zeros((100, 0))]) # make correlated
     self.d = DataSet(xs, np.ones((100, 1)), None)
 
-  def test_nocov(self):
-    '''Test that the PCA-transformed features are uncorrelated'''
+  def test_nocov_descending(self):
+    '''Test that the PCA-transformed features are uncorrelated, and ordered'''
     d = self.d
     n = nodes.PCA()
     n.train(d)
@@ -22,6 +22,8 @@ class TestPCA(unittest.TestCase):
 
     cov = np.cov(d2.xs, rowvar=False)
     self.assertAlmostEqual(np.trace(cov), np.sum(cov))
+    self.assert_((np.abs(np.diag(cov) - np.sort(np.diag(cov))[::-1]) \
+      < 1e-8).all())
   
   def test_ndims(self):
     '''Test PCA with given dimensionality'''

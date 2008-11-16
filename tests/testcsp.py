@@ -12,17 +12,19 @@ class TestCSP(unittest.TestCase):
 
     self.n = nodes.CSP(m=2)
 
-  def test_class_diag(self):
-    '''Test for diagonal class cov'''
+  def test_class_diag_descending(self):
+    '''Test for diagonal, descending class cov'''
     d, n = self.d, self.n
     n.train(d)
     d2 = n.test(d.get_class(0))
 
-    self.assert_(d2.nfeatures == 2) # rank(cov) == 2
+    self.assert_(d2.nfeatures == 2)
     self.assert_(d2.nclasses == 2)
 
     cov = np.cov(d2.xs, rowvar=False)
     self.assertAlmostEqual(np.trace(cov), np.sum(cov))
+    self.assert_((np.abs(np.diag(cov) - np.sort(np.diag(cov))[::-1]) \
+      < 1e-8).all())
   
   def test_nocov(self):
     '''Test that the CSP-transformed features are uncorrelated'''
@@ -30,7 +32,7 @@ class TestCSP(unittest.TestCase):
     n.train(d)
     d2 = n.test(d)
 
-    self.assert_(d2.nfeatures == 2) # rank(cov) == 2
+    self.assert_(d2.nfeatures == 2)
     self.assert_(d2.nclasses == 2)
 
     cov = np.cov(d2.xs, rowvar=False)
