@@ -1,21 +1,15 @@
-1 Add default copy-option for DataSet (-> properties?)
-1 Add unittests for different featureshapes to DataSet
 2 Add shuffle to crossvalidation
 3 Automated tests for derivatives of Node
 
 Unit-test wish-list
 ===================
-1 CSP
 
 Node wish-list
 ==============
-1 CSP
+1 AUC-ROC
 2 CacheNode
 2 CombineFeatures
 2 ForwardFeatSel
 2 Group
-2 loss.AUC
 3 KNN
-3 NaiveBayes
-3 ROC
 3 SMLR

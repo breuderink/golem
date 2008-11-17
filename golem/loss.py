@@ -2,7 +2,6 @@ import numpy as np
 from golem.helpers import hard_max
 from golem import DataSet
 
-
 def class_loss(dataset):
   hm = hard_max(dataset.xs)
   ys = dataset.ys

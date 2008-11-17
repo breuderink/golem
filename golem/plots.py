@@ -1,9 +1,6 @@
-# TODO:
-# - add markers to the legend
-# - use class names if provided
 import pylab
 import numpy as np
-from golem import DataSet
+from golem import DataSet, helpers
 
 markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']
@@ -11,7 +8,6 @@ colors = ['w', 'k', 'r', 'y', 'b']
 def scatter_plot(dataset, fname = None):
   ''' Display the dataset with a scatterplot using Matplotlib/pylab. The user is
   responsible for calling pylab.show() to display the plot.
-
   '''
   assert(dataset.nfeatures == 2)
   # loop over classes
@@ -60,7 +56,6 @@ def plot_classifier_hyperplane(classifier, fname=None, heat_map=False,
   Plot the decision-function of a classifier. The labels of the contours can
   be enabled with contour_label, plotting the heatmap can be disabled with the
   heat_map argument.
-
   '''
   (X, Y, Zs) = classifier_grid(classifier)
   for Z in Zs:
@@ -69,6 +64,19 @@ def plot_classifier_hyperplane(classifier, fname=None, heat_map=False,
     if len(Zs) > 2: raise ValueError, 'Cannot draw a heat map for nclasses > 2'
     pylab.imshow(Z, origin='lower', alpha=heat_map_alpha, aspect='auto',
       extent=[X.min(), X.max(), Y.min(), Y.max()])
+  if fname:
+    pylab.savefig(fname)
+    pylab.close()
+
+def plot_roc(d, fname=None):
+  assert(d.nclasses == 2)
+  TPs, FPs = helpers.roc(d.xs[:, 0], d.ys[:, 0])
+  pylab.plot(TPs, FPs)
+  a = pylab.gca()
+  a.set_aspect('equal')
+  pylab.axis([0, 1, 0, 1])
+  pylab.xlabel('False positives')
+  pylab.ylabel('True positives')
   if fname:
     pylab.savefig(fname)
     pylab.close()
