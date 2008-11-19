@@ -4,30 +4,27 @@ import logging
 import numpy as np
 import pylab 
 
-from helpers import *
-from crossval import *
-import nodes
-import loss
-    
+import golem as g
+
 def gen_svms():
   result = []
-  for sigma in [.1, .3, .5, .8, 1, 2, 5]:
-    for C in [1, 10, 50, 100, 200, 2000]:
-      result.append(nodes.OneVsOne(nodes.SVM(C=C, kernel='rbf', sigma=sigma)))
-      #result.append(nodes.OneVsRest(nodes.SVM(C=C, kernel='linear')))
+  for sigma in [.1, 1, 10]:
+    for C in [1, 10, 100, 1000]:
+      result.append(g.nodes.OneVsRest(
+        g.nodes.SVM(C=C, kernel='rbf', sigma=sigma)))
   return result
       
 def cv_acc_critic(d, node):
-  splits = stratified_split(d, 5)
-  return np.mean([loss.accuracy(r) for r in cross_validate(splits, node)])
+  splits = g.crossval.stratified_split(d, 5)
+  return np.mean([g.loss.accuracy(r) for r in g.crossval.cross_validate(splits, node)])
   
 if __name__ == '__main__':
   np.random.seed(1)
-  logging.basicConfig(level=logging.WARNING)
-  logging.getLogger('LSReg').setLevel(logging.DEBUG)
+  logging.basicConfig(level=logging.INFO)
 
-  unittest.main()
-  d = artificialdata.gaussian_dataset([400, 400, 300])
+  d = g.data.gaussian_dataset([400, 400, 300])
+  n = g.nodes.ModelSelect(gen_svms(), cv_acc_critic)
 
-  #plots.scatter_plot(d)
-  #plots.plot_classifier_hyperplane(n, fname='lsreg.png')
+  aucs = [g.loss.accuracy(dt) for dt in \
+    g.crossval.cross_validate(g.crossval.stratified_split(d, 4), n)]
+  print aucs

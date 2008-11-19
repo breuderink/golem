@@ -60,21 +60,3 @@ def cross_validate(subsets, node):
     tnode.train(tr)
     yield tnode.test(te)
     del tnode
-
-if __name__ == '__main__':
-  #unittest.main()
-  import algorithms
-  import loss
-
-  np.random.seed(1)
-  d = artificialdata.gaussian_dataset([300, 200])
-  K = 10
-  
-  svm = algorithms.SupportVectorMachine(C=100)
-  print d
-  test_folds = [d for d in cross_validate(stratified_split(d, K), svm)]
-  #for t in test_folds:
-  #  print loss.format_confmat(t)
-  accuracy = [loss.accuracy(d) for d in test_folds]
-  print '%.3f (%.3f)' % (np.mean(accuracy), np.std(accuracy))
-
