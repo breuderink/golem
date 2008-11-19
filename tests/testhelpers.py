@@ -27,6 +27,14 @@ class Testroc(unittest.TestCase):
 
     self.assert_((t0 == t1).all())
     self.assert_((f0 == f1).all())
+  
+  def test_known(self):
+    scores = np.array([-1, 0, 0, 0, 0, 0, 0, 1])
+    labels = np.array([ 0, 0, 0, 0, 1, 1, 1, 1])
+    t0, f0 = golem.helpers.roc(scores, labels)
+
+    self.assert_((t0 == [0, .25, 1, 1]).all())
+    self.assert_((f0 == [0, 0, .75, 1]).all())
 
   def test_plot(self):
     d = golem.DataSet(np.round(self.d.xs, 1), default=self.d)
