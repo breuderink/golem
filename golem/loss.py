@@ -1,9 +1,8 @@
 import numpy as np
-from golem.helpers import hard_max
-from golem import DataSet
+from golem import DataSet, helpers
 
 def class_loss(dataset):
-  hm = hard_max(dataset.xs)
+  hm = helpers.hard_max(dataset.xs)
   ys = dataset.ys
   loss = np.where(np.sum(np.abs(hm - ys), axis=1).reshape(-1, 1), 
     np.ones((ys.shape[0], 1)), np.zeros((ys.shape[0], 1)))
@@ -15,7 +14,7 @@ def accuracy(dataset):
 def confusion_matrix(dataset):
   '''Make a confusion matrix. Rows contain the label, columns the prediction.'''
   result = []
-  hmd = DataSet(hard_max(dataset.xs), dataset.ys, None)
+  hmd = DataSet(helpers.hard_max(dataset.xs), dataset.ys, None)
   for ci in range(dataset.nclasses):
     cid = hmd.get_class(ci)
     result.append(np.sum(cid.xs, axis=0))
@@ -39,3 +38,8 @@ def format_confmat(dataset):
   result.append(hline)
 
   return '\n'.join(result)
+
+def auc(dataset):
+  assert(dataset.nclasses == 2)
+  TPs, FPs = helpers.roc(dataset.xs[:, 0], dataset.ys[:, 0])
+  return np.trapz(TPs, FPs)

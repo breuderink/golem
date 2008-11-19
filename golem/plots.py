@@ -69,6 +69,10 @@ def plot_classifier_hyperplane(classifier, fname=None, heat_map=False,
     pylab.close()
 
 def plot_roc(d, fname=None):
+  '''
+  Plot the ROC curve for a DataSet d. The first column of d.xs and d.ys is used
+  to compute the ROC.
+  '''
   assert(d.nclasses == 2)
   TPs, FPs = helpers.roc(d.xs[:, 0], d.ys[:, 0])
   pylab.plot(TPs, FPs)

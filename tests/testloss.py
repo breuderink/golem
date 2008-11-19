@@ -9,14 +9,14 @@ class TestLoss(unittest.TestCase):
       helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]), None)
 
   def testHardMax(self):
-    self.assert_((loss.hard_max(self.d.xs) == self.d.xs).all())
+    self.assert_((helpers.hard_max(self.d.xs) == self.d.xs).all())
 
     soft_votes = np.array([[-.3, -.1], [9, 4], [.1, .101]])
-    self.assert_((loss.hard_max(soft_votes) == 
+    self.assert_((helpers.hard_max(soft_votes) == 
       helpers.to_one_of_n([1, 0, 1])).all())
 
     tie_votes = np.array([[-1, -1], [0, 0], [1, 1]])
-    self.assert_((loss.hard_max(tie_votes) == 
+    self.assert_((helpers.hard_max(tie_votes) == 
       helpers.to_one_of_n([0, 0, 0], 2)).all())
   
   def testClassLoss(self):
@@ -34,6 +34,19 @@ class TestLoss(unittest.TestCase):
   def testFormatConfusionMatrix(self):
     c  = loss.format_confmat(self.d)
     self.assert_(hash(c) == 630198187)
+  
+  def testAUC(self):
+    d1 = DataSet(helpers.to_one_of_n([0, 0, 1, 1, 1, 1]),
+      helpers.to_one_of_n([0, 0, 1, 1, 1, 1]))
+    d0 = DataSet(helpers.to_one_of_n([1, 1, 0, 0, 0, 0]),
+      helpers.to_one_of_n([0, 0, 1, 1, 1, 1]))
+    dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]),
+      helpers.to_one_of_n([1, 1, 1, 1, 0, 0]))
+
+    self.assert_(loss.auc(d0) == 0)
+    self.assert_(loss.auc(d1) == 1)
+    self.assert_(loss.auc(dr) == .5)
+
     
 if __name__ == '__main__':
   unittest.main()
