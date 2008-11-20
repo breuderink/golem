@@ -12,3 +12,4 @@ from testpca import TestPCA
 from testlsreg import TestLSReg
 from testcsp import TestCSP
 from testhelpers import *
+from testfeatsel import *

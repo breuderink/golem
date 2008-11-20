@@ -41,6 +41,4 @@ def format_confmat(dataset):
 
 def auc(dataset):
   assert(dataset.nclasses == 2)
-  TPs, FPs = helpers.roc(dataset.xs[:, 0], dataset.ys[:, 0])
-  return np.trapz(TPs, FPs)
-
+  return helpers.auc(dataset.xs[:, 0], dataset.ys[:, 0])

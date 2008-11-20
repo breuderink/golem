@@ -22,21 +22,25 @@ def hard_max(xs):
   result[range(xs.shape[0]), np.argmax(xs, axis=1)] = 1
   return result
 
-def roc(score, label):
+def roc(scores, labels):
   '''Calc (TPs, FPs) for ROC plotting and AUC-ROC calculation.''' 
-  assert(score.ndim == label.ndim ==  1)
-  si = np.argsort(score)[::-1]
-  score, label = score[si], label[si]
+  assert(scores.ndim == labels.ndim ==  1)
+  si = np.argsort(scores)[::-1]
+  scores, labels = scores[si], labels[si]
   
   # slide threshold from above
-  TPs = np.cumsum(label == 1) / np.sum(label == 1).astype(float)
-  FPs = np.cumsum(label <> 1) / np.sum(label <> 1).astype(float)
+  TPs = np.cumsum(labels == 1) / np.sum(labels == 1).astype(float)
+  FPs = np.cumsum(labels <> 1) / np.sum(labels <> 1).astype(float)
   
-  # handle equal scores
-  ui = np.concatenate([np.diff(score), np.array([1])]) <> 0
+  # handle equal scoress
+  ui = np.concatenate([np.diff(scores), np.array([1])]) <> 0
   TPs, FPs = TPs[ui], FPs[ui]
 
   # add (0, 0) to ROC
   TPs = np.concatenate([np.array([0]), TPs])
   FPs = np.concatenate([np.array([0]), FPs])
   return (TPs, FPs)
+
+def auc(scores, labels):
+  TPs, FPs = roc(scores, labels)
+  return np.trapz(TPs, FPs)

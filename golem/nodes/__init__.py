@@ -8,4 +8,4 @@ from lsreg import LSReg
 from chain import Chain
 from zscore import ZScore
 from useless import *
-from golem import DataSet
+from featsel import *
