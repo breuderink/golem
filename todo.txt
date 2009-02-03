@@ -1,3 +1,4 @@
+1 Check logging scope/binding!
 2 Add shuffle to crossvalidation
 3 Automated tests for derivatives of Node
 
