@@ -4,9 +4,9 @@ from golem import DataSet, helpers
 
 auc_log = logging.getLogger('AUCFilter')
 class AUCFilter:
-  def __init__(self, min_auc = .6, nfeatures=None):
+  def __init__(self, min_auc=.6, min_nfeatures=0):
     self.min_auc = min_auc
-    self.nfeatures = nfeatures
+    self.min_nfeatures = min_nfeatures
 
   def train(self, d):
     assert(d.nclasses == 2)
@@ -18,15 +18,12 @@ class AUCFilter:
       aucs[fi] = helpers.auc(scores, labels)
     auc_log.debug('Found AUCs for features: %s' % aucs)
 
-    if self.nfeatures == None:
-      # threshold filter
-      self.feat_bool = np.logical_or(aucs > min_auc, aucs < 1 - min_auc)
-      if (self.feat_bool == False).all():
-        auc_log.warning('No features found above threshold.')
-    else:
-      # pick best nfeatures
-      self.feat_bool = np.zeros(aucs.size, bool)
-      self.feat_bool[aucs.argsort()[:self.nfeatures]] = True
+    # select at least min_features
+    self.feat_bool = np.zeros(aucs.size, bool)
+    self.feat_bool[aucs.argsort()[:self.min_nfeatures]] = True
+
+    # add threshold filtered features
+    self.feat_bool[np.logical_or(aucs > min_auc, aucs < 1 - min_auc)] = True
 
     auc_log.info('Keeping %d%% of the features' % (100 * self.feat_bool.mean()))
     self.cl_lab = d.cl_lab
