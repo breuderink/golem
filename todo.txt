@@ -2,16 +2,18 @@
 1 Change to new-style classes (class A(object):)
 2 Add shuffle to crossvalidation
 3 Automated tests for derivatives of Node
+2 Use numpy.matrix when more natural
 
 Unit-test wish-list
 ===================
 
+
 Node wish-list
 ==============
-1 AUC-ROC
 2 CacheNode
 2 CombineFeatures
-2 ForwardFeatSel
+2 AdaBoost
+3 ForwardFeatSel
 2 Group
 3 KNN
 3 SMLR

@@ -1,0 +1,60 @@
+import unittest
+import numpy as np
+import golem
+
+class TestAUCFilter(unittest.TestCase):
+  def setUp(self):
+    np.random.seed(1)
+    d = golem.data.gaussian_dataset([200, 200])
+    self.d = golem.DataSet(
+      xs=np.hstack([d.xs, np.random.random((d.ninstances, 30))]), ys=d.ys)
+
+  def test_AUCFilter(self):
+    d = self.d
+    n = golem.nodes.featsel.AUCFilter()
+    n.train(d)
+    d2 = n.test(d)
+    self.assert_(d2.nfeatures == 2)
+    self.assert_(n.feat_bool[:2].all())
+  
+  def test_AUCFilter_strong(self):
+    d = self.d
+    n = golem.nodes.featsel.AUCFilter(min_auc=.8)
+    n.train(d)
+    d2 = n.test(d)
+    self.assert_(d2.nfeatures == 1)
+    self.assert_(n.feat_bool[:1].all())
+
+  def test_AUCFilter_min_feat(self):
+    d = self.d
+    for nf in range(d.nfeatures):
+      n = golem.nodes.featsel.AUCFilter(min_auc=1, min_nfeatures=nf)
+      n.train(d)
+      d2 = n.test(d)
+      self.assertEqual(d2.nfeatures, nf)
+      if nf <= 2:
+        self.assert_(n.feat_bool[:nf].all())
+
+  def test_AUCFilter_auc_nfeat_combo(self):
+    d = self.d
+    n = golem.nodes.featsel.AUCFilter(min_auc=.6, min_nfeatures=1)
+    n.train(d)
+    d2 = n.test(d)
+    self.assert_(d2.nfeatures == 2)
+
+  def test_AUCFilterr_too_strong(self):
+    d = self.d
+    n = golem.nodes.featsel.AUCFilter(min_auc=1)
+    n.train(d)
+    d2 = n.test(d)
+    self.assert_(d2.nfeatures == 0)
+    self.assertFalse(n.feat_bool.all())
+
+  def test_AUCFilter_is_symmetric(self):
+    d = self.d
+    dn = golem.DataSet(xs=-d.xs, default=d)
+    n = golem.nodes.featsel.AUCFilter()
+    n.train(d)
+    nn = golem.nodes.featsel.AUCFilter()
+    nn.train(dn)
+    self.assert_((n.feat_bool == nn.feat_bool).all())
