@@ -3,3 +3,4 @@ syntax: glob
 .bzr/*
 .*.swp
 tests/plots/*
+MANIFEST
