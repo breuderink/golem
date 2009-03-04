@@ -1,6 +1,7 @@
 import pylab
 import numpy as np
-from golem import DataSet, helpers
+from dataset import DataSet
+import helpers
 
 markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']

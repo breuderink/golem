@@ -1,6 +1,7 @@
 import logging
 import numpy as np
-from golem import DataSet, helpers
+from ..dataset import DataSet
+from .. import helpers
 
 auc_log = logging.getLogger('AUCFilter')
 class AUCFilter:

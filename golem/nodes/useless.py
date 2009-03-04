@@ -1,4 +1,4 @@
-from golem import DataSet
+from ..dataset import DataSet
 
 class PriorClassifier:
   def __init__(self):

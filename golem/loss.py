@@ -1,5 +1,6 @@
 import numpy as np
-from golem import DataSet, helpers
+from dataset import DataSet
+import helpers
 
 def class_loss(dataset):
   hm = helpers.hard_max(dataset.xs)

@@ -1,5 +1,5 @@
 import numpy as np
-from golem import DataSet
+from ..dataset import DataSet
 
 class ZScore:
   def __init__(self):

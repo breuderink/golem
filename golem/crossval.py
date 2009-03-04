@@ -1,7 +1,8 @@
 import copy
 import logging
 import numpy as np
-from golem import DataSet, helpers
+from dataset import DataSet
+import helpers
 
 log = logging.getLogger('CV')
 def stratified_split(d, K=10):

@@ -3,7 +3,6 @@ import logging
 
 log = logging.getLogger('golem.ModelSelect')
 
-
 class ModelSelect:
   def __init__(self, nodes, critic):
     assert(isinstance(nodes, list))

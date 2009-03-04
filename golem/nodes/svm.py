@@ -6,7 +6,7 @@ import cvxopt.base as cvx
 import cvxopt.solvers
 
 from kernel import *
-from golem import *
+from ..dataset import DataSet
 
 log = logging.getLogger('SVM')
 QP_ACCURACY = 1e-8

@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.linalg as la
-from golem import DataSet
+from dataset import DataSet
 
 def gaussian_dataset(ninstances = [50, 50]):
   mus = [\

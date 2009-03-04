@@ -1,7 +1,8 @@
 import logging
 import copy
 import numpy as np
-from golem import DataSet, helpers
+from ..dataset import DataSet
+from .. import helpers
 
 log = logging.getLogger('OneVsRest')
 
