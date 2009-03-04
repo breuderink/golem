@@ -6,6 +6,6 @@ setup(name='Golem',
   url='www.borisreuderink.nl',
   author='Boris Reuderink',
   author_email='b.reuderink@gmail.com',
-  packages=['golem', 'golem.nodes', 'tests'],
-  py_modules=['runtests']
+  packages=['golem', 'golem.nodes', 'golem.tests'],
+  py_modules=['__init__', 'runtests']
   )
