@@ -62,7 +62,7 @@ def plot_classifier_hyperplane(classifier, fname=None, heat_map=False,
     pylab.contour(X, Y, Z, [0, .5, 1], linewidths=[2, .5, .5], colors='k')
   if heat_map:
     if len(Zs) > 2: raise ValueError, 'Cannot draw a heat map for nclasses > 2'
-    pylab.imshow(Z, origin='lower', cmap=pylab.cm.RdBu, alpha=heat_map_alpha, 
+    pylab.imshow(Z, origin='lower', cmap=pylab.cm.PuOr, alpha=heat_map_alpha, 
       aspect='auto', extent=[X.min(), X.max(), Y.min(), Y.max()])
   if fname:
     pylab.savefig(fname)
