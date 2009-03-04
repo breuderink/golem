@@ -1,7 +1,7 @@
 import unittest
 import sets
 import numpy as np
-from golem import crossval, data
+from .. import crossval, data
 
 class TestCrossValidation(unittest.TestCase):
   def setUp(self):

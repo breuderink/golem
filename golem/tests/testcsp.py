@@ -1,7 +1,7 @@
 import unittest
 import os.path
 import numpy as np
-from golem import DataSet, nodes, helpers, data, plots
+from .. import DataSet, nodes, helpers, data, plots
 
 class TestCSP(unittest.TestCase):
   def setUp(self):

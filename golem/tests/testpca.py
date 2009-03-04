@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from golem import DataSet, nodes
+from .. import DataSet, nodes
 
 class TestPCA(unittest.TestCase):
   def setUp(self):

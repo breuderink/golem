@@ -1,10 +1,13 @@
 #!/usr/bin/env python
-import unittest
-import tests
-import logging
 
-if __name__== '__main__':
+def test():
+  import unittest
+  import golem.tests
+  import logging
   logging.basicConfig(level=logging.WARNING)
-  suite = unittest.defaultTestLoader.loadTestsFromModule(tests)
+  suite = unittest.defaultTestLoader.loadTestsFromModule(golem.tests)
   #suite = unittest.defaultTestLoader.loadTestsFromTestCase(tests.TestDataSet)
   unittest.TextTestRunner(verbosity=1).run(suite)
+
+if __name__=='__main__':
+  test()

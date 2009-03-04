@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from golem import DataSet, data, nodes, loss
+from .. import DataSet, data, nodes, loss
 
 class TestLSReg(unittest.TestCase):
   def setUp(self):

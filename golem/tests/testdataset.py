@@ -2,7 +2,7 @@ import unittest
 import operator
 import numpy as np
 
-from golem import DataSet
+from .. import DataSet
 
 class TestDataSetConstruction(unittest.TestCase):
   def setUp(self):

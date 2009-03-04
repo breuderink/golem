@@ -31,5 +31,3 @@ def build_kernel_matrix(instances_row, instances_col, kernel=None, **params):
       for c in xrange(ncols):
         kernel_matrix[r, c] = kernel(irow[r, :], icol[c, :])
   return kernel_matrix
-
-

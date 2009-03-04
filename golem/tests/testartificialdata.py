@@ -1,7 +1,7 @@
 import unittest
 import os.path
 import numpy as np
-from golem import data, plots
+from .. import data, plots
 
 class TestGaussianData(unittest.TestCase):
   def setUp(self):

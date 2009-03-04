@@ -5,9 +5,8 @@ import numpy as np
 import numpy.linalg as la
 import pylab
 
-from golem import DataSet, loss, data, plots
-from golem.nodes import SVM
-
+from .. import DataSet, loss, data, plots
+from ..nodes import SVM
 
 EPSILON = 1e-8
 

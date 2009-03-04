@@ -3,7 +3,7 @@ import copy
 import logging
 import numpy as np
 
-from golem import nodes, data
+from .. import nodes, data
 
 def svm_critic(d, node):
   return 1 if isinstance(node, nodes.SVM) else 0
