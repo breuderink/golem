@@ -1,17 +1,16 @@
 import numpy as np
 
-def to_one_of_n(ints, nclasses=None):
+def to_one_of_n(ints, class_cols=None):
   '''Convert a list with ints to one-of-N coding for to use in a DataSet.
   Note that the columns correspond to the classes in *sorted* order.
-
   '''
-  a = np.array(ints)
-  classes = np.unique(a)
-  if not nclasses:
-    nclasses = classes.size
-  ys = np.zeros((a.size, nclasses))  
-  for i in range(classes.size):
-    ys[a == classes[i], i] = 1
+  a = np.array(ints, int)
+  classes = np.unique(a) # is automatically sorted
+  if not class_cols:
+    class_cols = classes
+  ys = np.zeros((a.size, len(class_cols)))
+  for i in range(ys.shape[1]):
+    ys[a == class_cols[i], i] = 1
   return ys
 
 def hard_max(xs):

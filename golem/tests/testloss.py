@@ -17,7 +17,7 @@ class TestLoss(unittest.TestCase):
 
     tie_votes = np.array([[-1, -1], [0, 0], [1, 1]])
     self.assert_((helpers.hard_max(tie_votes) == 
-      helpers.to_one_of_n([0, 0, 0], 2)).all())
+      helpers.to_one_of_n([0, 0, 0], [0, 1])).all())
   
   def testClassLoss(self):
     self.assert_((loss.class_loss(self.d) == 

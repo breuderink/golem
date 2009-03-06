@@ -7,5 +7,4 @@ setup(name='golem',
   author='Boris Reuderink',
   author_email='b.reuderink@gmail.com',
   packages=['golem', 'golem.nodes', 'golem.tests'],
-  py_modules=['__init__', 'runtests']
   )
