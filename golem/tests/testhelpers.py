@@ -1,9 +1,10 @@
 import unittest
 import os
 import numpy as np
+from numpy.testing import assert_equal
 from .. import data, helpers, plots, DataSet
 
-class Testroc(unittest.TestCase):
+class TestRoc(unittest.TestCase):
   def setUp(self):
     self.d = data.gaussian_dataset([100, 100])
 
@@ -39,3 +40,23 @@ class Testroc(unittest.TestCase):
   def test_plot(self):
     d = DataSet(np.round(self.d.xs, 1), default=self.d)
     plots.plot_roc(d, os.path.join('tests', 'plots', 'roc.eps'))
+
+class TestOneOfN(unittest.TestCase):
+  def test_simple(self):
+    # test construction with one class
+    assert_equal(helpers.to_one_of_n([0, 0, 0, 0]), np.ones((4, 1)))
+    assert_equal(helpers.to_one_of_n([1, 1, 1]), np.ones((3, 1)))
+
+    # test construction with two classes, cols sorted
+    ys2d_a = helpers.to_one_of_n([0, 1, 1])
+    ys2d_b = helpers.to_one_of_n([1, 2, 0])
+    assert_equal(ys2d_a, np.array([[1, 0], [0, 1], [0, 1]]))
+    assert_equal(ys2d_b, np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]]))
+
+  def test_cols(self):
+    ys = helpers.to_one_of_n([0, 1, 2], [2, 1, 0])
+    assert_equal(ys, np.array([[0, 0, 1], [0, 1, 0], [1, 0, 0]]))
+
+  def test_cols_non_existing(self):
+    ys = helpers.to_one_of_n([0, 1, 2], [5, 6, 7])
+    assert_equal(ys, np.zeros((3, 3)))
