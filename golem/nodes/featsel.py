@@ -31,6 +31,9 @@ class AUCFilter:
     self.aucs = aucs
 
   def test(self, d):
-    feat_lab = [d.feat_lab[i] for i in range(len(d.feat_lab)) \
-      if self.feat_bool[i]]
+    if d.feat_lab != None:
+      feat_lab = [d.feat_lab[i] for i in range(len(d.feat_lab)) \
+        if self.feat_bool[i]]
+    else:
+      feat_lab = None
     return DataSet(xs=d.xs[:, self.feat_bool], feat_lab=feat_lab, default=d)

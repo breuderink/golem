@@ -32,9 +32,9 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertRaises(ValueError, DataSet, xs, ys.tolist(), ids)
     self.assertRaises(ValueError, DataSet, xs, ys, ids.tolist())
     
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, cl_lab = 'c0')
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_lab = 'f0')
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_shape = (1, 1))
+    self.assertRaises(AssertionError, DataSet, xs, ys, ids, cl_lab='c0')
+    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_lab='f0')
+    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_shape=(1, 1))
     
   def test_construction_dims(self):
     xs = np.arange(12).reshape(-1, 1)
@@ -66,7 +66,7 @@ class TestDataSetConstruction(unittest.TestCase):
     dxy = DataSet(xs, ys)
     self.assert_((dxy.ids == np.arange(dxy.ninstances).reshape(-1, 1)).all())
     self.assert_(dxy.cl_lab == ['class0'])
-    self.assert_(dxy.feat_lab == ['feat0'])
+    self.assert_(dxy.feat_lab == None)
     self.assert_(dxy.feat_shape == [1])
     
   def test_from_default(self):
@@ -217,7 +217,7 @@ class TestDataSet(unittest.TestCase):
     '''Test the creation of compound datasets using the add-operator.'''
     ids = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]]).T
     xs, ys = np.random.random((6, 3)), np.ones((6, 3)) 
-    d = DataSet(xs, ys, ids)
+    d = DataSet(xs, ys, ids, feat_lab=['feat%d' for d in range(3)])
 
     da, db = d[:3], d[3:]
     self.assert_(da + db == d)

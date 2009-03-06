@@ -6,7 +6,7 @@ import helpers
 markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']
 
-def scatter_plot(dataset, fname = None):
+def scatter_plot(dataset, fname=None):
   ''' Display the dataset with a scatterplot using Matplotlib/pylab. The user is
   responsible for calling pylab.show() to display the plot.
   '''
@@ -22,8 +22,14 @@ def scatter_plot(dataset, fname = None):
     pylab.scatter(f0, f1, c = color, marker = marker, 
       label = dataset.cl_lab[ci])
   pylab.legend()
-  pylab.xlabel(dataset.feat_lab[0])
-  pylab.ylabel(dataset.feat_lab[1])
+
+  if dataset.feat_lab != None:
+    xlab, ylab = dataset.feat_lab
+  else:
+    xlab, ylab = 'feat0', 'feat1'
+  pylab.xlabel(xlab)
+  pylab.ylabel(ylab)
+
   if fname:
     pylab.savefig(fname)
     pylab.close()

@@ -32,8 +32,7 @@ class DataSet:
       np.arange(self.ninstances).reshape(-1, 1)
     self.cl_lab = cl_lab if cl_lab <> None \
       else ['class%d' % i for i in range(self.nclasses)]
-    self.feat_lab = feat_lab if feat_lab <> None \
-      else ['feat%d' % i for i in range(self.nfeatures)]
+    self.feat_lab = feat_lab
     self.feat_shape = feat_shape if feat_shape <> None \
       else [self.nfeatures]
 
@@ -41,18 +40,19 @@ class DataSet:
       
     if not isinstance(self.ids, np.ndarray):
       raise ValueError, 'Only np.ndarray is supported for ids'
-    if self.ids.ndim <> 2:
+    if self.ids.ndim != 2:
       raise ValueError, 'Only 2d arrays are supported for ids.'
     if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
       raise ValueError, 'Number of rows does not match'
     
-    assert(isinstance(self.cl_lab, list))
-    assert(isinstance(self.feat_lab, list))
-    assert(isinstance(self.feat_shape, list))
+    assert isinstance(self.cl_lab, list), 'Class labels not a list'
+    assert self.feat_lab == None or isinstance(self.feat_lab, list), \
+      'Feature labels not a list'
+    assert isinstance(self.feat_shape, list), 'Feature shape not a list'
 
     # Final integrity test
-    assert(np.unique(self.ids[:,0]).size == self.ninstances)
-    if len(self.feat_lab) <> self.nfeatures:
+    assert np.unique(self.ids[:,0]).size == self.ninstances, 'ids not unique.'
+    if self.feat_lab != None and len(self.feat_lab) <> self.nfeatures:
       raise ValueError, '"%s" does not match #features' % self.feat_lab
     if len(self.cl_lab) <> self.nclasses:
       raise ValueError, 'The number of class labels does not match #classes'
