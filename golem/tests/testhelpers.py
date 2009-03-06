@@ -60,3 +60,7 @@ class TestOneOfN(unittest.TestCase):
   def test_cols_non_existing(self):
     ys = helpers.to_one_of_n([0, 1, 2], [5, 6, 7])
     assert_equal(ys, np.zeros((3, 3)))
+
+  def test_2d_input(self):
+    self.assertRaises(AssertionError, helpers.to_one_of_n, 
+      np.atleast_2d(np.asarray([0, 1, 2])))
