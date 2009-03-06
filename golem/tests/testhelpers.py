@@ -62,5 +62,7 @@ class TestOneOfN(unittest.TestCase):
     assert_equal(ys, np.zeros((3, 3)))
 
   def test_2d_input(self):
-    self.assertRaises(AssertionError, helpers.to_one_of_n, 
-      np.atleast_2d(np.asarray([0, 1, 2])))
+    ok_2d = helpers.to_one_of_n(np.atleast_2d([0, 1, 1]))
+    assert_equal(ok_2d, np.array([[1, 0], [0, 1], [0, 1]]))
+
+    self.assertRaises(AssertionError, helpers.to_one_of_n, np.ones((3, 3)))
