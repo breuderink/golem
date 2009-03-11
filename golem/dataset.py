@@ -7,55 +7,66 @@ class DataSet:
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
     feat_shape=None, default=None):
     '''Create a new dataset.'''
-    if default != None:
-      # Fill in blanks from default DataSet
-      assert(isinstance(default, DataSet))
-      xs = xs if xs != None else default.xs
-      ys = ys if ys != None else default.ys
-      ids = ids if ids != None else default.ids
-      cl_lab = cl_lab if cl_lab != None else default.cl_lab
-      feat_lab = feat_lab if feat_lab != None else default.feat_lab
-      feat_shape = feat_shape if feat_shape != None else default.feat_shape
-      
-    if not isinstance(xs, np.ndarray):
+    # First, take care of xs, ys and ids
+    if default == None:
+      if xs == None: raise ValueError, 'No xs given'
+      if ys == None: raise ValueError, 'No ys given'
+      self.xs, self.ys = xs, ys
+      self.ids = ids if ids != None else\
+        np.arange(self.ninstances).reshape(-1, 1)
+    else:
+      assert isinstance(default, DataSet), 'Default is not a DataSet'
+      self.xs = xs if xs != None else default.xs
+      self.ys = ys if ys != None else default.ys
+      self.ids = ids if ids != None else default.ids
+
+    if not isinstance(self.xs, np.ndarray):
       raise ValueError, 'Only np.ndarray is supported for xs'
-    if xs.ndim != 2:
+    if self.xs.ndim != 2:
       raise ValueError, 'Only 2d arrays are supported for xs. See feat_shape.'
-    if not isinstance(ys, np.ndarray):
+    if not isinstance(self.ys, np.ndarray):
       raise ValueError, 'Only np.ndarray is supported for ys'
-    if ys.ndim != 2:
+    if self.ys.ndim != 2:
       raise ValueError, 'Only 2d arrays are supported for ys.'
-
-    self.xs = xs
-    self.ys = ys
-   
-    self.ids = ids if ids != None else \
-      np.arange(self.ninstances).reshape(-1, 1)
-
     if not isinstance(self.ids, np.ndarray):
       raise ValueError, 'Only np.ndarray is supported for ids'
     if self.ids.ndim != 2:
       raise ValueError, 'Only 2d arrays are supported for ids.'
     if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
       raise ValueError, 'Number of rows does not match'
+    assert np.unique(self.ids[:,0]).size == self.ninstances, \
+      'The ids not unique.'
 
-    self.cl_lab = cl_lab if cl_lab != None \
-      else ['class%d' % i for i in range(self.nclasses)]
-    self.feat_lab = feat_lab
-    self.feat_shape = feat_shape if feat_shape != None \
-      else [self.nfeatures]
+    # Ok, xs, ys, and ids are ok. Now the labels and shapes
+    if default == None:  
+      self.cl_lab = cl_lab if cl_lab != None \
+        else ['class%d' % i for i in range(self.nclasses)]
+      self.feat_lab = feat_lab
+      self.feat_shape = feat_shape if feat_shape != None \
+        else [self.nfeatures]
+    if default != None:
+      self.cl_lab = cl_lab if cl_lab != None else default.cl_lab
+      self.feat_lab = feat_lab if feat_lab != None else default.feat_lab
+      if feat_shape == None:
+        if np.prod(default.feat_shape) != self.nfeatures:
+          self.feat_shape = [self.nfeatures]
+        else:
+          self.feat_shape = default.feat_shape
+      else:
+        self.feat_shape = feat_shape
    
     assert isinstance(self.cl_lab, list), 'Class labels not a list'
     assert self.feat_lab == None or isinstance(self.feat_lab, list), \
       'Feature labels not a list'
     assert isinstance(self.feat_shape, list), 'Feature shape not a list'
 
-    # Final integrity test
-    assert np.unique(self.ids[:,0]).size == self.ninstances, 'ids not unique.'
     if self.feat_lab != None and len(self.feat_lab) != self.nfeatures:
       raise ValueError, '"%s" does not match #features' % self.feat_lab
     if len(self.cl_lab) != self.nclasses:
       raise ValueError, 'The number of class labels does not match #classes'
+    if not np.prod(self.feat_shape) == self.nfeatures:
+      raise ValueError, '%d features does not match feat_shape %s' % \
+        (self.nfeatures, self.feat_shape)
 
   def get_class(self, i):
     return self[self.ys[:, i] == 1]

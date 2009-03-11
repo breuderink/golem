@@ -50,10 +50,18 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertRaises(ValueError, DataSet, xs, ys[:-1, :], ids);
     self.assertRaises(ValueError, DataSet, xs, ys, ids[:-1, :]);
     
-    # raise if .ndim <> 2
+    # raise if .ndim != 2
     self.assertRaises(ValueError, DataSet, xs.flatten(), ys, ids);
     self.assertRaises(ValueError, DataSet, xs, ys.flatten(), ids);
     self.assertRaises(ValueError, DataSet, xs, ys, ids.flatten());
+
+  def test_construction_feat_shape(self):
+    xs = np.arange(12 * 3).reshape(3, -1)
+    ys = np.arange(3).reshape(-1, 1)
+
+    DataSet(xs, ys, feat_shape=[12])
+    DataSet(xs, ys, feat_shape=[1, 12])
+    self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=[1, 1])
   
   def test_defaults(self):
     xs = np.arange(12).reshape(-1, 1)
@@ -75,8 +83,7 @@ class TestDataSetConstruction(unittest.TestCase):
     ys = np.arange(12).reshape(-1, 1)
     ids = np.arange(12).reshape(-1, 1)
 
-    d = DataSet(xs, ys, ids, cl_lab= ['c1'], feat_lab=['f1'], 
-      feat_shape=[1, 11])
+    d = DataSet(xs, ys, ids, cl_lab= ['c1'], feat_lab=['f1'], feat_shape=[1, 1])
 
     # test xs
     d2 = DataSet(xs=np.zeros(xs.shape), default=d)
@@ -98,19 +105,19 @@ class TestDataSetConstruction(unittest.TestCase):
 
     # test cl_lab
     d2 = DataSet(cl_lab=['altc0'], default=d)
-    self.assert_(d.cl_lab <> d2.cl_lab)
+    self.assert_(d.cl_lab != d2.cl_lab)
     d2 = DataSet(cl_lab=None, default=d)
     self.assert_(d.cl_lab == d2.cl_lab)
 
     # test feat_lab
     d2 = DataSet(feat_lab=['altf0'], default=d)
-    self.assert_(d.feat_lab <> d2.feat_lab)
+    self.assert_(d.feat_lab != d2.feat_lab)
     d2 = DataSet(feat_lab=None, default=d)
     self.assert_(d.feat_lab == d2.feat_lab)
     
     # test feat_shape
-    d2 = DataSet(feat_shape=[1, 1], default=d)
-    self.assert_(d.feat_shape <> d2.feat_shape)
+    d2 = DataSet(feat_shape=[1, 1, 1], default=d)
+    self.assert_(d.feat_shape != d2.feat_shape)
     d2 = DataSet(feat_shape=None, default=d)
     self.assert_(d.feat_shape == d2.feat_shape)
   
@@ -140,33 +147,33 @@ class TestDataSet(unittest.TestCase):
       cl_lab=d.cl_lab, feat_shape=d.feat_shape))
 
     # test all kinds of differences
-    self.assert_(d <> DataSet(xs=d.xs+1, default=d))
-    self.assert_(d <> DataSet(ys=d.ys+1, default=d))
-    self.assert_(d <> DataSet(ids=d.ids+1, default=d))
-    self.assert_(d <> DataSet(cl_lab=['a', 'b'], default=d))
-    self.assert_(d <> DataSet(feat_lab=['F1', 'F2', 'F3'], default=d))
-    self.assert_(d <> DataSet(feat_shape=[1, 3], default=d))
+    self.assert_(d != DataSet(xs=d.xs+1, default=d))
+    self.assert_(d != DataSet(ys=d.ys+1, default=d))
+    self.assert_(d != DataSet(ids=d.ids+1, default=d))
+    self.assert_(d != DataSet(cl_lab=['a', 'b'], default=d))
+    self.assert_(d != DataSet(feat_lab=['F1', 'F2', 'F3'], default=d))
+    self.assert_(d != DataSet(feat_shape=[1, 3], default=d))
     
     # test special cases
     self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
       default=d))
-    self.assert_(d <> 3)
+    self.assert_(d != 3)
 
   def test_indexing(self):
     '''Test the indexing of DataSet.'''
     d = self.d
-    self.assert_(d[:] == d)
-    self.assert_(d[0] + d[1] == d)
-    self.assert_(d[:-1] == d[0])
-    self.assert_(d[0].ninstances == 1)
-    self.assert_(d[0].nclasses == d.nclasses)
-    self.assert_(d[0].nfeatures == d.nfeatures)
-    self.assert_(d[-1] == d[d.nclasses - 1])
+    self.assertEqual(d[:], d)
+    self.assertEqual(d[0] + d[1], d)
+    self.assertEqual(d[:-1], d[0])
+    self.assertEqual(d[0].ninstances, 1)
+    self.assertEqual(d[0].nclasses, d.nclasses)
+    self.assertEqual(d[0].nfeatures, d.nfeatures)
+    self.assertEqual(d[-1], d[d.nclasses - 1])
 
     indices = np.arange(d.ninstances)
-    self.assert_(d[indices==1] == d[1])
-    self.assert_(d[indices.tolist()] == d)
-    self.assert_(d[[1]] == d[1])
+    self.assertEqual(d[indices==1], d[1])
+    self.assertEqual(d[indices.tolist()], d)
+    self.assertEqual(d[[1]], d[1])
 
   def test_class_extraction(self):
     '''Test the extraction of a single class from DataSet'''
