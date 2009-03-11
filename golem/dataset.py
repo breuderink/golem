@@ -1,4 +1,5 @@
 import itertools
+import cPickle
 import numpy as np
 import helpers
 
@@ -147,3 +148,18 @@ class DataSet:
       return self.xs.reshape([self.ninstances] + self.feat_shape)
     raise Exception, 'Feature shape is unknown'
     return self.xs.shape[1]
+
+  def save(self, file):
+    f = open(file, 'wb') if isinstance(file, str) else file
+    cPickle.dump(self, f, cPickle.HIGHEST_PROTOCOL)
+    if isinstance(file, str):
+      f.close()
+
+  @classmethod
+  def load(cls, file):
+    f = open(file, 'rb') if isinstance(file, str) else file
+    d = cPickle.load(f)
+    assert isinstance(d, DataSet)
+    if isinstance(file, str):
+      f.close()
+    return d
