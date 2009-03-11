@@ -1,5 +1,6 @@
 import unittest
 import operator
+import tempfile
 import numpy as np
 
 from .. import DataSet
@@ -241,3 +242,15 @@ class TestDataSet(unittest.TestCase):
     # different cl_lab
     self.assertRaises(ValueError, da.__add__,
       DataSet(cl_lab=['c0', 'c1', 'c2'], default=db))
+
+  def test_save_load(self):
+    '''Test loading and saving datasets'''
+    # test round-trip using file objects
+    _, tfname = tempfile.mkstemp('.goldat')
+    self.d.save(open(tfname, 'wb'))
+    self.assertEqual(self.d, DataSet.load(open(tfname, 'rb')))
+
+    # test round-trip using filenames
+    _, tfname = tempfile.mkstemp('.goldat')
+    self.d.save(tfname)
+    self.assertEqual(self.d, DataSet.load(tfname))

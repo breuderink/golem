@@ -1,3 +1,4 @@
+1 Allow > 2D xs in construction of DataSet, and tuple shapes.
 1 Check logging scope/binding!
 1 Change to new-style classes (class A(object):)
 1 Add base-class for Nodes, implement train_ and test_ (like MDP)
