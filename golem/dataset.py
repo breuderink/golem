@@ -7,45 +7,44 @@ class DataSet:
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
     feat_shape=None, default=None):
     '''Create a new dataset.'''
-    if default <> None:
+    if default != None:
       # Fill in blanks from default DataSet
       assert(isinstance(default, DataSet))
-      xs = xs if xs <> None else default.xs
-      ys = ys if ys <> None else default.ys
-      ids = ids if ids <> None else default.ids
-      cl_lab = cl_lab if cl_lab <> None else default.cl_lab
-      feat_lab = feat_lab if feat_lab <> None else default.feat_lab
-      feat_shape = feat_shape if feat_shape <> None else default.feat_shape
+      xs = xs if xs != None else default.xs
+      ys = ys if ys != None else default.ys
+      ids = ids if ids != None else default.ids
+      cl_lab = cl_lab if cl_lab != None else default.cl_lab
+      feat_lab = feat_lab if feat_lab != None else default.feat_lab
+      feat_shape = feat_shape if feat_shape != None else default.feat_shape
       
     if not isinstance(xs, np.ndarray):
       raise ValueError, 'Only np.ndarray is supported for xs'
-    if xs.ndim <> 2:
+    if xs.ndim != 2:
       raise ValueError, 'Only 2d arrays are supported for xs. See feat_shape.'
     if not isinstance(ys, np.ndarray):
       raise ValueError, 'Only np.ndarray is supported for ys'
-    if ys.ndim <> 2:
+    if ys.ndim != 2:
       raise ValueError, 'Only 2d arrays are supported for ys.'
 
     self.xs = xs
     self.ys = ys
-    
-    self.ids = ids if ids <> None else \
+   
+    self.ids = ids if ids != None else \
       np.arange(self.ninstances).reshape(-1, 1)
-    self.cl_lab = cl_lab if cl_lab <> None \
-      else ['class%d' % i for i in range(self.nclasses)]
-    self.feat_lab = feat_lab
-    self.feat_shape = feat_shape if feat_shape <> None \
-      else [self.nfeatures]
 
-    del xs, ys, ids, cl_lab, feat_lab, feat_shape
-      
     if not isinstance(self.ids, np.ndarray):
       raise ValueError, 'Only np.ndarray is supported for ids'
     if self.ids.ndim != 2:
       raise ValueError, 'Only 2d arrays are supported for ids.'
     if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
       raise ValueError, 'Number of rows does not match'
-    
+
+    self.cl_lab = cl_lab if cl_lab != None \
+      else ['class%d' % i for i in range(self.nclasses)]
+    self.feat_lab = feat_lab
+    self.feat_shape = feat_shape if feat_shape != None \
+      else [self.nfeatures]
+   
     assert isinstance(self.cl_lab, list), 'Class labels not a list'
     assert self.feat_lab == None or isinstance(self.feat_lab, list), \
       'Feature labels not a list'
@@ -53,9 +52,9 @@ class DataSet:
 
     # Final integrity test
     assert np.unique(self.ids[:,0]).size == self.ninstances, 'ids not unique.'
-    if self.feat_lab != None and len(self.feat_lab) <> self.nfeatures:
+    if self.feat_lab != None and len(self.feat_lab) != self.nfeatures:
       raise ValueError, '"%s" does not match #features' % self.feat_lab
-    if len(self.cl_lab) <> self.nclasses:
+    if len(self.cl_lab) != self.nclasses:
       raise ValueError, 'The number of class labels does not match #classes'
 
   def get_class(self, i):
@@ -96,13 +95,13 @@ class DataSet:
       return a
 
     # Check shape and labels
-    if (a.nfeatures <> b.nfeatures) or (a.nclasses <> b.nclasses):
+    if (a.nfeatures != b.nfeatures) or (a.nclasses != b.nclasses):
       raise ValueError, 'The #features or #classes do not match'
-    if a.feat_lab <> b.feat_lab:
+    if a.feat_lab != b.feat_lab:
       raise ValueError, 'The feature labels do not match'
-    if a.feat_shape <> b.feat_shape:
+    if a.feat_shape != b.feat_shape:
       raise ValueError, 'The feature shapes do not match'
-    if a.cl_lab <> b.cl_lab:
+    if a.cl_lab != b.cl_lab:
       raise ValueError, 'The class labels do not match'
 
     return DataSet(np.vstack([a.xs, b.xs]), np.vstack([a.ys, b.ys]),
@@ -144,7 +143,7 @@ class DataSet:
   @property
   def nd_xs(self):
     '''Return N-dimensional view of xs'''
-    if self.feat_shape <> None:
+    if self.feat_shape != None:
       return self.xs.reshape([self.ninstances] + self.feat_shape)
     raise Exception, 'Feature shape is unknown'
     return self.xs.shape[1]
