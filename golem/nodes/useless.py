@@ -1,3 +1,4 @@
+import numpy as np
 from ..dataset import DataSet
 
 class PriorClassifier:
@@ -25,6 +26,6 @@ class RandomClassifier:
 
   def test(self, d):
     xs = np.random.random((d.ninstances, self.nclasses))
-    return DataSet(xs, d.ys, d.ids, class_labels=d.class_labels)
+    return DataSet(xs, d.ys, d.ids, cl_lab=d.cl_lab)
 
   def __str__(self): return 'RandomClassifier ()'

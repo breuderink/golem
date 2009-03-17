@@ -13,3 +13,4 @@ from testlsreg import TestLSReg
 from testcsp import TestCSP
 from testhelpers import *
 from testfeatsel import *
+from testcache import *
