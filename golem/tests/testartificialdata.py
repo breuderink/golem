@@ -10,7 +10,7 @@ class TestGaussianData(unittest.TestCase):
 
   def test_scatterplot(self):
     '''Test Gaussian distribution by writing a scatterplot to a file'''
-    plots.scatter_plot(self.d, os.path.join('tests', 'plots',\
+    plots.scatter_plot(self.d, os.path.join('plots',
       'test_gaussian_3_classes.eps'))
   
   def test_ninstances(self):
