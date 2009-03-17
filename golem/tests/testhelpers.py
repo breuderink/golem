@@ -39,7 +39,7 @@ class TestRoc(unittest.TestCase):
 
   def test_plot(self):
     d = DataSet(np.round(self.d.xs, 1), default=self.d)
-    plots.plot_roc(d, os.path.join('tests', 'plots', 'roc.eps'))
+    plots.plot_roc(d, 'roc.eps')
 
 class TestOneOfN(unittest.TestCase):
   def test_simple(self):

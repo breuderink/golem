@@ -43,7 +43,7 @@ class TestCSP(unittest.TestCase):
     d, n = self.d, self.n
     n.train(d)
     d2 = n.test(d)
-    plots.scatter_plot(d2, os.path.join('tests', 'plots', 'csp.eps'))
+    plots.scatter_plot(d2, 'csp.eps')
   
   def test_2d(self):
     '''Test CSP on 2D-shaped features'''
