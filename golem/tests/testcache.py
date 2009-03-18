@@ -54,6 +54,7 @@ class PickleMockNode(object):
 class TestCacheNode(unittest.TestCase):
   def setUp(self):
     self.d = data.gaussian_dataset([10, 10])
+    self.d2 = data.gaussian_dataset([10, 10, 10])
 
   def test_training(self):
     cache_name = tempfile.mkdtemp()
@@ -69,14 +70,24 @@ class TestCacheNode(unittest.TestCase):
     # test second time
     n = PickleMockNode()
     cn = CacheNode(n, cache_name) 
-    cn.train(self.d)
+    d = cn.train(self.d)
+    self.assertEqual(d, self.d)
     self.assert_(cn.node.trained)
     self.assertEqual(cn.node.serialization_count, 1)
 
     # test with different node
     n = PickleMockNode(nid=2)
     cn = CacheNode(n, cache_name) 
-    cn.train(self.d)
+    d = cn.train(self.d)
+    self.assertEqual(d, self.d)
+    self.assert_(cn.node.trained)
+    self.assertEqual(cn.node.serialization_count, 0)
+
+    # test with different dataset
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    d2 = cn.train(self.d2)
+    self.assertEqual(d2, self.d2)
     self.assert_(cn.node.trained)
     self.assertEqual(cn.node.serialization_count, 0)
 
@@ -87,23 +98,35 @@ class TestCacheNode(unittest.TestCase):
     self.failIf(cn.node.tested)
 
     # test first time
-    cn.test(self.d)
+    d = cn.test(self.d)
+    self.assertEqual(d, self.d)
     self.assert_(cn.node.tested)
     self.assertEqual(cn.node.serialization_count, 0)
 
     # test second time
     n = PickleMockNode()
     cn = CacheNode(n, cache_name) 
-    cn.test(self.d)
+    d = cn.test(self.d)
+    self.assertEqual(d, self.d)
     self.assert_(cn.node.tested)
     self.assertEqual(cn.node.serialization_count, 1)
 
     # test with different node
     n = PickleMockNode(nid=2)
     cn = CacheNode(n, cache_name) 
-    cn.test(self.d)
+    d = cn.test(self.d)
+    self.assertEqual(d, self.d)
     self.assert_(cn.node.tested)
     self.assertEqual(cn.node.serialization_count, 0)
+
+    # test with different dataset
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    d2 = cn.test(self.d2)
+    self.assertEqual(d2, self.d2)
+    self.assert_(cn.node.tested)
+    self.assertEqual(cn.node.serialization_count, 0)
+
 
   def test_traintest(self):
     cache_name = tempfile.mkdtemp()

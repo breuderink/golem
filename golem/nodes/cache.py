@@ -35,7 +35,7 @@ class CacheNode:
       d_out = value['d_out']
 
       # make user happy
-      self.log_duration(value['duration'] - duration, value['duration'])
+      self.log_duration(duration, value['duration'])
     else:
       start_time = clock()
       d_out = self.node.train(d) # node *can* change now!
@@ -58,7 +58,7 @@ class CacheNode:
       d_out = value['d_out']
 
       # make user happy
-      self.log_duration(value['duration'] - duration, value['duration'])
+      self.log_duration(duration, value['duration'])
     else:
       start_time = clock()
       d_out = self.node.test(d) # node *can* change now!
