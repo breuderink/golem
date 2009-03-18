@@ -9,3 +9,4 @@ from chain import Chain
 from zscore import ZScore
 from useless import *
 from featsel import *
+from cache import CacheNode
