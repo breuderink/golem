@@ -25,7 +25,12 @@ class CacheNode:
       # make user happy
       saved_s = value['duration'] - duration
       logging.getLogger('golem.nodes.Cache').info(
-        'Cached! Saved %f seconds.' % saved_s)
+        'Cached. Saved %.2f seconds (from %.2f to %.2f).' % (
+        saved_s, value['duration'], duration))
+      if saved_s < 0:
+        logging.getLogger('golem.nodes.Cache').warning(
+        'Cashing took %.2f seconds longer! (from %.2f to %.2f).' % (
+        -saved_s, value['duration'], duration))
     else:
       start_time = clock()
       d_out = self.node.train(d) # node *can* change now!
