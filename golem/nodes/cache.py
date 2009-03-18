@@ -27,22 +27,7 @@ class CacheNode:
     (node_hash, d_hash) -> dict
     '''
     key = 'train' + CacheNode.calc_hash(d) + CacheNode.calc_hash(self.node)
-    if self.cache.has(key):
-      start_time = clock()
-      value = self.cache.get(key)
-      duration = clock() - start_time
-      self.node = value['trained_node']
-      d_out = value['d_out']
-
-      # make user happy
-      self.log_duration(duration, value['duration'])
-    else:
-      start_time = clock()
-      d_out = self.node.train(d) # node *can* change now!
-      duration = clock() - start_time
-      value = {'trained_node': self.node, 'd_out': d_out, 'duration': duration}
-      self.cache.add(key, value)
-    return d_out
+    return self.cached_call(key, self.node.train, d)
 
   def test(self, d):
     '''
@@ -50,20 +35,24 @@ class CacheNode:
     (node_hash, d_hash) -> dict
     '''
     key = 'test' + CacheNode.calc_hash(d) + CacheNode.calc_hash(self.node)
+    func = self.node.test
+    return self.cached_call(key, self.node.test, d)
+
+  def cached_call(self, key, func, d):
     if self.cache.has(key):
       start_time = clock()
       value = self.cache.get(key)
       duration = clock() - start_time
-      self.node = value['test_node']
+      self.node = value['node']
       d_out = value['d_out']
 
       # make user happy
       self.log_duration(duration, value['duration'])
     else:
       start_time = clock()
-      d_out = self.node.test(d) # node *can* change now!
+      d_out = func(d) # node *can* change now!
       duration = clock() - start_time
-      value = {'test_node': self.node, 'd_out': d_out, 'duration': duration}
+      value = {'node': self.node, 'd_out': d_out, 'duration': duration}
       self.cache.add(key, value)
     return d_out
 
