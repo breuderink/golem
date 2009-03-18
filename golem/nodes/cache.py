@@ -13,13 +13,20 @@ class CacheNode:
 
   def log_duration(self, cached_time, uncached_time):
     saved_time = uncached_time - cached_time
-    logging.getLogger('golem.nodes.Cache').info(
-      'Cached. Saved %.2f seconds (from %.2f to %.2f).' % (
-      saved_time, uncached_time, cached_time))
-    if saved_time < 0:
+    if saved_time > 0:
+      gain = uncached_time / (cached_time + 1e-8)
+      if uncached_time == 0:
+        uncached_time += .0001
+      logging.getLogger('golem.nodes.Cache').info(
+        'Caching saved %.2f seconds (%.4g times faster).' % (
+        saved_time, gain))
+    elif saved_time == 0:
+      logging.getLogger('golem.nodes.Cache').info(
+        'Caching saved %.2f seconds.' % saved_time)
+    else:
       logging.getLogger('golem.nodes.Cache').warning(
-      'Cashing took %.2f seconds longer! (from %.2f to %.2f).' % (
-      -saved_time, uncached_time, cached_time))
+        'Caching took %.2f seconds (from %.2f to %.2f).' % (
+        saved_time, uncached_time, cached_time))
 
   def train(self, d):
     '''
