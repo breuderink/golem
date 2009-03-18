@@ -7,14 +7,26 @@ class CacheNode:
     self.node = node
     self.cache = DirCache(cachedir)
 
+  @classmethod
+  def calc_hash(cls, d):
+    return sha1(cPickle.dumps(d, cPickle.HIGHEST_PROTOCOL)).hexdigest()
+
+  def log_duration(self, cached_time, uncached_time):
+    saved_time = uncached_time - cached_time
+    logging.getLogger('golem.nodes.Cache').info(
+      'Cached. Saved %.2f seconds (from %.2f to %.2f).' % (
+      saved_time, uncached_time, cached_time))
+    if saved_time < 0:
+      logging.getLogger('golem.nodes.Cache').warning(
+      'Cashing took %.2f seconds longer! (from %.2f to %.2f).' % (
+      -saved_time, uncached_time, cached_time))
+
   def train(self, d):
     '''
     Trains the node, but uses cached node and results if possible.
     (node_hash, d_hash) -> dict
     '''
-    d_hash = sha1(cPickle.dumps(d)).hexdigest()
-    node_hash = sha1(cPickle.dumps(d)).hexdigest()
-    key = 'train' + node_hash + d_hash
+    key = 'train' + CacheNode.calc_hash(d) + CacheNode.calc_hash(self.node)
     if self.cache.has(key):
       start_time = clock()
       value = self.cache.get(key)
@@ -23,14 +35,7 @@ class CacheNode:
       d_out = value['d_out']
 
       # make user happy
-      saved_s = value['duration'] - duration
-      logging.getLogger('golem.nodes.Cache').info(
-        'Cached. Saved %.2f seconds (from %.2f to %.2f).' % (
-        saved_s, value['duration'], duration))
-      if saved_s < 0:
-        logging.getLogger('golem.nodes.Cache').warning(
-        'Cashing took %.2f seconds longer! (from %.2f to %.2f).' % (
-        -saved_s, value['duration'], duration))
+      self.log_duration(value['duration'] - duration, value['duration'])
     else:
       start_time = clock()
       d_out = self.node.train(d) # node *can* change now!
@@ -44,29 +49,21 @@ class CacheNode:
     Test using the node, but uses cached node and results if possible.
     (node_hash, d_hash) -> dict
     '''
-    d_hash = sha1(cPickle.dumps(d)).hexdigest()
-    node_hash = sha1(cPickle.dumps(d)).hexdigest()
-    key = 'test' + node_hash + d_hash
+    key = 'test' + CacheNode.calc_hash(d) + CacheNode.calc_hash(self.node)
     if self.cache.has(key):
       start_time = clock()
       value = self.cache.get(key)
       duration = clock() - start_time
+      self.node = value['test_node']
       d_out = value['d_out']
 
       # make user happy
-      saved_s = value['duration'] - duration
-      logging.getLogger('golem.nodes.Cache').info(
-        'Cached. Saved %.2f seconds (from %.2f to %.2f).' % (
-        saved_s, value['duration'], duration))
-      if saved_s < 0:
-        logging.getLogger('golem.nodes.Cache').warning(
-        'Cashing took %.2f seconds longer! (from %.2f to %.2f).' % (
-        -saved_s, value['duration'], duration))
+      self.log_duration(value['duration'] - duration, value['duration'])
     else:
       start_time = clock()
       d_out = self.node.test(d) # node *can* change now!
       duration = clock() - start_time
-      value = {'d_out': d_out, 'duration': duration}
+      value = {'test_node': self.node, 'd_out': d_out, 'duration': duration}
       self.cache.add(key, value)
     return d_out
 

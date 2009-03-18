@@ -1,4 +1,4 @@
-import unittest, tempfile, cPickle
+import unittest, tempfile, cPickle, copy
 from ..nodes.cache import DirCache, CacheNode
 from ..nodes import PriorClassifier, RandomClassifier
 from .. import data
@@ -28,51 +28,115 @@ class TestDirCache(unittest.TestCase):
     for i in range(20):
       self.assertEqual(fc2.get(i), range(i))
 
+class PickleMockNode(object):
+  def __init__(self, nid=0):
+    self.serialization_count = 0
+    self.id = nid
+    self.trained = False
+    self.tested = False
+
+  def train(self, d):
+    self.trained = True
+    return d
+
+  def test(self, d):
+    self.tested = True
+    return d
+
+  def __setstate__(self, state):
+    self.__dict__ = state
+    self.serialization_count += 1
+
+  def __str__(self):
+    return 'I was pickled %d times' % self.serialization_count
+
+
 class TestCacheNode(unittest.TestCase):
   def setUp(self):
     self.d = data.gaussian_dataset([10, 10])
 
-  def test_train(self):
+  def test_training(self):
     cache_name = tempfile.mkdtemp()
-    n0 = PriorClassifier()
-    n1 = PriorClassifier()
-    cn1 = CacheNode(n1, cache_name)
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    self.failIf(cn.node.trained)
 
-    # test construction
-    self.assertEqual(id(cn1.node), id(n1))
-    self.assertEqual(cPickle.dumps(cn1.node), cPickle.dumps(n0))
+    # test first time
+    cn.train(self.d)
+    self.assert_(cn.node.trained)
+    self.assertEqual(cn.node.serialization_count, 0)
 
-    # test that training modifies node
-    d_out1 = cn1.train(self.d)
-    self.failIfEqual(cPickle.dumps(cn1.node), cPickle.dumps(n0))
-    self.assertEqual(id(cn1.node), id(n1))
+    # test second time
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    cn.train(self.d)
+    self.assert_(cn.node.trained)
+    self.assertEqual(cn.node.serialization_count, 1)
 
-    # create second CacheNode
-    n2 = PriorClassifier()
-    cn2 = CacheNode(n2, cache_name)
-    self.assertEqual(cPickle.dumps(cn2.node), cPickle.dumps(n0))
+    # test with different node
+    n = PickleMockNode(nid=2)
+    cn = CacheNode(n, cache_name) 
+    cn.train(self.d)
+    self.assert_(cn.node.trained)
+    self.assertEqual(cn.node.serialization_count, 0)
 
-    # test cached training
-    d_out2 = cn2.train(self.d)
-    self.failIfEqual(id(cn2.node), id(n2))
-    self.assertEqual(d_out1, d_out2)
-    self.assertEqual(cPickle.dumps(cn1.node), cPickle.dumps(cn2.node))
-
-  def test_test(self):
+  def test_testing(self):
     cache_name = tempfile.mkdtemp()
-    n0 = RandomClassifier()
-    n1 = RandomClassifier()
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    self.failIf(cn.node.tested)
 
-    # fill cache
-    cn1 = CacheNode(n1, cache_name)
-    cn1.train(self.d)
-    d_out1 = cn1.test(self.d)
+    # test first time
+    cn.test(self.d)
+    self.assert_(cn.node.tested)
+    self.assertEqual(cn.node.serialization_count, 0)
 
-    # create second CacheNode
-    n2 = RandomClassifier()
-    cn2 = CacheNode(n1, cache_name)
-    cn2.train(self.d)
-    d_out2 = cn2.test(self.d)
+    # test second time
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    cn.test(self.d)
+    self.assert_(cn.node.tested)
+    self.assertEqual(cn.node.serialization_count, 1)
 
-    # compare results
-    self.assertEqual(cPickle.dumps(d_out1), cPickle.dumps(d_out2))
+    # test with different node
+    n = PickleMockNode(nid=2)
+    cn = CacheNode(n, cache_name) 
+    cn.test(self.d)
+    self.assert_(cn.node.tested)
+    self.assertEqual(cn.node.serialization_count, 0)
+
+  def test_traintest(self):
+    cache_name = tempfile.mkdtemp()
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    self.failIf(cn.node.trained)
+    self.failIf(cn.node.tested)
+
+    # test training, testing not cached
+    cn.train(self.d)
+    self.assert_(cn.node.trained)
+    self.assertEqual(cn.node.serialization_count, 0)
+
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    cn.test(self.d)
+    self.assert_(cn.node.tested)
+    self.assertEqual(cn.node.serialization_count, 0)
+
+  def test_testtrain(self):
+    cache_name = tempfile.mkdtemp()
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    self.failIf(cn.node.trained)
+    self.failIf(cn.node.tested)
+
+    # test training, testing not cached
+    cn.test(self.d)
+    self.assert_(cn.node.tested)
+    self.assertEqual(cn.node.serialization_count, 0)
+
+    n = PickleMockNode()
+    cn = CacheNode(n, cache_name) 
+    cn.train(self.d)
+    self.assert_(cn.node.trained)
+    self.assertEqual(cn.node.serialization_count, 0)
