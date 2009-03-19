@@ -31,7 +31,7 @@ class CacheNode:
     Trains the node, but uses cached node and results if possible.
     (node_hash, d_hash) -> dict
     '''
-    key = 'train' + CacheNode.calc_hash(d) + CacheNode.calc_hash(self.node)
+    key = 'train' + d.hash() + CacheNode.calc_hash(self.node)
     return self.cached_call(key, self.node.train, d)
 
   def test(self, d):
@@ -39,7 +39,7 @@ class CacheNode:
     Test using the node, but uses cached node and results if possible.
     (node_hash, d_hash) -> dict
     '''
-    key = 'test' + CacheNode.calc_hash(d) + CacheNode.calc_hash(self.node)
+    key = 'test' + d.hash() + CacheNode.calc_hash(self.node)
     func = self.node.test
     return self.cached_call(key, self.node.test, d)
 

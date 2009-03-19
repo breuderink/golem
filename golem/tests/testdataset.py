@@ -20,6 +20,15 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d.nclasses, 2)
     self.assert_((d.xs == xs).all())
     self.assert_((d.ys == ys).all())
+
+  def test_construction_empty(self):
+    xs = np.zeros((0, 0))
+    ys = np.zeros((0, 0))
+    d = DataSet(xs, ys)
+    self.assertEqual(d.ninstances, 0)
+    self.assertEqual(d.ninstances_per_class, [])
+    self.assertEqual(d.nfeatures, 0)
+    self.assertEqual(d.nclasses, 0)
     
   def test_construction_types(self):
     xs = np.arange(12).reshape(-1, 1)
@@ -147,17 +156,36 @@ class TestDataSet(unittest.TestCase):
       cl_lab=d.cl_lab, feat_shape=d.feat_shape))
 
     # test all kinds of differences
-    self.assert_(d != DataSet(xs=d.xs+1, default=d))
-    self.assert_(d != DataSet(ys=d.ys+1, default=d))
-    self.assert_(d != DataSet(ids=d.ids+1, default=d))
-    self.assert_(d != DataSet(cl_lab=['a', 'b'], default=d))
-    self.assert_(d != DataSet(feat_lab=['F1', 'F2', 'F3'], default=d))
-    self.assert_(d != DataSet(feat_shape=[1, 3], default=d))
+    self.failIfEqual(d, DataSet(xs=d.xs+1, default=d))
+    self.failIfEqual(d, DataSet(ys=d.ys+1, default=d))
+    self.failIfEqual(d, DataSet(ids=d.ids+1, default=d))
+    self.failIfEqual(d, DataSet(cl_lab=['a', 'b'], default=d))
+    self.failIfEqual(d, DataSet(feat_lab=['F1', 'F2', 'F3'], default=d))
+    self.failIfEqual(d, DataSet(feat_shape=[1, 3], default=d))
     
     # test special cases
-    self.assert_(d == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
+    self.assertEqual(d, DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
       default=d))
     self.assert_(d != 3)
+
+  def test_hash(self):
+    d = self.d
+    self.assert_(d.hash() == d.hash())
+    self.assert_(d.hash() == DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
+      cl_lab=d.cl_lab, feat_shape=d.feat_shape).hash())
+
+    # test all kinds of differences
+    self.failIfEqual(d.hash(), DataSet(xs=d.xs+1, default=d).hash())
+    self.failIfEqual(d.hash(), DataSet(ys=d.ys+1, default=d).hash())
+    self.failIfEqual(d.hash(), DataSet(ids=d.ids+1, default=d).hash())
+    self.failIfEqual(d.hash(), DataSet(cl_lab=['a', 'b'], default=d).hash())
+    self.failIfEqual(d.hash(), DataSet(feat_lab=['F1', 'F2', 'F3'], 
+      default=d).hash())
+    self.failIfEqual(d.hash(), DataSet(feat_shape=[1, 3], default=d).hash())
+    
+    # test special cases
+    self.assert_(d.hash() == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
+      default=d).hash())
 
   def test_indexing(self):
     '''Test the indexing of DataSet.'''

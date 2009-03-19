@@ -1,5 +1,6 @@
 import itertools
 import cPickle
+from hashlib import sha1
 import numpy as np
 import helpers
 
@@ -128,6 +129,18 @@ class DataSet:
     
   def __ne__(a, b):
     return not a == b
+
+  def hash(self):
+    '''
+    Return a sha1 hash for caching. Does not return a integer as required
+    by dictionaries and sets (and is therefore not named __hash__).
+    '''
+    hash = sha1()
+    hash.update(self.xs.view(np.uint8))
+    hash.update(self.ys.view(np.uint8))
+    hash.update(self.ids.view(np.uint8))
+    hash.update(cPickle.dumps((self.feat_lab, self.cl_lab, self.feat_shape)))
+    return hash.digest()
     
   @property
   def nclasses(self):
@@ -143,6 +156,8 @@ class DataSet:
     
   @property
   def ninstances_per_class(self):
+    if self.ninstances == 0:
+      return []
     return np.sum(helpers.hard_max(self.ys), axis=0).astype(int).tolist()
 
   @property
