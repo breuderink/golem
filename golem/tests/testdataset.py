@@ -45,6 +45,7 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, cl_lab='c0')
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_lab='f0')
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_shape=(1, 1))
+    self.assertRaises(AssertionError, DataSet, xs, ys, ids, extra='baz')
     
   def test_construction_dims(self):
     xs = np.arange(12).reshape(-1, 1)
@@ -86,13 +87,15 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assert_(dxy.cl_lab == ['class0'])
     self.assert_(dxy.feat_lab == None)
     self.assert_(dxy.feat_shape == [1])
+    self.assert_(dxy.extra == {})
     
   def test_from_default(self):
     xs = np.arange(12).reshape(-1, 1)
     ys = np.arange(12).reshape(-1, 1)
     ids = np.arange(12).reshape(-1, 1)
 
-    d = DataSet(xs, ys, ids, cl_lab= ['c1'], feat_lab=['f1'], feat_shape=[1, 1])
+    d = DataSet(xs, ys, ids, cl_lab= ['c1'], feat_lab=['f1'], 
+      feat_shape=[1, 1], extra={'foo':'bar'})
 
     # test xs
     d2 = DataSet(xs=np.zeros(xs.shape), default=d)
@@ -129,6 +132,12 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assert_(d.feat_shape != d2.feat_shape)
     d2 = DataSet(feat_shape=None, default=d)
     self.assert_(d.feat_shape == d2.feat_shape)
+
+    # test extra
+    d2 = DataSet(extra={'foo':'baz'}, default=d)
+    self.assert_(d.extra != d2.extra)
+    d2 = DataSet(extra=None, default=d)
+    self.assert_(d.extra == d2.extra)
   
   def test_integrity(self):
     xs = np.arange(12).reshape(-1, 1)
@@ -147,13 +156,13 @@ class TestDataSet(unittest.TestCase):
     ys = np.array([[0, 1], [1, 0]])
     ids = np.array([[3], [4]])
     self.d = DataSet(xs, ys, ids, feat_lab=['f1', 'f2', 'f3'], 
-      cl_lab=['A', 'B'], feat_shape=[3, 1])
+      cl_lab=['A', 'B'], feat_shape=[3, 1], extra={'foo':'bar'})
       
   def test_equality(self):
     d = self.d
     self.assert_(d == d)
     self.assert_(d == DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
-      cl_lab=d.cl_lab, feat_shape=d.feat_shape))
+      cl_lab=d.cl_lab, feat_shape=d.feat_shape, extra=d.extra))
 
     # test all kinds of differences
     self.failIfEqual(d, DataSet(xs=d.xs+1, default=d))
@@ -162,6 +171,7 @@ class TestDataSet(unittest.TestCase):
     self.failIfEqual(d, DataSet(cl_lab=['a', 'b'], default=d))
     self.failIfEqual(d, DataSet(feat_lab=['F1', 'F2', 'F3'], default=d))
     self.failIfEqual(d, DataSet(feat_shape=[1, 3], default=d))
+    self.failIfEqual(d, DataSet(extra={'foo':'baz'}, default=d))
     
     # test special cases
     self.assertEqual(d, DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
@@ -171,8 +181,7 @@ class TestDataSet(unittest.TestCase):
   def test_hash(self):
     d = self.d[::2] # noncontiguous arrays can pose a problem
     self.assert_(d.hash() == d.hash())
-    self.assert_(d.hash() == DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
-      cl_lab=d.cl_lab, feat_shape=d.feat_shape).hash())
+    self.assert_(d.hash() == DataSet(default=d).hash())
 
     # test all kinds of differences
     self.failIfEqual(d.hash(), DataSet(xs=d.xs+1, default=d).hash())
@@ -182,6 +191,7 @@ class TestDataSet(unittest.TestCase):
     self.failIfEqual(d.hash(), DataSet(feat_lab=['F1', 'F2', 'F3'], 
       default=d).hash())
     self.failIfEqual(d.hash(), DataSet(feat_shape=[1, 3], default=d).hash())
+    self.failIfEqual(d.hash(), DataSet(extra={'foo':'baz'}, default=d).hash())
     
     # test special cases
     self.assert_(d.hash() == DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
@@ -211,7 +221,7 @@ class TestDataSet(unittest.TestCase):
     self.assert_(dA == d[1])
     self.assert_(dB == d[0])
 
-  def test_ndxs(self):
+  def test_nd_xs(self):
     '''Test multidimensional xs'''
     xs = np.arange(100).reshape(10, 10)
     ys = np.ones((10, 1))
@@ -277,6 +287,10 @@ class TestDataSet(unittest.TestCase):
     # different cl_lab
     self.assertRaises(ValueError, da.__add__,
       DataSet(cl_lab=['c0', 'c1', 'c2'], default=db))
+
+    # different extra
+    self.assertRaises(ValueError, da.__add__,
+      DataSet(extra={'foo':'baz'}, default=db))
 
   def test_save_load(self):
     '''Test loading and saving datasets'''

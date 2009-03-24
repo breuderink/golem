@@ -6,7 +6,7 @@ import helpers
 
 class DataSet:
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
-    feat_shape=None, default=None):
+    feat_shape=None, extra=None, default=None):
     '''Create a new dataset.'''
     # First, take care of xs, ys and ids
     if default == None:
@@ -38,13 +38,14 @@ class DataSet:
     assert np.unique(self.ids[:,0]).size == self.ninstances, \
       'The ids not unique.'
 
-    # Ok, xs, ys, and ids are ok. Now the labels and shapes
+    # Ok, xs, ys, and ids are ok. Now the labels, shapes and extras
     if default == None:  
       self.cl_lab = cl_lab if cl_lab != None \
         else ['class%d' % i for i in range(self.nclasses)]
       self.feat_lab = feat_lab
       self.feat_shape = feat_shape if feat_shape != None \
         else [self.nfeatures]
+      self.extra = extra if extra != None else {}
     else:
       self.cl_lab = cl_lab if cl_lab != None else default.cl_lab
       self.feat_lab = feat_lab if feat_lab != None else default.feat_lab
@@ -55,11 +56,13 @@ class DataSet:
           self.feat_shape = default.feat_shape
       else:
         self.feat_shape = feat_shape
+      self.extra = extra if extra != None else default.extra
    
     assert isinstance(self.cl_lab, list), 'Class labels not a list'
     assert self.feat_lab == None or isinstance(self.feat_lab, list), \
       'Feature labels not a list'
     assert isinstance(self.feat_shape, list), 'Feature shape not a list'
+    assert isinstance(self.extra, dict), 'Keyword extra not a dict'
 
     if self.feat_lab != None and len(self.feat_lab) != self.nfeatures:
       raise ValueError, '"%s" does not match #features' % self.feat_lab
@@ -115,6 +118,8 @@ class DataSet:
       raise ValueError, 'The feature shapes do not match'
     if a.cl_lab != b.cl_lab:
       raise ValueError, 'The class labels do not match'
+    if a.extra != b.extra:
+      raise ValueError, 'The class extra attributes do not match'
 
     return DataSet(np.vstack([a.xs, b.xs]), np.vstack([a.ys, b.ys]),
       ids=np.vstack([a.ids, b.ids]), default=a)
@@ -123,7 +128,8 @@ class DataSet:
     if isinstance(b, DataSet):
       return (a.xs == b.xs).all() and (a.ys == b.ys).all() and \
         (a.ids == b.ids).all() and a.feat_lab == b.feat_lab and \
-        a.cl_lab == b.cl_lab and a.feat_shape == b.feat_shape
+        a.cl_lab == b.cl_lab and a.feat_shape == b.feat_shape and\
+        a.extra == b.extra
 
     return False
     
@@ -139,7 +145,8 @@ class DataSet:
     hash.update(np.ascontiguousarray(self.xs).view(np.uint8))
     hash.update(np.ascontiguousarray(self.ys).view(np.uint8))
     hash.update(np.ascontiguousarray(self.ids).view(np.uint8))
-    hash.update(cPickle.dumps((self.feat_lab, self.cl_lab, self.feat_shape)))
+    hash.update(cPickle.dumps((self.feat_lab, self.cl_lab, self.feat_shape,
+      self.extra)))
     return hash.digest()
     
   @property
