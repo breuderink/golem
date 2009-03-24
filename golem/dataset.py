@@ -45,7 +45,7 @@ class DataSet:
       self.feat_lab = feat_lab
       self.feat_shape = feat_shape if feat_shape != None \
         else [self.nfeatures]
-    if default != None:
+    else:
       self.cl_lab = cl_lab if cl_lab != None else default.cl_lab
       self.feat_lab = feat_lab if feat_lab != None else default.feat_lab
       if feat_shape == None:
