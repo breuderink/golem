@@ -169,7 +169,7 @@ class TestDataSet(unittest.TestCase):
     self.assert_(d != 3)
 
   def test_hash(self):
-    d = self.d
+    d = self.d[::2] # noncontiguous arrays can pose a problem
     self.assert_(d.hash() == d.hash())
     self.assert_(d.hash() == DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
       cl_lab=d.cl_lab, feat_shape=d.feat_shape).hash())

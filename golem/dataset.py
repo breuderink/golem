@@ -136,9 +136,9 @@ class DataSet:
     by dictionaries and sets (and is therefore not named __hash__).
     '''
     hash = sha1()
-    hash.update(self.xs.view(np.uint8))
-    hash.update(self.ys.view(np.uint8))
-    hash.update(self.ids.view(np.uint8))
+    hash.update(np.ascontiguousarray(self.xs).view(np.uint8))
+    hash.update(np.ascontiguousarray(self.ys).view(np.uint8))
+    hash.update(np.ascontiguousarray(self.ids).view(np.uint8))
     hash.update(cPickle.dumps((self.feat_lab, self.cl_lab, self.feat_shape)))
     return hash.digest()
     

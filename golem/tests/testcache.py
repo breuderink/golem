@@ -127,7 +127,6 @@ class TestCacheNode(unittest.TestCase):
     self.assert_(cn.node.tested)
     self.assertEqual(cn.node.serialization_count, 0)
 
-
   def test_traintest(self):
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
