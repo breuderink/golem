@@ -94,9 +94,9 @@ class DataSet:
     return self.ninstances
 
   def __str__(self):
-    return 'DataSet with %d instances, %d features, %d classes: %s' % \
-      (self.ninstances, self.nfeatures, self.nclasses, 
-      repr(self.ninstances_per_class))
+    return ('DataSet with %d instances, %d features, %d classes: %s, '
+      'extras: %s') % (self.ninstances, self.nfeatures, self.nclasses, 
+      repr(self.ninstances_per_class), repr(self.extra.keys()))
 
   def __add__(a, b):
     '''Create a new DataSet by adding the instances of b to a'''

@@ -256,8 +256,8 @@ class TestDataSet(unittest.TestCase):
 
   def test_str(self):
     '''Test string representation.'''
-    self.assertEqual('DataSet with 2 instances, 3 features, 2 classes: [1, 1]',
-      str(self.d))
+    self.assertEqual("DataSet with 2 instances, 3 features, 2 classes: [1, 1]"
+      ", extras: ['foo']", str(self.d))
 
   def test_add(self):
     '''Test the creation of compound datasets using the add-operator.'''
