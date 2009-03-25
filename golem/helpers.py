@@ -32,7 +32,7 @@ def roc(scores, labels):
   FPs = np.cumsum(labels <> 1) / np.sum(labels <> 1).astype(float)
   
   # handle equal scoress
-  ui = np.concatenate([np.diff(scores), np.array([1])]) <> 0
+  ui = np.concatenate([np.diff(scores), np.array([1])]) != 0
   TPs, FPs = TPs[ui], FPs[ui]
 
   # add (0, 0) to ROC
@@ -41,5 +41,11 @@ def roc(scores, labels):
   return (TPs, FPs)
 
 def auc(scores, labels):
-  TPs, FPs = roc(scores, labels)
+  TPs, FPs = roc(np.asarray(scores), np.asarray(labels))
   return np.trapz(TPs, FPs)
+
+def auc_confidence(N, rho=.5, delta=.05):
+  '''Calculate the confidence interval epsilon for the AUC statistic.
+  N is the number if instances, rho is the percentage of *positive* instances,
+  and delta is the confidence interval (.05)'''
+  return np.sqrt(np.log(2. / delta) / (2 * rho * (1 - rho) * N))
