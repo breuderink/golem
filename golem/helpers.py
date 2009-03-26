@@ -41,6 +41,7 @@ def roc(scores, labels):
   return (TPs, FPs)
 
 def auc(scores, labels):
+  assert len(np.unique(labels)) == 2
   TPs, FPs = roc(np.asarray(scores), np.asarray(labels))
   return np.trapz(TPs, FPs)
 

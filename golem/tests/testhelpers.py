@@ -74,6 +74,16 @@ class TestAUC(unittest.TestCase):
     self.assertEqual(auc([1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 1, 1]), 0)
     self.assertEqual(auc([1, 0, 1, 0, 1, 0], [1, 1, 1, 1, 0, 0]), .5)
 
+    # test symmetry and bounds
+    N = 100
+    for rho in [.1, .3, .5]:
+      for i in range(20):
+        xs = np.random.random(N)
+        ys = (np.linspace(0, 1, N) <= rho).round()
+        self.assertAlmostEqual(auc(xs, ys), 1-auc(xs, np.abs(ys-1)))
+        self.assert_(0 <= auc(xs, ys) <= 1)
+
+
   def test_AUC_confidence(self):
     # we do not know much, but we can test for trends
     self.assert_(auc_confidence(1) > auc_confidence(100))
@@ -81,5 +91,25 @@ class TestAUC(unittest.TestCase):
     self.assert_(auc_confidence(100, delta=1e-8) > auc_confidence(100))
 
     # and symmetry
-    self.assertAlmostEqual(auc_confidence(100, rho=2./3),
-      auc_confidence(100, rho=1./3))
+    for rho in [.01, .1, .5]:
+      self.assertAlmostEqual(auc_confidence(100, rho=rho),
+        auc_confidence(100, rho=1-rho))
+
+  def test_monte_carlo(self):
+    SAMPLES = 100
+    for N in [100, 1000]:
+      for rho in [0.1, .5, .9]:
+        xs = np.random.random(N)
+        ys = (np.linspace(0, 1, N) <= rho).round()
+        self.assertEqual(ys.mean(), rho)
+        aucs = []
+        for i in range(SAMPLES):
+          np.random.shuffle(ys)
+          aucs.append(auc(xs, ys))
+        for delta in [.95, .05, .001, .0001]:
+          dev = np.abs(np.array(aucs) - 0.5)
+          epsilon = auc_confidence(N, rho, delta)
+          e_epsilon = sorted(dev)[int(SAMPLES * (1-delta))]
+          e_p = np.mean(dev > epsilon)
+          self.assert_(e_p <= delta, 
+            'empirical p (=%f) > delta (=%f)' % (e_p, delta))
