@@ -58,7 +58,7 @@ def classifier_grid(classifier):
   return (X, Y, Zs)
 
 def plot_classifier_hyperplane(classifier, fname=None, heat_map=False, 
-  heat_map_alpha=0.8):
+  heat_map_alpha=1):
   '''
   Plot the decision-function of a classifier. The labels of the contours can
   be enabled with contour_label, plotting the heatmap can be disabled with the
