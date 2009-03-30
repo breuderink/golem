@@ -1,3 +1,5 @@
+1 Which class is the target for AUCs? ys[:,1] or ys[:0] -> Really important!
+2 grep for ).all(), replace with np.testing
 1 Add n-D feature labels.
 1 Change feat-shape to tuples for numpy consistency.
 1 Check logging scope/binding!
