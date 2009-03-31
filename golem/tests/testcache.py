@@ -5,13 +5,9 @@ from .. import data
 
 class TestDirCache(unittest.TestCase):
   def setUp(self):
-    logging.getLogger('golem.nodes.Cache').setLevel(logging.ERROR)
     self.file_cache = DirCache(tempfile.mkdtemp())
     for i in range(20):
       self.file_cache.add(i, range(i))
-  def tearDown(self):
-    logging.getLogger('golem.nodes.Cache').setLevel(logging.WARNING)
-
 
   def test_get(self):
     for i in range(20):
@@ -59,6 +55,11 @@ class TestCacheNode(unittest.TestCase):
   def setUp(self):
     self.d = data.gaussian_dataset([10, 10])
     self.d2 = data.gaussian_dataset([10, 10, 10])
+    logging.getLogger('golem.nodes.Cache').setLevel(logging.ERROR)
+
+  def tearDown(self):
+    logging.getLogger('golem.nodes.Cache').setLevel(logging.WARNING)
+    pass
 
   def test_training(self):
     cache_name = tempfile.mkdtemp()

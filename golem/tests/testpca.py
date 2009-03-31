@@ -16,15 +16,13 @@ class TestPCA(unittest.TestCase):
     n.train(d)
     d2 = n.test(d)
 
-    self.assert_(d2.nfeatures == d.nfeatures)
-    self.assert_(d2.nclasses == d.nclasses)
-    self.assert_(d2.ninstances == d.ninstances)
+    self.assertEqual(d2.nfeatures, d.nfeatures)
+    self.assertEqual(d2.nclasses, d.nclasses)
+    self.assertEqual(d2.ninstances, d.ninstances)
 
     cov = np.cov(d2.xs, rowvar=False)
-    self.assertAlmostEqual(np.trace(cov), np.sum(cov))
-    self.assert_((np.abs(np.diag(cov) - np.sort(np.diag(cov))[::-1]) \
-      < 1e-8).all())
-  
+    np.testing.assert_almost_equal(np.diag(cov), np.sort(np.diag(cov))[::-1])
+
   def test_ndims(self):
     '''Test PCA with given dimensionality'''
     d = self.d

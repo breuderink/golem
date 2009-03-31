@@ -22,9 +22,8 @@ class TestCSP(unittest.TestCase):
 
     cov = np.cov(d2.xs, rowvar=False)
     self.assertAlmostEqual(np.trace(cov), np.sum(cov))
-    self.assert_((np.abs(np.diag(cov) - np.sort(np.diag(cov))[::-1]) \
-      < 1e-8).all())
-  
+    np.testing.assert_equal(np.diag(cov), np.sort(np.diag(cov))[::-1])
+
   def test_nocov(self):
     '''Test that the CSP-transformed features are uncorrelated'''
     d, n = self.d, self.n
