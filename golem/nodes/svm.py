@@ -13,11 +13,10 @@ log = logging.getLogger('SVM')
 QP_ACCURACY = 1e-8
 
 class SVM:
-  def __init__(self, C=2, kernel=None, hard_max=False, **params):
+  def __init__(self, C=2, kernel=None, **params):
     self.C = C
     self.kernel = kernel
     self.params = params
-    self.hard_max = hard_max
 
   def train(self, d):
     assert(d.nclasses == 2)
@@ -85,14 +84,12 @@ class SVM:
     labels, b = model['labels'], model['b']
 
     kernel_matrix = build_kernel_matrix(xs, SVs, self.kernel, **self.params)
-    # Eq. 7.25: f(x) = sign(sum_i(y_i a_i k(x, x_i) + b)
+    # Eq. 7.25: f(x) = sign(sum_i(y_i a_i k(x, x_i) + b), we do not sign!
     labels = np.dot(kernel_matrix, (alphas * labels)) + b
 
-    # Transform into two-colum positive hyperplane distance format
+    # Transform into two-colum hyperplane distance format
     labels = labels.reshape(-1, 1)
     xs = np.hstack([labels, -labels])
-    if self.hard_max:
-      xs = hard_max(xs)
     return DataSet(xs, feat_lab=self.cl_lab, default=d)
 
   def __str__(self):

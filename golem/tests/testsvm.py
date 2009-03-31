@@ -43,11 +43,10 @@ class TestSVM(unittest.TestCase):
     hyperplane_d = DataSet(np.array([[.5, 0], [.5, 1]]), np.zeros((2, 2)), None)
     np.testing.assert_equal(svm.test(hyperplane_d).xs, hyperplane_d.ys)
 
-    # Test SVs, and dist vs hard_max
+    # Test SVs
     sv_d = d[2:6]
-    np.testing.assert_equal(helpers.hard_max(svm.test(sv_d).xs), sv_d.ys)
-    svm.hard_max = True
-    np.testing.assert_equal(svm.test(sv_d).xs, sv_d.ys)
+    np.testing.assert_almost_equal(
+      svm.test(sv_d).xs, sv_d.ys.astype(float) * 2 - 1)
   
   def test_nonlinear(self): 
     '''Test simple RBF SVM on a XOR problem'''
@@ -78,7 +77,7 @@ class TestSVMPlot(unittest.TestCase):
     random.seed(1) # use same seed to make this test reproducible
     d = data.gaussian_dataset([50, 50])
 
-    svm = SVM(C=1e2, kernel='rbf', sigma=1.5, hard_max=False)
+    svm = SVM(C=1e2, kernel='rbf', sigma=1.5)
     svm.train(d)
 
     # Plot SVs and scatter
