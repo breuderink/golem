@@ -11,7 +11,7 @@ class AUCFilter:
 
   def train(self, d):
     assert(d.nclasses == 2)
-    labels = d.ys[:, 0]
+    labels = d.ys[:, 1]
     min_auc = self.min_auc
     aucs = np.zeros(d.nfeatures)
     for fi in xrange(d.nfeatures):
@@ -19,16 +19,18 @@ class AUCFilter:
       aucs[fi] = helpers.auc(scores, labels)
     auc_log.debug('Found AUCs for features: %s' % aucs)
 
-    # select at least min_features
+    pos_aucs = np.abs(aucs - .5) + .5
+
+    # select at least min_nfeatures
     self.feat_bool = np.zeros(aucs.size, bool)
-    self.feat_bool[aucs.argsort()[:self.min_nfeatures]] = True
+    self.feat_bool[pos_aucs.argsort()[::-1][:self.min_nfeatures]] = True
 
     # add threshold filtered features
-    self.feat_bool[np.logical_or(aucs > min_auc, aucs < 1 - min_auc)] = True
+    self.feat_bool[pos_aucs >= min_auc] = True
 
     auc_log.info('Keeping %d%% of the features' % (100 * self.feat_bool.mean()))
     self.cl_lab = d.cl_lab
-    self.aucs = aucs
+    self.aucs = aucs.reshape(d.feat_shape)
 
   def test(self, d):
     if d.feat_lab != None:

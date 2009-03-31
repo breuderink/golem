@@ -43,8 +43,8 @@ class TestLoss(unittest.TestCase):
     dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]),
       helpers.to_one_of_n([1, 1, 1, 1, 0, 0]))
 
-    self.assert_(loss.auc(d0) == 0)
-    self.assert_(loss.auc(d1) == 1)
+    self.assert_(loss.auc(d0) == 1)
+    self.assert_(loss.auc(d1) == 0)
     self.assert_(loss.auc(dr) == .5)
 
     

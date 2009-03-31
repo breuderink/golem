@@ -15,7 +15,7 @@ class TestAUCFilter(unittest.TestCase):
     n = featsel.AUCFilter()
     n.train(d)
     d2 = n.test(d)
-    self.assert_(d2.nfeatures == 2)
+    self.assertEqual(d2.nfeatures, 2)
     self.assert_(n.feat_bool[:2].all())
   
   def test_AUCFilter_strong(self):
@@ -23,8 +23,7 @@ class TestAUCFilter(unittest.TestCase):
     n = featsel.AUCFilter(min_auc=.8)
     n.train(d)
     d2 = n.test(d)
-    self.assert_(d2.nfeatures == 1)
-    self.assert_(n.feat_bool[:1].all())
+    self.assertEqual(d2.nfeatures, 1)
 
   def test_AUCFilter_min_feat(self):
     d = self.d
@@ -41,21 +40,21 @@ class TestAUCFilter(unittest.TestCase):
     n = featsel.AUCFilter(min_auc=.6, min_nfeatures=1)
     n.train(d)
     d2 = n.test(d)
-    self.assert_(d2.nfeatures == 2)
+    self.assertEqual(d2.nfeatures, 2)
 
   def test_AUCFilterr_too_strong(self):
     d = self.d
     n = featsel.AUCFilter(min_auc=1)
     n.train(d)
     d2 = n.test(d)
-    self.assert_(d2.nfeatures == 0)
+    self.assertEqual(d2.nfeatures, 0)
     self.assertFalse(n.feat_bool.all())
 
   def test_AUCFilter_is_symmetric(self):
     d = self.d
     dn = DataSet(xs=-d.xs, default=d)
-    n = featsel.AUCFilter()
+    n = featsel.AUCFilter(min_nfeatures=3)
     n.train(d)
-    nn = featsel.AUCFilter()
+    nn = featsel.AUCFilter(min_nfeatures=3)
     nn.train(dn)
-    self.assert_((n.feat_bool == nn.feat_bool).all())
+    np.testing.assert_equal(n.feat_bool, nn.feat_bool)

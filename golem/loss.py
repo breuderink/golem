@@ -42,4 +42,4 @@ def format_confmat(dataset):
 
 def auc(dataset):
   assert(dataset.nclasses == 2)
-  return helpers.auc(dataset.xs[:, 0], dataset.ys[:, 0])
+  return helpers.auc(dataset.xs[:, 0], dataset.ys[:, 1])
