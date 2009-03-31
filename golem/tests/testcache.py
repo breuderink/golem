@@ -1,13 +1,17 @@
-import unittest, tempfile, cPickle, copy
+import unittest, tempfile, cPickle, copy, logging
 from ..nodes.cache import DirCache, CacheNode
 from ..nodes import PriorClassifier, RandomClassifier
 from .. import data
 
 class TestDirCache(unittest.TestCase):
   def setUp(self):
+    logging.getLogger('golem.nodes.Cache').setLevel(logging.ERROR)
     self.file_cache = DirCache(tempfile.mkdtemp())
     for i in range(20):
       self.file_cache.add(i, range(i))
+  def tearDown(self):
+    logging.getLogger('golem.nodes.Cache').setLevel(logging.WARNING)
+
 
   def test_get(self):
     for i in range(20):
