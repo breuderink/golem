@@ -5,7 +5,7 @@ import numpy as np
 import numpy.linalg as la
 import pylab
 
-from .. import DataSet, loss, data, plots
+from .. import DataSet, loss, data, plots, helpers
 from ..nodes import SVM
 
 EPSILON = 1e-8
@@ -29,10 +29,10 @@ class TestSVM(unittest.TestCase):
     svm.train(d)
     
     # Test if the instances are correctly classified
-    self.assert_(loss.accuracy(svm.test(d)) == 1)
+    self.assertEqual(loss.accuracy(svm.test(d)), 1)
     
     # Check if the right Support Vectors are found
-    self.assert_((svm.model['SVs'] == xs[2:6]).all())
+    np.testing.assert_equal(svm.model['SVs'], xs[2:6])
 
     # Check if the alphas satisfy the constraints
     # 0 < all alphas < C/m where m is the number of instances
@@ -40,12 +40,14 @@ class TestSVM(unittest.TestCase):
     self.assert_((svm.model['alphas'] < C/xs.shape[0]).all())
 
     # Test b in f(x) = ax + b
-    svm.sign_output = False
     hyperplane_d = DataSet(np.array([[.5, 0], [.5, 1]]), np.zeros((2, 2)), None)
-    self.assert_((svm.test(hyperplane_d).xs == hyperplane_d.ys).all())
+    np.testing.assert_equal(svm.test(hyperplane_d).xs, hyperplane_d.ys)
 
+    # Test SVs, and dist vs hard_max
     sv_d = d[2:6]
-    self.assert_(((svm.test(sv_d).xs - sv_d.ys) < EPSILON).all())
+    np.testing.assert_equal(helpers.hard_max(svm.test(sv_d).xs), sv_d.ys)
+    svm.hard_max = True
+    np.testing.assert_equal(svm.test(sv_d).xs, sv_d.ys)
   
   def test_nonlinear(self): 
     '''Test simple RBF SVM on a XOR problem'''
@@ -60,10 +62,10 @@ class TestSVM(unittest.TestCase):
     svm.train(d)
 
     # Test if the instances are correctly classified
-    self.assert_(loss.accuracy(svm.test(d)) == 1)
+    self.assertEqual(loss.accuracy(svm.test(d)), 1)
     
     # Check if all instances are support vectors
-    self.assert_(len(svm.model['SVs']) == 4)
+    self.assertEqual(len(svm.model['SVs']), 4)
 
     # Check if the alphas satisfy the contraints
     # 0 < all alphas < C/m where m is the number of instances
@@ -76,8 +78,7 @@ class TestSVMPlot(unittest.TestCase):
     random.seed(1) # use same seed to make this test reproducible
     d = data.gaussian_dataset([50, 50])
 
-    svm = SVM(C=1e2, kernel='rbf', sigma=1.5, 
-      sign_output=False)
+    svm = SVM(C=1e2, kernel='rbf', sigma=1.5, hard_max=False)
     svm.train(d)
 
     # Plot SVs and scatter

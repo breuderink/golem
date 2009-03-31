@@ -7,16 +7,17 @@ import cvxopt.solvers
 
 from kernel import *
 from ..dataset import DataSet
+from ..helpers import hard_max
 
 log = logging.getLogger('SVM')
 QP_ACCURACY = 1e-8
 
 class SVM:
-  def __init__(self, C=2, kernel=None, sign_output=False, **params):
+  def __init__(self, C=2, kernel=None, hard_max=False, **params):
     self.C = C
     self.kernel = kernel
     self.params = params
-    self.sign_output = sign_output
+    self.hard_max = hard_max
 
   def train(self, d):
     assert(d.nclasses == 2)
@@ -90,8 +91,8 @@ class SVM:
     # Transform into two-colum positive hyperplane distance format
     labels = labels.reshape(-1, 1)
     xs = np.hstack([labels, -labels])
-    if self.sign_output:
-      xs = np.where(ys > 0, np.ones(ys.shape), np.zeros(ys.shape))
+    if self.hard_max:
+      xs = hard_max(xs)
     return DataSet(xs, feat_lab=self.cl_lab, default=d)
 
   def __str__(self):
