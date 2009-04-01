@@ -55,6 +55,6 @@ def auc_confidence(N, rho=.5, delta=.05):
   See:
   Shivani Agarwal, Thore Graepel, Ralf Herbrich, and Dan Roth. A large
   deviation bound for the area under the ROC curve. In Advances in Neural
-  Information Processing Systems, volume 17, pages 9–16, 2005.
+  Information Processing Systems, volume 17, pages 9-16, 2005.
   '''
   return np.sqrt(np.log(2. / delta) / (2 * rho * (1 - rho) * N))
