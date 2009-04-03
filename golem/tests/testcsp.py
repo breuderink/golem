@@ -17,8 +17,8 @@ class TestCSP(unittest.TestCase):
     n.train(d)
     d2 = n.test(d.get_class(0))
 
-    self.assert_(d2.nfeatures == 2)
-    self.assert_(d2.nclasses == 2)
+    self.assertEqual(d2.nfeatures, 2)
+    self.assertEqual(d2.nclasses, 2)
 
     cov = np.cov(d2.xs, rowvar=False)
     self.assertAlmostEqual(np.trace(cov), np.sum(cov))
@@ -30,12 +30,11 @@ class TestCSP(unittest.TestCase):
     n.train(d)
     d2 = n.test(d)
 
-    self.assert_(d2.nfeatures == 2)
-    self.assert_(d2.nclasses == 2)
+    self.assertEqual(d2.nfeatures, 2)
+    self.assertEqual(d2.nclasses, 2)
 
     cov = np.cov(d2.xs, rowvar=False)
-    self.assertAlmostEqual(np.trace(cov), np.sum(cov))
-    self.assert_(np.sum(np.abs(cov - np.eye(cov.shape[0]))) < 1e-8)
+    np.testing.assert_almost_equal(cov, np.eye(cov.shape[0]))
   
   def test_plot(self):
     '''Plot CSP for visual inspection'''
@@ -52,9 +51,8 @@ class TestCSP(unittest.TestCase):
     n2 = nodes.CSP(m=2)
     n2.train(d2)
     d2 = n2.test(d2)
-    self.assert_(d2.nfeatures == 4)
-    self.assert_(d2.nclasses == 2)
+    self.assertEqual(d2.nfeatures, 4)
+    self.assertEqual(d2.nclasses, 2)
 
     cov = np.cov(np.concatenate(d2.nd_xs, axis=0), rowvar=False)
-    self.assertAlmostEqual(np.trace(cov), np.sum(cov))
-    self.assert_(np.sum(np.abs(cov - np.eye(cov.shape[0]))) < 1e-8)
+    np.testing.assert_almost_equal(cov, np.eye(cov.shape[0]))

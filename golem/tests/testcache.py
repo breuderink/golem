@@ -10,15 +10,18 @@ class TestDirCache(unittest.TestCase):
       self.file_cache.add(i, range(i))
 
   def test_get(self):
+    '''Test getting known items from cache'''
     for i in range(20):
       self.assertEqual(self.file_cache.get(i), range(i))
 
   def test_key_error(self):
+    '''Test a key error when getting'''
     self.assertRaises(KeyError, self.file_cache.get, -1)
     self.file_cache.add(-1, -1)
     self.assertEqual(self.file_cache.get(-1), -1)
 
   def test_persistence(self):
+    '''Test persistence of cache'''
     cache_name = tempfile.mkdtemp()
     fc1 = DirCache(cache_name)
     for i in range(20):
@@ -59,9 +62,9 @@ class TestCacheNode(unittest.TestCase):
 
   def tearDown(self):
     logging.getLogger('golem.nodes.Cache').setLevel(logging.WARNING)
-    pass
 
   def test_training(self):
+    '''Test training of a cached node'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
     cn = CacheNode(n, cache_name) 
@@ -97,6 +100,7 @@ class TestCacheNode(unittest.TestCase):
     self.assertEqual(cn.node.serialization_count, 0)
 
   def test_testing(self):
+    '''Test testing of a cached node'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
     cn = CacheNode(n, cache_name) 
@@ -133,6 +137,7 @@ class TestCacheNode(unittest.TestCase):
     self.assertEqual(cn.node.serialization_count, 0)
 
   def test_traintest(self):
+    '''Test the combination of training and testing'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
     cn = CacheNode(n, cache_name) 
@@ -151,6 +156,7 @@ class TestCacheNode(unittest.TestCase):
     self.assertEqual(cn.node.serialization_count, 0)
 
   def test_testtrain(self):
+    '''Test the combination of testing and training'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
     cn = CacheNode(n, cache_name) 

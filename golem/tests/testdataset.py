@@ -6,22 +6,31 @@ import numpy as np
 from .. import DataSet
 
 class TestDataSetConstruction(unittest.TestCase):
-  def setUp(self):
-    pass
-
   def test_construction(self):
+    '''Test basic construction of DataSet'''
     xs = np.array([[0, 0, 0], [1, 1, 1]])
     ys = np.array([[0, 1], [1, 0]])
-    d = DataSet(xs, ys)
+    d = DataSet(xs=xs, ys=ys)
+    np.testing.assert_equal(d.xs, xs)
+    np.testing.assert_equal(d.ys, ys)
     self.assertEqual(d.ninstances, 2)
     self.assertEqual(d.ninstances_per_class, [1, 1])
-    self.assert_((d.nd_xs == d.xs).all())
     self.assertEqual(d.nfeatures, 3)
     self.assertEqual(d.nclasses, 2)
-    self.assert_((d.xs == xs).all())
-    self.assert_((d.ys == ys).all())
+    np.testing.assert_equal(d.nd_xs, d.xs)
+
+    self.assertRaises(ValueError, DataSet) # no xs, no ys
+    self.assertRaises(ValueError, DataSet, xs=xs) # no ys
+    self.assertRaises(ValueError, DataSet, ys=ys) # no xs
+
+    np.testing.assert_equal(d.ids, np.arange(d.ninstances).reshape(-1, 1))
+    self.assertEqual(d.cl_lab, ['class0', 'class1'])
+    self.assertEqual(d.feat_lab, None)
+    self.assertEqual(d.feat_shape, [3])
+    self.assertEqual(d.extra, {})
 
   def test_construction_empty(self):
+    '''Test empty construction of DataSet'''
     xs = np.zeros((0, 0))
     ys = np.zeros((0, 0))
     d = DataSet(xs, ys)
@@ -29,12 +38,11 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d.ninstances_per_class, [])
     self.assertEqual(d.nfeatures, 0)
     self.assertEqual(d.nclasses, 0)
+    self.assertEqual(d.extra, {})
     
   def test_construction_types(self):
-    xs = np.arange(12).reshape(-1, 1)
-    ys = np.arange(12).reshape(-1, 1)
-    ids = np.arange(12).reshape(-1, 1)
-
+    '''Test types of DataSet during construction'''
+    xs = ys = ids = np.arange(12).reshape(-1, 1)
     d = DataSet(xs, ys, ids)
 
     # raise with wrong types
@@ -48,12 +56,8 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, extra='baz')
     
   def test_construction_dims(self):
-    xs = np.arange(12).reshape(-1, 1)
-    ys = np.arange(12).reshape(-1, 1)
-    ids = np.arange(12).reshape(-1, 1)
-
-    d = DataSet(xs, ys)
-    d = DataSet(xs, ys, ids)
+    '''Test the handling of dimension during DataSet construction'''
+    xs = ys = ids = np.arange(12).reshape(-1, 1)
 
     # raise if #rows does not match
     self.assertRaises(ValueError, DataSet, xs[:-1,:], ys, ids);
@@ -66,78 +70,60 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertRaises(ValueError, DataSet, xs, ys, ids.flatten());
 
   def test_construction_feat_shape(self):
+    '''Test feat_shape in construction of DataSet'''
     xs = np.arange(12 * 3).reshape(3, -1)
     ys = np.arange(3).reshape(-1, 1)
 
     DataSet(xs, ys, feat_shape=[12])
     DataSet(xs, ys, feat_shape=[1, 12])
     self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=[1, 1])
-  
-  def test_defaults(self):
-    xs = np.arange(12).reshape(-1, 1)
-    ys = np.arange(12).reshape(-1, 1)
-    ids = np.arange(12).reshape(-1, 1)
-
-    self.assertRaises(ValueError, DataSet) # no xs, no ys
-    self.assertRaises(ValueError, DataSet, xs=xs) # no ys
-    self.assertRaises(ValueError, DataSet, ys=ys) # no xs
-    
-    dxy = DataSet(xs, ys)
-    self.assert_((dxy.ids == np.arange(dxy.ninstances).reshape(-1, 1)).all())
-    self.assert_(dxy.cl_lab == ['class0'])
-    self.assert_(dxy.feat_lab == None)
-    self.assert_(dxy.feat_shape == [1])
-    self.assert_(dxy.extra == {})
     
   def test_from_default(self):
-    xs = np.arange(12).reshape(-1, 1)
-    ys = np.arange(12).reshape(-1, 1)
-    ids = np.arange(12).reshape(-1, 1)
-
+    xs = ys = ids = np.arange(12).reshape(-1, 1)
     d = DataSet(xs, ys, ids, cl_lab= ['c1'], feat_lab=['f1'], 
       feat_shape=[1, 1], extra={'foo':'bar'})
 
     # test xs
     d2 = DataSet(xs=np.zeros(xs.shape), default=d)
-    self.assert_(not (d.xs == d2.xs).all())
+    np.testing.assert_equal(d2.xs, np.zeros(xs.shape))
     d2 = DataSet(xs=None, default=d)
-    self.assert_((d.xs == d2.xs).all())
+    np.testing.assert_equal(d2.xs, d.xs)
     
     # test ys
     d2 = DataSet(ys=np.zeros(ys.shape), default=d)
-    self.assert_(not (d.ys == d2.ys).all())
+    np.testing.assert_equal(d2.ys, np.zeros(ys.shape))
     d2 = DataSet(ys=None, default=d)
-    self.assert_((d.ys == d2.ys).all())
+    np.testing.assert_equal(d2.ys, d.ys)
     
     # test ids
     d2 = DataSet(ids=ids+1, default=d)
-    self.assert_(not (d.ids == d2.ids).all())
+    np.testing.assert_equal(d2.ids, ids+1)
     d2 = DataSet(ids=None, default=d)
-    self.assert_((d.ids == d2.ids).all())
+    np.testing.assert_equal(d2.ids, d.ids)
 
     # test cl_lab
     d2 = DataSet(cl_lab=['altc0'], default=d)
-    self.assert_(d.cl_lab != d2.cl_lab)
+    self.assertEqual(d2.cl_lab, ['altc0'])
     d2 = DataSet(cl_lab=None, default=d)
-    self.assert_(d.cl_lab == d2.cl_lab)
+    self.assertEqual(d2.cl_lab, d.cl_lab)
 
     # test feat_lab
     d2 = DataSet(feat_lab=['altf0'], default=d)
-    self.assert_(d.feat_lab != d2.feat_lab)
+    self.assertEqual(d2.feat_lab, ['altf0'])
     d2 = DataSet(feat_lab=None, default=d)
-    self.assert_(d.feat_lab == d2.feat_lab)
+    self.assertEqual(d2.feat_lab, d.feat_lab)
     
     # test feat_shape
     d2 = DataSet(feat_shape=[1, 1, 1], default=d)
-    self.assert_(d.feat_shape != d2.feat_shape)
+    self.assertEqual(d2.feat_shape, [1, 1, 1])
     d2 = DataSet(feat_shape=None, default=d)
-    self.assert_(d.feat_shape == d2.feat_shape)
+    self.assertEqual(d2.feat_shape, d.feat_shape)
 
     # test extra
     d2 = DataSet(extra={'foo':'baz'}, default=d)
-    self.assert_(d.extra != d2.extra)
+    self.assertEqual(d2.extra, {'foo':'baz'})
     d2 = DataSet(extra=None, default=d)
-    self.assert_(d.extra == d2.extra)
+    self.assertEqual(d2.extra, d.extra)
   
   def test_integrity(self):
     xs = np.arange(12).reshape(-1, 1)
@@ -147,7 +133,6 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertRaises(AssertionError, DataSet, xs, ys, np.zeros(ids.shape))
     self.assertRaises(ValueError, DataSet, xs, ys, feat_lab=['f0', 'f1'])
     self.assertRaises(ValueError, DataSet, xs, ys, cl_lab=['c0', 'c1'])
-
 
 class TestDataSet(unittest.TestCase):
   def setUp(self):

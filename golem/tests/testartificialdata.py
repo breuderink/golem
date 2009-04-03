@@ -6,7 +6,7 @@ from .. import data, plots
 class TestGaussianData(unittest.TestCase):
   def setUp(self):
     np.random.seed(1) # use same seed to make this test reproducible
-    self.d = data.gaussian_dataset([200, 200, 50])
+    self.d = data.gaussian_dataset([200, 200, 100])
 
   def test_scatterplot(self):
     '''Test Gaussian distribution by writing a scatterplot to a file'''
@@ -14,11 +14,11 @@ class TestGaussianData(unittest.TestCase):
   
   def test_ninstances(self):
     d = self.d
-    self.assert_(d.ninstances_per_class == [200, 200, 50])
+    self.assert_(d.ninstances_per_class == [200, 200, 100])
   
   def test_ids(self):
-    d = self.d
-    self.assert_((d.ids == np.arange(450).reshape(-1, 1)).all())
+    '''Test for sequential ids'''
+    np.testing.assert_equal(self.d.ids, np.arange(500).reshape(-1, 1))
  
   def test_means_cov(self):
     '''Test if the means and covariance of gaussian_data are correct.'''
@@ -31,7 +31,7 @@ class TestGaussianData(unittest.TestCase):
     d = self.d
     for ci in range(d.nclasses):
       xs = d.get_class(ci).xs
-      mean_diff = np.mean(xs, axis=0) - mus[ci]
-      self.assert_((abs(mean_diff) < 0.5).all())
-      cov_diff = np.cov(xs, rowvar=0) - sigmas[ci]
-      self.assert_((abs(cov_diff) < 0.5).all())
+      np.testing.assert_almost_equal(
+        np.mean(xs, axis=0), mus[ci], decimal=0)
+      np.testing.assert_almost_equal(
+        np.cov(xs, rowvar=0), sigmas[ci], decimal=0)
