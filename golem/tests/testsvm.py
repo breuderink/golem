@@ -11,9 +11,6 @@ from ..nodes import SVM
 EPSILON = 1e-8
 
 class TestSVM(unittest.TestCase):
-  def setUp(self):
-    pass
-
   def test_linear(self): 
     '''Test simple linear SVM'''
     # Make data
@@ -40,20 +37,19 @@ class TestSVM(unittest.TestCase):
     self.assert_((svm.model['alphas'] < C/xs.shape[0]).all())
 
     # Test b in f(x) = ax + b
-    hyperplane_d = DataSet(np.array([[.5, 0], [.5, 1]]), np.zeros((2, 2)), None)
+    hyperplane_d = DataSet(xs=np.array([[.5, 0], [.5, 1]]), ys=np.zeros((2, 2)))
     np.testing.assert_equal(svm.test(hyperplane_d).xs, hyperplane_d.ys)
 
     # Test SVs
     sv_d = d[2:6]
-    np.testing.assert_almost_equal(
-      svm.test(sv_d).xs, sv_d.ys.astype(float) * 2 - 1)
+    np.testing.assert_almost_equal(svm.test(sv_d).xs, sv_d.ys * 2. - 1)
   
   def test_nonlinear(self): 
     '''Test simple RBF SVM on a XOR problem'''
     # Make data
-    xs = np.array([[0, 0], [1, 0], [0, 1], [1, 1]]).astype(np.float64)
+    xs = np.array([[0, 0], [1, 0], [0, 1], [1, 1.]])
     ys = np.array([[1, 0], [0, 1], [0, 1], [1, 0]])
-    d = DataSet(xs, ys, None)
+    d = DataSet(xs=xs, ys=ys)
 
     # Train SVM
     C = 100
@@ -86,6 +82,3 @@ class TestSVMPlot(unittest.TestCase):
     plots.scatter_plot(d)
     plots.plot_classifier_hyperplane(svm, heat_map=True, 
       fname='test_nonlinear_svm.eps')
-
-if __name__ == '__main__':
-  unittest.main()

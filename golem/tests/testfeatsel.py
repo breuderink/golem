@@ -1,14 +1,16 @@
 import unittest
 import numpy as np
-from .. import data, helpers, plots, DataSet
+from .. import helpers, plots, DataSet
 from ..nodes import featsel
 
 class TestAUCFilter(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
-    d = data.gaussian_dataset([200, 200])
-    self.d = DataSet(
-      xs=np.hstack([d.xs, np.random.random((d.ninstances, 30))]), ys=d.ys)
+    # generate dataset with features based on labels with increasing noise
+    ys = helpers.to_one_of_n(np.linspace(0, 1, 400).round())
+    xs = ys[:, 1].reshape(-1, 1) + (np.linspace(.5, 10, 10) * 
+      np.random.randn(400, 10))
+    self.d = DataSet(xs=xs, ys=ys)
 
   def test_AUCFilter(self):
     d = self.d
@@ -36,11 +38,18 @@ class TestAUCFilter(unittest.TestCase):
         self.assert_(n.feat_bool[:nf].all())
 
   def test_AUCFilter_auc_nfeat_combo(self):
+    # test with more strict min_auc
     d = self.d
     n = featsel.AUCFilter(min_auc=.6, min_nfeatures=1)
     n.train(d)
     d2 = n.test(d)
     self.assertEqual(d2.nfeatures, 2)
+
+    # test with more strict min_nfeatures
+    n = featsel.AUCFilter(min_auc=.6, min_nfeatures=6)
+    n.train(d)
+    d2 = n.test(d)
+    self.assertEqual(d2.nfeatures, 6)
 
   def test_AUCFilterr_too_strong(self):
     d = self.d
@@ -53,8 +62,10 @@ class TestAUCFilter(unittest.TestCase):
   def test_AUCFilter_is_symmetric(self):
     d = self.d
     dn = DataSet(xs=-d.xs, default=d)
-    n = featsel.AUCFilter(min_nfeatures=3)
-    n.train(d)
-    nn = featsel.AUCFilter(min_nfeatures=3)
-    nn.train(dn)
-    np.testing.assert_equal(n.feat_bool, nn.feat_bool)
+    for min_auc in [.5, .6, .9, 1]:
+      for nf in range(10):
+        n = featsel.AUCFilter(min_auc=min_auc, min_nfeatures=nf)
+        nn = featsel.AUCFilter(min_auc=min_auc, min_nfeatures=nf)
+        n.train(d)
+        nn.train(dn)
+        np.testing.assert_equal(n.feat_bool, nn.feat_bool)

@@ -145,8 +145,8 @@ class TestDataSet(unittest.TestCase):
       
   def test_equality(self):
     d = self.d
-    self.assert_(d == d)
-    self.assert_(d == DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
+    self.assertEqual(d, d)
+    self.assertEqual(d, DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
       cl_lab=d.cl_lab, feat_shape=d.feat_shape, extra=d.extra))
 
     # test all kinds of differences
@@ -161,12 +161,13 @@ class TestDataSet(unittest.TestCase):
     # test special cases
     self.assertEqual(d, DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
       default=d))
-    self.assert_(d != 3)
+    self.failIfEqual(d, 3)
 
   def test_hash(self):
     d = self.d[::2] # noncontiguous arrays can pose a problem
-    self.assert_(d.hash() == d.hash())
-    self.assert_(d.hash() == DataSet(default=d).hash())
+    self.assertEqual(d.hash(), d.hash())
+    self.assertEqual(d.hash(), DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
+      cl_lab=d.cl_lab, feat_shape=d.feat_shape, extra=d.extra).hash())
 
     # test all kinds of differences
     self.failIfEqual(d.hash(), DataSet(xs=d.xs+1, default=d).hash())
@@ -203,21 +204,25 @@ class TestDataSet(unittest.TestCase):
     d = self.d
     dA = d.get_class(0)
     dB = d.get_class(1)
-    self.assert_(dA == d[1])
-    self.assert_(dB == d[0])
+    self.assertEqual(dA, d[1])
+    self.assertEqual(dB, d[0])
 
   def test_nd_xs(self):
     '''Test multidimensional xs'''
     xs = np.arange(100).reshape(10, 10)
     ys = np.ones((10, 1))
     d = DataSet(xs, ys, None, feat_shape=[2, 1, 5])
-    self.assert_((d.xs == xs).all())
-    self.assert_(d.ninstances == 10)
-    self.assert_(d.nfeatures == 10)
-    self.assert_((d.nd_xs[0,:,:] == np.arange(10).reshape(2, 1, 5)).all())
-    self.assert_((d.nd_xs[2,:,:] == np.arange(20, 30).reshape(2, 1, 5)).all())
+    np.testing.assert_equal(d.xs, xs)
+    self.assertEqual(d.ninstances, 10)
+    self.assertEqual(d.nfeatures, 10)
+    np.testing.assert_equal(
+      d.nd_xs[0,:,:], np.arange(10).reshape(2, 1, 5))
+    np.testing.assert_equal(
+      d.nd_xs[2,:,:], np.arange(20, 30).reshape(2, 1, 5))
+
+    # test modification
     d.nd_xs[0, 0, 0] = 1000
-    self.assert_(d.xs[0, 0] == 1000)
+    self.assertEqual(d.xs[0, 0], 1000)
   
   def test_sorted(self):
     '''Test sorting the DataSet'''
@@ -230,14 +235,14 @@ class TestDataSet(unittest.TestCase):
     shuf_i = np.arange(d1d.ninstances)
     np.random.shuffle(shuf_i)
     d1ds, d2ds = d1d[shuf_i], d2d[shuf_i]
-    self.failIf(d1d == d1ds)
-    self.failIf(d2d == d2ds)
+    self.failIfEqual(d1d, d1ds)
+    self.failIfEqual(d2d, d2ds)
     d1ds = d1ds.sorted()
     d2ds = d2ds.sorted()
     
-    # Test if ids are sorted
-    self.assert_(d1d == d1ds)
-    self.assert_(d2d == d2ds)
+    # verify that ids are sorted
+    self.assertEqual(d1d, d1ds)
+    self.assertEqual(d2d, d2ds)
 
   def test_str(self):
     '''Test string representation.'''
@@ -251,7 +256,7 @@ class TestDataSet(unittest.TestCase):
     d = DataSet(xs, ys, ids, feat_lab=['feat%d' for d in range(3)])
 
     da, db = d[:3], d[3:]
-    self.assert_(da + db == d)
+    self.assertEqual(da + db, d)
 
     # different nfeatures
     self.assertRaises(ValueError, da.__add__,

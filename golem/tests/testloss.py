@@ -5,34 +5,37 @@ from .. import DataSet, loss, helpers
 class TestLoss(unittest.TestCase):
   def setUp(self):
     self.d = DataSet(
-      helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]),
-      helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]), None)
+      xs=helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]),
+      ys=helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]))
 
-  def testHardMax(self):
-    self.assert_((helpers.hard_max(self.d.xs) == self.d.xs).all())
+  def test_hardmax(self):
+    np.testing.assert_equal(helpers.hard_max(self.d.xs), self.d.xs)
 
     soft_votes = np.array([[-.3, -.1], [9, 4], [.1, .101]])
-    self.assert_((helpers.hard_max(soft_votes) == 
-      helpers.to_one_of_n([1, 0, 1])).all())
+    np.testing.assert_equal(helpers.hard_max(soft_votes), 
+      helpers.to_one_of_n([1, 0, 1]))
 
     tie_votes = np.array([[-1, -1], [0, 0], [1, 1]])
-    self.assert_((helpers.hard_max(tie_votes) == 
-      helpers.to_one_of_n([0, 0, 0], [0, 1])).all())
+    np.testing.assert_equal(helpers.hard_max(tie_votes),  
+      helpers.to_one_of_n([0, 0, 0], [0, 1]))
   
-  def testClassLoss(self):
-    self.assert_((loss.class_loss(self.d) == 
-      np.array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]).reshape(12, 1)).all())
+  def test_class_loss(self):
+    targets = np.array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]).reshape(-1, 1)
+    d = self.d
+    d2 = DataSet(xs=d.xs + (0.1 * np.random.rand(*d.xs.shape)), default=d)
+    np.testing.assert_equal(loss.class_loss(d), targets)
+    np.testing.assert_equal(loss.class_loss(d2), targets)
   
-  def testAccurracy(self):
-    self.assert_(loss.accuracy(self.d) == (12 - 3) / 12.)
+  def test_accurracy(self):
+    self.assertEqual(loss.accuracy(self.d), (12 - 3) / 12.)
 
   def testConfusionMatrix(self):
     c = loss.confusion_matrix(self.d)
     ct = np.array([[3, 1, 0], [0, 3, 1], [1, 0, 3]])
-    self.assert_((c == ct).all())
+    np.testing.assert_equal(c, ct)
   
   def testFormatConfusionMatrix(self):
-    c  = loss.format_confmat(self.d)
+    c = loss.format_confmat(self.d)
     self.assert_(hash(c) == 630198187)
   
   def testAUC(self):
@@ -43,10 +46,6 @@ class TestLoss(unittest.TestCase):
     dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]),
       helpers.to_one_of_n([1, 1, 1, 1, 0, 0]))
 
-    self.assert_(loss.auc(d0) == 1)
-    self.assert_(loss.auc(d1) == 0)
-    self.assert_(loss.auc(dr) == .5)
-
-    
-if __name__ == '__main__':
-  unittest.main()
+    self.assertEqual(loss.auc(d0), 1)
+    self.assertEqual(loss.auc(d1), 0)
+    self.assertEqual(loss.auc(dr), .5)

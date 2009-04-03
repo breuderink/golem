@@ -16,7 +16,7 @@ class TestModelSelection(unittest.TestCase):
   def test_select_best(self):
     n = nodes.ModelSelect([nodes.PriorClassifier(), nodes.SVM()], svm_critic)
     n.train(self.d) 
-    self.assert_(isinstance(n.best_node, nodes.SVM))
     s = nodes.SVM()
     s.train(self.d)
-    self.assert_(n.test(self.d) == s.test(self.d))
+    self.assert_(isinstance(n.best_node, nodes.SVM))
+    self.assertEqual(n.test(self.d), s.test(self.d))

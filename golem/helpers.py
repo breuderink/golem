@@ -5,7 +5,8 @@ def to_one_of_n(ints, class_cols=None):
   Note that the columns correspond to the classes in *sorted* order.
   '''
   a = np.array(ints, int).squeeze()
-  assert a.ndim == 1, 'Labels should be 1D'
+  if a.ndim != 1:
+    raise ValueError('Labels should be 1D')
   if not class_cols:
     class_cols = np.unique(a) # is automatically sorted
   ys = np.zeros((a.size, len(class_cols)))

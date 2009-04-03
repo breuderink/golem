@@ -20,4 +20,3 @@ class TestLSReg(unittest.TestCase):
     n = nodes.LSReg()
     n.train(d)
     self.assert_(loss.accuracy(n.test(d)) > 0.6)
-    

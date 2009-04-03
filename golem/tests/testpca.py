@@ -7,7 +7,7 @@ class TestPCA(unittest.TestCase):
     np.random.seed(1)
     xs = np.random.rand(100, 3)
     xs = np.hstack([xs, -xs, np.zeros((100, 0))]) # make correlated
-    self.d = DataSet(xs, np.ones((100, 1)), None)
+    self.d = DataSet(xs=xs, ys=np.ones((100, 1)))
 
   def test_nocov_descending(self):
     '''Test that the PCA-transformed features are uncorrelated, and ordered'''
@@ -32,11 +32,10 @@ class TestPCA(unittest.TestCase):
       p.train(d)
       d2 = p.test(d)
 
-      self.assert_(d2.nfeatures==td)
+      self.assertEqual(d2.nfeatures, td)
       if td > 1:
         cov = np.cov(d2.xs, rowvar=False)
         self.assertAlmostEqual(np.trace(cov), np.sum(cov))
-
 
   def test_retain(self):
     '''Test that the PCA retains minimum but at least the specified variance'''
@@ -49,8 +48,8 @@ class TestPCA(unittest.TestCase):
       n.train(d)
       d2 = n.test(d)
 
-      self.assert_(d2.nclasses == d.nclasses)
-      self.assert_(d2.ninstances == d.ninstances)
+      self.assertEqual(d2.nclasses, d.nclasses)
+      self.assertEqual(d2.ninstances, d.ninstances)
 
       retained = np.sum(np.var(d2.xs, axis=0)) / np.sum(np.var(d.xs, axis=0))
       self.assert_(round(retained, 4) >= round(retain_v, 4))
@@ -60,7 +59,7 @@ class TestPCA(unittest.TestCase):
         one_less = nodes.PCA(ndims=d2.nfeatures - 1)
         one_less.train(d)
         d3 = one_less.test(d)
-        self.assert_(d3.nfeatures == d2.nfeatures - 1)
+        self.assertEqual(d3.nfeatures, d2.nfeatures - 1)
         retained_ol = np.sum(np.var(d3.xs, axis=0)) / \
           np.sum(np.var(d.xs, axis=0))
         self.assert_(retained_ol < retain_v)
