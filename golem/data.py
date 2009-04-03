@@ -21,7 +21,7 @@ def gaussian_dataset(ninstances = [50, 50]):
     ys = np.zeros((cl_instances, nclasses))
     ys[:, y] = 1.
     cids = np.arange(last_id, last_id + cl_instances).reshape(-1, 1)
-    result.append(DataSet(xs, ys, cids))
+    result.append(DataSet(xs=xs, ys=ys, ids=cids))
     last_id += cl_instances 
   result = reduce(lambda a, b: a + b, result)
   return result

@@ -26,7 +26,7 @@ class TestDataSetConstruction(unittest.TestCase):
     np.testing.assert_equal(d.ids, np.arange(d.ninstances).reshape(-1, 1))
     self.assertEqual(d.cl_lab, ['class0', 'class1'])
     self.assertEqual(d.feat_lab, None)
-    self.assertEqual(d.feat_shape, [3])
+    self.assertEqual(d.feat_shape, (3,))
     self.assertEqual(d.extra, {})
 
   def test_construction_empty(self):
@@ -52,7 +52,7 @@ class TestDataSetConstruction(unittest.TestCase):
     
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, cl_lab='c0')
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_lab='f0')
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_shape=(1, 1))
+    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_shape=[1, 1])
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, extra='baz')
     
   def test_construction_dims(self):
@@ -74,14 +74,14 @@ class TestDataSetConstruction(unittest.TestCase):
     xs = np.arange(12 * 3).reshape(3, -1)
     ys = np.arange(3).reshape(-1, 1)
 
-    DataSet(xs, ys, feat_shape=[12])
-    DataSet(xs, ys, feat_shape=[1, 12])
-    self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=[1, 1])
+    DataSet(xs, ys, feat_shape=(12,))
+    DataSet(xs, ys, feat_shape=(1, 12))
+    self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=(1, 1))
     
   def test_from_default(self):
     xs = ys = ids = np.arange(12).reshape(-1, 1)
     d = DataSet(xs, ys, ids, cl_lab= ['c1'], feat_lab=['f1'], 
-      feat_shape=[1, 1], extra={'foo':'bar'})
+      feat_shape=(1, 1), extra={'foo':'bar'})
 
     # test xs
     d2 = DataSet(xs=np.zeros(xs.shape), default=d)
@@ -114,8 +114,8 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d2.feat_lab, d.feat_lab)
     
     # test feat_shape
-    d2 = DataSet(feat_shape=[1, 1, 1], default=d)
-    self.assertEqual(d2.feat_shape, [1, 1, 1])
+    d2 = DataSet(feat_shape=(1, 1, 1), default=d)
+    self.assertEqual(d2.feat_shape, (1, 1, 1))
     d2 = DataSet(feat_shape=None, default=d)
     self.assertEqual(d2.feat_shape, d.feat_shape)
 
@@ -141,7 +141,7 @@ class TestDataSet(unittest.TestCase):
     ys = np.array([[0, 1], [1, 0]])
     ids = np.array([[3], [4]])
     self.d = DataSet(xs, ys, ids, feat_lab=['f1', 'f2', 'f3'], 
-      cl_lab=['A', 'B'], feat_shape=[3, 1], extra={'foo':'bar'})
+      cl_lab=['A', 'B'], feat_shape=(3, 1), extra={'foo':'bar'})
       
   def test_equality(self):
     d = self.d
@@ -155,7 +155,7 @@ class TestDataSet(unittest.TestCase):
     self.failIfEqual(d, DataSet(ids=d.ids+1, default=d))
     self.failIfEqual(d, DataSet(cl_lab=['a', 'b'], default=d))
     self.failIfEqual(d, DataSet(feat_lab=['F1', 'F2', 'F3'], default=d))
-    self.failIfEqual(d, DataSet(feat_shape=[1, 3], default=d))
+    self.failIfEqual(d, DataSet(feat_shape=(1, 3), default=d))
     self.failIfEqual(d, DataSet(extra={'foo':'baz'}, default=d))
     
     # test special cases
@@ -176,7 +176,7 @@ class TestDataSet(unittest.TestCase):
     self.failIfEqual(d.hash(), DataSet(cl_lab=['a', 'b'], default=d).hash())
     self.failIfEqual(d.hash(), DataSet(feat_lab=['F1', 'F2', 'F3'], 
       default=d).hash())
-    self.failIfEqual(d.hash(), DataSet(feat_shape=[1, 3], default=d).hash())
+    self.failIfEqual(d.hash(), DataSet(feat_shape=(1, 3), default=d).hash())
     self.failIfEqual(d.hash(), DataSet(extra={'foo':'baz'}, default=d).hash())
     
     # test special cases
@@ -211,7 +211,7 @@ class TestDataSet(unittest.TestCase):
     '''Test multidimensional xs'''
     xs = np.arange(100).reshape(10, 10)
     ys = np.ones((10, 1))
-    d = DataSet(xs, ys, None, feat_shape=[2, 1, 5])
+    d = DataSet(xs, ys, None, feat_shape=(2, 1, 5))
     np.testing.assert_equal(d.xs, xs)
     self.assertEqual(d.ninstances, 10)
     self.assertEqual(d.nfeatures, 10)
@@ -268,7 +268,7 @@ class TestDataSet(unittest.TestCase):
 
     # different feat_shape
     self.assertRaises(ValueError, da.__add__,
-      DataSet(feat_shape=[3, 1], default=db))
+      DataSet(feat_shape=(3, 1), default=db))
 
     # different nclasses
     self.assertRaises(ValueError, da.__add__,

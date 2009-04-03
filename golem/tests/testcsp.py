@@ -8,7 +8,7 @@ class TestCSP(unittest.TestCase):
     np.random.seed(1)
     da = data.gaussian_dataset([100, 100])
     self.d = DataSet(np.hstack([da.xs, np.random.random(da.xs.shape)]), 
-      da.ys, da.ids, feat_shape=[1, 4])
+      da.ys, da.ids, feat_shape=(1, 4))
     self.n = nodes.CSP(m=2)
 
   def test_class_diag_descending(self):
@@ -47,7 +47,7 @@ class TestCSP(unittest.TestCase):
     '''Test CSP on 2D-shaped features'''
     d, n = self.d, self.n
     n.train(d)
-    d2 = DataSet(d.xs.reshape(-1, 8), d.ys[::2], d.ids[::2], feat_shape=[2, 4])
+    d2 = DataSet(d.xs.reshape(-1, 8), d.ys[::2], d.ids[::2], feat_shape=(2, 4))
     n2 = nodes.CSP(m=2)
     n2.train(d2)
     d2 = n2.test(d2)

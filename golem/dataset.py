@@ -44,14 +44,14 @@ class DataSet:
         else ['class%d' % i for i in range(self.nclasses)]
       self.feat_lab = feat_lab
       self.feat_shape = feat_shape if feat_shape != None \
-        else [self.nfeatures]
+        else (self.nfeatures, )
       self.extra = extra if extra != None else {}
     else:
       self.cl_lab = cl_lab if cl_lab != None else default.cl_lab
       self.feat_lab = feat_lab if feat_lab != None else default.feat_lab
       if feat_shape == None:
         if np.prod(default.feat_shape) != self.nfeatures:
-          self.feat_shape = [self.nfeatures]
+          self.feat_shape = (self.nfeatures,)
         else:
           self.feat_shape = default.feat_shape
       else:
@@ -61,7 +61,7 @@ class DataSet:
     assert isinstance(self.cl_lab, list), 'Class labels not a list'
     assert self.feat_lab == None or isinstance(self.feat_lab, list), \
       'Feature labels not a list'
-    assert isinstance(self.feat_shape, list), 'Feature shape not a list'
+    assert isinstance(self.feat_shape, tuple), 'Feature shape not a tuple'
     assert isinstance(self.extra, dict), 'Keyword extra not a dict'
 
     if self.feat_lab != None and len(self.feat_lab) != self.nfeatures:
@@ -177,7 +177,7 @@ class DataSet:
   def nd_xs(self):
     '''Return N-dimensional view of xs'''
     if self.feat_shape != None:
-      return self.xs.reshape([self.ninstances] + self.feat_shape)
+      return self.xs.reshape((self.ninstances,) + self.feat_shape)
     raise Exception, 'Feature shape is unknown'
     return self.xs.shape[1]
 

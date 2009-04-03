@@ -47,7 +47,7 @@ class CSP:
     assert(len(d.feat_shape) == 2)
     xs = np.concatenate(d.nd_xs, axis=0) - self.mean
     xs = np.dot(xs, self.W).reshape(d.ninstances, -1)
-    feat_shape = [d.feat_shape[0], self.m]
+    feat_shape = (d.feat_shape[0], self.m)
     feat_lab = ['csp_f%d' % i for i in range(np.prod(feat_shape))]
     return DataSet(xs, feat_lab=feat_lab, feat_shape=feat_shape, 
       cl_lab=self.cl_lab, default=d)
