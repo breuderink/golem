@@ -6,7 +6,8 @@ import helpers
 
 class DataSet:
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
-    feat_shape=None, extra=None, default=None):
+    feat_shape=None, feat_dim_units=None, feat_nd_lab=None, extra=None, 
+    default=None):
     '''Create a new dataset.'''
     # First, take care of xs, ys and ids
     if default == None:
@@ -22,55 +23,86 @@ class DataSet:
       self.ids = ids if ids != None else default.ids
 
     if not isinstance(self.xs, np.ndarray):
-      raise ValueError, 'Only np.ndarray is supported for xs'
+      raise ValueError('Only np.ndarray is supported for xs')
     if self.xs.ndim != 2:
-      raise ValueError, 'Only 2d arrays are supported for xs. See feat_shape.'
+      raise ValueError('Only 2d arrays are supported for xs. See feat_shape.')
     if not isinstance(self.ys, np.ndarray):
-      raise ValueError, 'Only np.ndarray is supported for ys'
+      raise ValueError('Only np.ndarray is supported for ys')
     if self.ys.ndim != 2:
-      raise ValueError, 'Only 2d arrays are supported for ys.'
+      raise ValueError('Only 2d arrays are supported for ys.')
     if not isinstance(self.ids, np.ndarray):
-      raise ValueError, 'Only np.ndarray is supported for ids'
+      raise ValueError('Only np.ndarray is supported for ids')
     if self.ids.ndim != 2:
-      raise ValueError, 'Only 2d arrays are supported for ids.'
+      raise ValueError('Only 2d arrays are supported for ids.')
     if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
-      raise ValueError, 'Number of rows does not match'
-    assert np.unique(self.ids[:,0]).size == self.ninstances, \
-      'The ids not unique.'
+      raise ValueError('Number of rows does not match')
+    if np.unique(self.ids[:,0]).size != self.ninstances:
+      raise ValueError('The ids not unique.')
 
-    # Ok, xs, ys, and ids are ok. Now the labels, shapes and extras
-    if default == None:  
-      self.cl_lab = cl_lab if cl_lab != None \
-        else ['class%d' % i for i in range(self.nclasses)]
-      self.feat_lab = feat_lab
-      self.feat_shape = feat_shape if feat_shape != None \
-        else (self.nfeatures, )
-      self.extra = extra if extra != None else {}
-    else:
-      self.cl_lab = cl_lab if cl_lab != None else default.cl_lab
-      self.feat_lab = feat_lab if feat_lab != None else default.feat_lab
+    # Ok, xs, ys, and ids are ok. Now wel add required structural info
+    if default != None:  
+      # fill in from default arg
+      if cl_lab == None: cl_lab = default.cl_lab
+      if feat_lab == None: feat_lab = default.feat_lab
       if feat_shape == None:
+        feat_shape = default.feat_shape
         if np.prod(default.feat_shape) != self.nfeatures:
-          self.feat_shape = (self.nfeatures,)
-        else:
-          self.feat_shape = default.feat_shape
-      else:
-        self.feat_shape = feat_shape
-      self.extra = extra if extra != None else default.extra
-   
-    assert isinstance(self.cl_lab, list), 'Class labels not a list'
+          feat_shape = (self.nfeatures,)
+
+    self.cl_lab = cl_lab if cl_lab \
+      else ['class%d' % i for i in range(self.nclasses)]
+    self.feat_lab = feat_lab if feat_lab else None
+    self.feat_shape = feat_shape if feat_shape != None else (self.nfeatures,)
+
+    # Now we are basically done, but let's add optional info
+    if default != None:  
+      # fill in from default arg
+      if feat_dim_units == None:
+        feat_dim_units = default.feat_dim_units
+        if len(default.feat_dim_units) != len(self.feat_shape):
+          feat_dim_units = None
+      if feat_nd_lab == None:
+        feat_nd_lab = default.feat_nd_lab
+        if feat_nd_lab != None:
+          if len(feat_nd_lab) != len(self.feat_shape):
+            feat_nd_lab = None
+      extra = extra if extra != None else default.extra
+
+    self.feat_dim_units = feat_dim_units if feat_dim_units else \
+      ['feat_dim%d' % i for i in range(len(self.feat_shape))]
+    self.feat_nd_lab = feat_nd_lab if feat_nd_lab else None
+    self.extra = extra if extra else {}
+
+    self.check_consistency()
+
+  def check_consistency(self):
+    assert isinstance(self.cl_lab, list), 'cl_lab not a list'
     assert self.feat_lab == None or isinstance(self.feat_lab, list), \
       'Feature labels not a list'
-    assert isinstance(self.feat_shape, tuple), 'Feature shape not a tuple'
-    assert isinstance(self.extra, dict), 'Keyword extra not a dict'
+    assert isinstance(self.feat_shape, tuple), 'feat_shape not a tuple'
+    assert isinstance(self.feat_dim_units, list), 'feat_dim_units not a list'
+    assert isinstance(self.extra, dict), 'extra not a dict'
 
     if self.feat_lab != None and len(self.feat_lab) != self.nfeatures:
-      raise ValueError, '"%s" does not match #features' % self.feat_lab
+      raise ValueError('feat_lab %s does not match #features' % self.feat_lab)
     if len(self.cl_lab) != self.nclasses:
-      raise ValueError, 'The number of class labels does not match #classes'
+      raise ValueError('The number of class labels does not match #classes')
     if not np.prod(self.feat_shape) == self.nfeatures:
-      raise ValueError, '%d features does not match feat_shape %s' % \
-        (self.nfeatures, self.feat_shape)
+      raise ValueError('%d features does not match feat_shape %s' % \
+        (self.nfeatures, self.feat_shape))
+
+    if self.feat_dim_units != None:
+      if len(self.feat_shape) != len(self.feat_dim_units):
+        raise ValueError('feat_dim_units %s does not match feat_shape %s' %
+          (repr(self.feat_dim_units), repr(self.feat_shape)))
+    if self.feat_nd_lab != None:
+      assert len(self.feat_nd_lab) == len(self.feat_shape)
+      for i, dlab in enumerate(self.feat_nd_lab):
+        assert isinstance(dlab, list)
+        if len(dlab) != self.feat_shape[i]:
+          raise ValueError(
+            'feat_nd_lab[%d] %s does not match feat_shape %s' % \
+            (i, dlab, self.feat_shape))
 
   def get_class(self, i):
     return self[self.ys[:, i] == 1]
@@ -109,29 +141,28 @@ class DataSet:
     if b.xs.ndim == 0:
       return a
 
-    # Check shape and labels
+    # Check for compatibility
     if (a.nfeatures != b.nfeatures) or (a.nclasses != b.nclasses):
       raise ValueError, 'The #features or #classes do not match'
-    if a.feat_lab != b.feat_lab:
-      raise ValueError, 'The feature labels do not match'
-    if a.feat_shape != b.feat_shape:
-      raise ValueError, 'The feature shapes do not match'
-    if a.cl_lab != b.cl_lab:
-      raise ValueError, 'The class labels do not match'
-    if a.extra != b.extra:
-      raise ValueError, 'The class extra attributes do not match'
+    for member in a.__dict__.keys():
+      if member not in ['xs', 'ys', 'ids']:
+        if a.__dict__[member] != b.__dict__[member]:
+          raise ValueError('Cannot add DataSets: %s is different')
 
     return DataSet(np.vstack([a.xs, b.xs]), np.vstack([a.ys, b.ys]),
       ids=np.vstack([a.ids, b.ids]), default=a)
 
   def __eq__(a, b):
-    if isinstance(b, DataSet):
-      return (a.xs == b.xs).all() and (a.ys == b.ys).all() and \
-        (a.ids == b.ids).all() and a.feat_lab == b.feat_lab and \
-        a.cl_lab == b.cl_lab and a.feat_shape == b.feat_shape and\
-        a.extra == b.extra
-
-    return False
+    if not isinstance(b, DataSet):
+      return False
+    for member in a.__dict__.keys():
+      am, bm = a.__dict__[member], b.__dict__[member]
+      if member in ['xs', 'ys', 'ids']:
+        if not (am == bm).all():  
+          return False
+      elif am != bm:
+        return False
+    return True
     
   def __ne__(a, b):
     return not a == b
@@ -142,11 +173,12 @@ class DataSet:
     by dictionaries and sets (and is therefore not named __hash__).
     '''
     hash = sha1()
-    hash.update(np.ascontiguousarray(self.xs).view(np.uint8))
-    hash.update(np.ascontiguousarray(self.ys).view(np.uint8))
-    hash.update(np.ascontiguousarray(self.ids).view(np.uint8))
-    hash.update(cPickle.dumps((self.feat_lab, self.cl_lab, self.feat_shape,
-      self.extra)))
+    for member in sorted(self.__dict__.keys()):
+      v = self.__dict__[member]
+      if member in ['xs', 'ys', 'ids']:
+        hash.update(np.ascontiguousarray(v).view(np.uint8))
+      else:
+        hash.update(cPickle.dumps(v))
     return hash.digest()
     
   @property
@@ -192,6 +224,7 @@ class DataSet:
     f = open(file, 'rb') if isinstance(file, str) else file
     d = cPickle.load(f)
     assert isinstance(d, DataSet)
+    d.check_consistency()
     if isinstance(file, str):
       f.close()
     return d
