@@ -1,2 +1,3 @@
 include tests/plots/.empty
 include docs/*
+include *.txt
