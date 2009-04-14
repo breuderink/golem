@@ -35,13 +35,13 @@ def scatter_plot(dataset, fname=None):
     pylab.close()
 
 def classifier_grid(classifier):
-  resolution = 80
+  RESOLUTION = 40
   xlim = pylab.xlim()
   ylim = pylab.ylim()
 
   # Build grid
-  x = np.arange(xlim[0], xlim[1], (xlim[1]-xlim[0])/resolution)
-  y = np.arange(ylim[0], ylim[1], (ylim[1]-ylim[0])/resolution)
+  x = np.arange(xlim[0], xlim[1], (xlim[1]-xlim[0])/RESOLUTION)
+  y = np.arange(ylim[0], ylim[1], (ylim[1]-ylim[0])/RESOLUTION)
   X, Y = np.meshgrid(x, y)
   xs = np.array([X.flatten(), Y.flatten()]).T
 
