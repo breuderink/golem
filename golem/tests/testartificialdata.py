@@ -1,6 +1,7 @@
 import unittest
 import os.path
 import numpy as np
+import pylab
 from .. import data, plots
 
 class TestGaussianData(unittest.TestCase):
@@ -10,7 +11,9 @@ class TestGaussianData(unittest.TestCase):
 
   def test_scatterplot(self):
     '''Test Gaussian distribution by writing a scatterplot to a file'''
-    plots.scatter_plot(self.d, 'test_gaussian_4_classes.eps')
+    plots.scatter_plot(self.d)
+    pylab.savefig('test_gaussian_3_classes.eps')
+    pylab.close()
   
   def test_ninstances(self):
     d = self.d

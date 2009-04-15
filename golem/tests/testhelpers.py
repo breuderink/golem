@@ -1,6 +1,7 @@
 import unittest
 import os
 import numpy as np
+import pylab
 from numpy.testing import assert_equal
 from .. import data, plots, DataSet
 from ..helpers import to_one_of_n, roc, auc, auc_confidence
@@ -85,7 +86,9 @@ class TestROC(unittest.TestCase):
   def test_plot(self):
     '''Test plotting ROC'''
     d = DataSet(xs = np.round(self.d.xs, 1), default=self.d)
-    plots.plot_roc(d, 'roc.eps')
+    plots.plot_roc(d)
+    pylab.savefig('roc.eps')
+    pylab.close()
 
 class TestAUC(unittest.TestCase):
   def test_AUC_extrema(self):

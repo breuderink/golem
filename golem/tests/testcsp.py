@@ -1,6 +1,7 @@
 import unittest
 import os.path
 import numpy as np
+import pylab
 from .. import DataSet, nodes, helpers, data, plots
 
 class TestCSP(unittest.TestCase):
@@ -41,7 +42,9 @@ class TestCSP(unittest.TestCase):
     d, n = self.d, self.n
     n.train(d)
     d2 = n.test(d)
-    plots.scatter_plot(d2, 'csp.eps')
+    plots.scatter_plot(d2)
+    pylab.savefig('csp.eps')
+    pylab.close()
   
   def test_2d(self):
     '''Test CSP on 2D-shaped features'''

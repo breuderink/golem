@@ -8,7 +8,6 @@ import pylab
 from .. import DataSet, loss, data, plots, helpers
 from ..nodes import SVM
 
-EPSILON = 1e-8
 
 class TestSVM(unittest.TestCase):
   def test_linear(self): 
@@ -80,5 +79,6 @@ class TestSVMPlot(unittest.TestCase):
     SVs = svm.model['SVs']
     pylab.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
     plots.scatter_plot(d)
-    plots.plot_classifier_hyperplane(svm, heat_map=True, 
-      fname='test_nonlinear_svm.eps')
+    plots.plot_classifier_hyperplane(svm, heat_map=True)
+    pylab.savefig('test_nonlinear_svm.eps')
+    pylab.close()

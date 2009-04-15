@@ -6,11 +6,11 @@ import helpers
 markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']
 
-def scatter_plot(dataset, fname=None):
+def scatter_plot(dataset):
   ''' Display the dataset with a scatterplot using Matplotlib/pylab. The user is
   responsible for calling pylab.show() to display the plot.
   '''
-  assert(dataset.nfeatures == 2)
+  assert dataset.nfeatures == 2
   # loop over classes
   for ci in range(dataset.nclasses):
     color, marker = colors[ci], markers[ci]
@@ -19,8 +19,7 @@ def scatter_plot(dataset, fname=None):
     # plot features
     f0 = [x[0] for x in xs]
     f1 = [x[1] for x in xs]
-    pylab.scatter(f0, f1, c = color, marker = marker, 
-      label = dataset.cl_lab[ci])
+    pylab.scatter(f0, f1, c=color, marker=marker, label=dataset.cl_lab[ci])
   pylab.legend()
 
   if dataset.feat_lab != None:
@@ -30,9 +29,6 @@ def scatter_plot(dataset, fname=None):
   pylab.xlabel(xlab)
   pylab.ylabel(ylab)
 
-  if fname:
-    pylab.savefig(fname)
-    pylab.close()
 
 def classifier_grid(classifier):
   RESOLUTION = 40
@@ -57,8 +53,7 @@ def classifier_grid(classifier):
     Zs.append(Z)
   return (X, Y, Zs)
 
-def plot_classifier_hyperplane(classifier, fname=None, heat_map=False, 
-  heat_map_alpha=1):
+def plot_classifier_hyperplane(classifier, heat_map=False, heat_map_alpha=1):
   '''
   Plot the decision-function of a classifier. The labels of the contours can
   be enabled with contour_label, plotting the heatmap can be disabled with the
@@ -68,19 +63,17 @@ def plot_classifier_hyperplane(classifier, fname=None, heat_map=False,
   for Z in Zs:
     pylab.contour(X, Y, Z, [0, .5, 1], linewidths=[2, .5, .5], colors='k')
   if heat_map:
-    if len(Zs) > 2: raise ValueError, 'Cannot draw a heat map for nclasses > 2'
+    if len(Zs) > 2: 
+      raise ValueError, 'Cannot draw a heat map for nclasses > 2'
     pylab.imshow(Z, origin='lower', cmap=pylab.cm.RdBu_r, alpha=heat_map_alpha, 
       aspect='auto', extent=[X.min(), X.max(), Y.min(), Y.max()])
-  if fname:
-    pylab.savefig(fname)
-    pylab.close()
 
 def plot_roc(d, fname=None):
   '''
   Plot the ROC curve for a DataSet d. The first column of d.xs and d.ys is used
   to compute the ROC.
   '''
-  assert(d.nclasses == 2)
+  assert d.nclasses == 2
   TPs, FPs = helpers.roc(d.xs[:, 0], d.ys[:, 0])
   pylab.plot(TPs, FPs)
   a = pylab.gca()
@@ -88,6 +81,3 @@ def plot_roc(d, fname=None):
   pylab.axis([0, 1, 0, 1])
   pylab.xlabel('False positives')
   pylab.ylabel('True positives')
-  if fname:
-    pylab.savefig(fname)
-    pylab.close()
