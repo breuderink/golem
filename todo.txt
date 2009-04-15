@@ -1,13 +1,10 @@
-2 grep for ).all(), replace with np.testing
-1 Add n-D feature labels.
-1 Change feat-shape to tuples for numpy consistency.
 1 Check logging scope/binding!
 1 Change to new-style classes (class A(object):)
 1 Add base-class for Nodes, implement train_ and test_ (like MDP)
 2 Search for asserts and replace with useful errors
 2 Add shuffle to crossvalidation
 3 Automated tests for derivatives of Node
-2 Use numpy.matrix when more natural
+2 Use numpy.matrix when more natural (Yes you SVM!)
 
 Unit-test wish-list
 ===================

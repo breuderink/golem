@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.4.1: http://docutils.sourceforge.net/" />
-<title>Pyhon ML</title>
+<title>Roadmap</title>
 <style type="text/css">
 
 /*
@@ -290,67 +290,78 @@ ul.auto-toc {
 </style>
 </head>
 <body>
-<div class="document" id="pyhon-ml">
-<h1 class="title">Pyhon ML</h1>
+<div class="document" id="roadmap">
+<h1 class="title">Roadmap</h1>
 <div class="section">
-<h1><a id="introduction" name="introduction">Introduction</a></h1>
-</div>
-<div class="section">
-<h1><a id="terminology" name="terminology">Terminology</a></h1>
-<p>We chose to split all operations in modular Blocks, that will operate on Data objects.</p>
-</div>
-<div class="section">
-<h1><a id="data-class" name="data-class">Data class</a></h1>
-<p>The data-class is used to communicate between blocks. The Data-class has an 'xs' attribute, containing the features for each instance, and an 'ys' attribute, containing the lables. These attributus are read-only. If you want to change them, you have to create a new Data-object. This is needed to prevent issues when using the same Data-class for multiple objects.</p>
-<p>Usually the 'ys' attribute is an label, encoded as an integer. So most blocks use a single output for each instance. For classifiers that only accept two classes, the OneVsOne Block can be used. For regression objects, multidimensional outputs are allowed.</p>
-</div>
-<div class="section">
-<h1><a id="block-class" name="block-class">Block class</a></h1>
-</div>
-<div class="section">
-<h1><a id="training-vs-testing" name="training-vs-testing">Training vs testing</a></h1>
-<p>A Block can be run in train and test mode. During train-mode, it can use both 'xs' and 'ys' attributes, during testing only the 'xs' attribute should be used. An exception is for example the Loss class, which measures the performance on the test-data.</p>
-</div>
-<div class="section">
-<h1><a id="blocks" name="blocks">Blocks</a></h1>
-<div class="section">
-<h2><a id="group" name="group">Group</a></h2>
-<p>Distributes Data objects over multiple Blocks</p>
-</div>
-<div class="section">
-<h2><a id="chain" name="chain">Chain</a></h2>
-<p>Creates a Block that is implemented as a chain of Blocks</p>
-</div>
-<div class="section">
-<h2><a id="map" name="map">Map</a></h2>
-<p>Applies different blocks to different Data objects</p>
-</div>
-<div class="section">
-<h2><a id="cv" name="cv">CV</a></h2>
-<p>Applies a block to multiple datasets, for example created using LOOCV or KFoldCV.</p>
-</div>
-<div class="section">
-<h2><a id="select" name="select">Select</a></h2>
-<p>Selects a specific data-object, associated with a given Loss-Block. Can be used for model-selection</p>
-</div>
-<div class="section">
-<h2><a id="fuse" name="fuse">Fuse</a></h2>
-<p>Combines several blocks, in order to perform fusion with another block.</p>
-</div>
-<div class="section">
-<h2><a id="one-vs-one" name="one-vs-one">One-vs-one</a></h2>
-<p>Splits one dataset into multiple dataset</p>
-</div>
-</div>
-<div class="section">
-<h1><a id="special-features" name="special-features">Special features</a></h1>
-<blockquote>
+<h1><a id="version-0-2" name="version-0-2">Version 0.2</a></h1>
 <ul class="simple">
-<li>GraphViz output</li>
-<li>Run on multiple computers using a special Map-Block</li>
-<li>A trace is produced for each Data object</li>
+<li>Change name</li>
+<li>Update package info</li>
+<li>ROC-plots</li>
 </ul>
-</blockquote>
+</div>
+<div class="section">
+<h1><a id="version-0-3" name="version-0-3">Version 0.3</a></h1>
+<ul class="simple">
+<li>Split Node (a.k.a. Group)</li>
+<li>Combine Node</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="version-0-4" name="version-0-4">Version 0.4</a></h1>
+<ul class="simple">
+<li>Add suffle to crossvalidation</li>
+<li>Naive Bayes / Fisher Discriminant</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="version-0-5" name="version-0-5">Version 0.5</a></h1>
+<ul class="simple">
+<li>Use Node baseclass with additional checks on train() and test()</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="version-0-6" name="version-0-6">Version 0.6</a></h1>
+<ul class="simple">
+<li>Forward feature selection</li>
+<li>Feature elimination</li>
+<li>Replace AUCFilter with generic filter</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="version-0-7" name="version-0-7">Version 0.7</a></h1>
+<ul class="simple">
+<li>Use numpy.matrix when more natural (Yes you SVM!)</li>
+<li>AdaBoost</li>
+<li>AUC-LP</li>
+<li>Kernel logistic regression</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="version-0-8" name="version-0-8">Version 0.8</a></h1>
+<ul class="simple">
+<li>No namespace pollution (logs, private imports)</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="version-0-9" name="version-0-9">Version 0.9</a></h1>
+<ul class="simple">
+<li>Find asserts and add useful error messages</li>
+<li>Doctests</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="version-1-0" name="version-1-0">Version 1.0</a></h1>
+<ul class="simple">
+<li>no changes, only bugfixes</li>
+<li>documentation and examples</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="version-1-1" name="version-1-1">Version 1.1</a></h1>
+<ul class="simple">
+<li>Independent Component Analysis</li>
+</ul>
 </div>
 </div>
 </body>

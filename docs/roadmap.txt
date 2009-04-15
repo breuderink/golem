@@ -1,0 +1,56 @@
+=======
+Roadmap
+=======
+
+
+Version 0.2
+-----------
+- Change name
+- Update package info
+- ROC-plots
+
+Version 0.3
+-----------
+- Split Node (a.k.a. Group)
+- Combine Node
+
+Version 0.4
+-----------
+- Add suffle to crossvalidation
+- Naive Bayes / Fisher Discriminant
+
+Version 0.5
+-----------
+- Use Node baseclass with additional checks on train() and test()
+
+Version 0.6
+-----------
+- Forward feature selection
+- Feature elimination
+- Replace AUCFilter with generic filter
+
+Version 0.7
+-----------
+- Use numpy.matrix when more natural (Yes you SVM!)
+- AdaBoost
+- AUC-LP
+- Kernel logistic regression
+
+Version 0.8
+-----------
+- No namespace pollution (logs, private imports)
+
+Version 0.9
+-----------
+- Find asserts and add useful error messages
+- Doctests
+
+Version 1.0
+-----------
+- no changes, only bugfixes
+- documentation and examples
+
+Version 1.1
+-----------
+- Independent Component Analysis
+
