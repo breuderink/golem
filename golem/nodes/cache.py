@@ -96,7 +96,10 @@ class DirCache:
     cPickle.dump(self.index, f, cPickle.HIGHEST_PROTOCOL)
     f.close()
 
-    # atomic update of index, does not work on windows.
+    # safe update
+    try:
+      os.remove('%s_index.cache' % self.base_name)
+    except OSError:
+      pass
     os.rename('%s_index.cache.new' % self.base_name,   
         '%s_index.cache' % self.base_name)
-

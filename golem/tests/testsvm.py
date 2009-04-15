@@ -28,7 +28,7 @@ class TestSVM(unittest.TestCase):
     self.assertEqual(loss.accuracy(svm.test(d)), 1)
     
     # Check if the right Support Vectors are found
-    np.testing.assert_equal(svm.model['SVs'], xs[2:6])
+    np.testing.assert_almost_equal(svm.model['SVs'], xs[2:6])
 
     # Check if the alphas satisfy the constraints
     # 0 < all alphas < C/m where m is the number of instances
