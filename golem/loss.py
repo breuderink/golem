@@ -35,11 +35,10 @@ def format_confmat(dataset):
   for ri in range(c.shape[0]):
     items = [labels[ri]] + [str(v) for v in c[ri, :]]
     result.append(formatter(items))
-    #result.append(labels[ri] + '\t' + '\t'.join([str(v) for v in c[ri, :]]))
   result.append(hline)
 
   return '\n'.join(result)
 
 def auc(dataset):
   assert(dataset.nclasses == 2)
-  return helpers.auc(dataset.xs[:, 0], dataset.ys[:, 1])
+  return helpers.auc(dataset.xs[:, 0], dataset.ys[:, 0])
