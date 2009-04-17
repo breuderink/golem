@@ -38,7 +38,7 @@ class CSP:
       self.W = self.W[:, comps]
     else:
       log.warning('Rank to low to select %d components. W.shape = %s' %
-        (self.m * 2, self.W.shape))
+        (self.m, self.W.shape))
       self.m = self.W.shape[1]
 
     self.cl_lab = d.cl_lab
