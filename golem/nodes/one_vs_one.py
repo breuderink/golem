@@ -24,6 +24,8 @@ class OneVsOne:
         cl_lab = [d.cl_lab[cia], d.cl_lab[cib]]
         log.info('Training class %s vs class %s' % (cl_lab[0], cl_lab[1]))
         pair_d = DataSet(ys=ys, cl_lab=cl_lab, default=pair_d)
+        
+        # Train pairwise node
         node = copy.deepcopy(self.base_node)
         node.train(pair_d)
         self.nodes[(cia, cib)] = node

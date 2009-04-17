@@ -15,4 +15,3 @@ class Chain:
 
   def __str__(self):
     return 'Chain (%s)' % ' -> '.join([str(n) for n in self.nodes])
-
