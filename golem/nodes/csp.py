@@ -2,8 +2,6 @@ import logging
 import numpy as np
 from ..dataset import DataSet
 
-log = logging.getLogger('CSP')
-
 class CSP:
   def __init__(self, m=2):
     assert(m % 2 == 0)
@@ -20,10 +18,10 @@ class CSP:
 
     # Calc whitening matrix P
     cov = np.cov(xs, rowvar=False) 
-    log.debug('Cov shape: %s' % str(cov.shape))
     U, s, V = np.linalg.svd(cov)
     P = np.dot(U, np.linalg.pinv(np.diag(s)) ** (.5))
-    self.P = P[:, :np.rank(P)]
+    rank = np.sum(s > 1e-8)
+    self.P = P[:, :rank]
     
     # Calc class-diagonalization matrix B
     d0 = d.get_class(0)
@@ -34,10 +32,11 @@ class CSP:
     self.W = np.dot(self.P, self.B)
     if self.W.shape[1] >= self.m:
       comps = range(self.m / 2) + range(-self.m / 2, 0)
-      log.debug('Selecting components %s' % comps)
+      logging.getLogger('golem.CSP').debug('Selecting components %s' % comps)
       self.W = self.W[:, comps]
     else:
-      log.warning('Rank to low to select %d components. W.shape = %s' %
+      logging.getLogger('golem.CSP').warning(
+        'Rank to low to select %d components. W.shape = %s' %
         (self.m, self.W.shape))
       self.m = self.W.shape[1]
 

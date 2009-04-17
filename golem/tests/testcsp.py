@@ -1,4 +1,4 @@
-import unittest
+import unittest, logging
 import os.path
 import numpy as np
 import pylab
@@ -31,11 +31,27 @@ class TestCSP(unittest.TestCase):
     n.train(d)
     d2 = n.test(d)
 
-    self.assertEqual(d2.nfeatures, 2)
-    self.assertEqual(d2.nclasses, 2)
-
     cov = np.cov(d2.xs, rowvar=False)
-    np.testing.assert_almost_equal(cov, np.eye(cov.shape[0]))
+    np.testing.assert_almost_equal(cov, np.eye(2))
+
+  def test_m(self):
+    '''Test that CSP selects the right number of components'''
+    logging.getLogger('golem.CSP').setLevel(logging.ERROR)
+
+    d = DataSet(xs=np.hstack([self.d.xs] * 2), feat_shape=(1, 8), 
+      default=self.d)
+
+    for m in [2, 4, 6]:
+      n = nodes.CSP(m=m)
+      n.train(d)
+      d2 = n.test(d)
+
+      if m <= 4:
+        self.assertEqual(d2.nfeatures, m)
+      else:
+        self.assertNotEqual(d2.nfeatures, m)
+
+    logging.getLogger('golem.CSP').setLevel(logging.WARNING)
   
   def test_plot(self):
     '''Plot CSP for visual inspection'''
