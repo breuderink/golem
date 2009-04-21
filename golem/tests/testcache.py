@@ -1,5 +1,5 @@
 import unittest, tempfile, cPickle, copy, logging
-from ..nodes.cache import DirCache, CacheNode
+from ..nodes.cache import DirCache, Cache
 from ..nodes import PriorClassifier, RandomClassifier
 from .. import data
 
@@ -54,7 +54,7 @@ class PickleMockNode(object):
     return 'I was pickled %d times' % self.serialization_count
 
 
-class TestCacheNode(unittest.TestCase):
+class TestCache(unittest.TestCase):
   def setUp(self):
     self.d = data.gaussian_dataset([10, 10])
     self.d2 = data.gaussian_dataset([10, 10, 10])
@@ -67,7 +67,7 @@ class TestCacheNode(unittest.TestCase):
     '''Test training of a cached node'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     self.failIf(cn.node.trained)
 
     # test first time
@@ -77,7 +77,7 @@ class TestCacheNode(unittest.TestCase):
 
     # test second time
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     d = cn.train(self.d)
     self.assertEqual(d, self.d)
     self.assert_(cn.node.trained)
@@ -85,7 +85,7 @@ class TestCacheNode(unittest.TestCase):
 
     # test with different node
     n = PickleMockNode(nid=2)
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     d = cn.train(self.d)
     self.assertEqual(d, self.d)
     self.assert_(cn.node.trained)
@@ -93,7 +93,7 @@ class TestCacheNode(unittest.TestCase):
 
     # test with different dataset
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     d2 = cn.train(self.d2)
     self.assertEqual(d2, self.d2)
     self.assert_(cn.node.trained)
@@ -103,7 +103,7 @@ class TestCacheNode(unittest.TestCase):
     '''Test testing of a cached node'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     self.failIf(cn.node.tested)
 
     # test first time
@@ -114,7 +114,7 @@ class TestCacheNode(unittest.TestCase):
 
     # test second time
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     d = cn.test(self.d)
     self.assertEqual(d, self.d)
     self.assert_(cn.node.tested)
@@ -122,7 +122,7 @@ class TestCacheNode(unittest.TestCase):
 
     # test with different node
     n = PickleMockNode(nid=2)
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     d = cn.test(self.d)
     self.assertEqual(d, self.d)
     self.assert_(cn.node.tested)
@@ -130,7 +130,7 @@ class TestCacheNode(unittest.TestCase):
 
     # test with different dataset
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     d2 = cn.test(self.d2)
     self.assertEqual(d2, self.d2)
     self.assert_(cn.node.tested)
@@ -140,7 +140,7 @@ class TestCacheNode(unittest.TestCase):
     '''Test the combination of training and testing'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     self.failIf(cn.node.trained)
     self.failIf(cn.node.tested)
 
@@ -150,7 +150,7 @@ class TestCacheNode(unittest.TestCase):
     self.assertEqual(cn.node.serialization_count, 0)
 
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     cn.test(self.d)
     self.assert_(cn.node.tested)
     self.assertEqual(cn.node.serialization_count, 0)
@@ -159,7 +159,7 @@ class TestCacheNode(unittest.TestCase):
     '''Test the combination of testing and training'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     self.failIf(cn.node.trained)
     self.failIf(cn.node.tested)
 
@@ -169,7 +169,7 @@ class TestCacheNode(unittest.TestCase):
     self.assertEqual(cn.node.serialization_count, 0)
 
     n = PickleMockNode()
-    cn = CacheNode(n, cache_name) 
+    cn = Cache(n, cache_name) 
     cn.train(self.d)
     self.assert_(cn.node.trained)
     self.assertEqual(cn.node.serialization_count, 0)
