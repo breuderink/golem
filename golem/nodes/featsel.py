@@ -29,8 +29,8 @@ class AUCFilter:
     self.feat_bool[pos_aucs >= min_auc] = True
 
     auc_log.info('Keeping %d%% of the features' % (100 * self.feat_bool.mean()))
-    if self.feat_bool.size < 20:
-      auc_log.info('Keeping features %s' % str(self.feat_bool))
+    if self.feat_bool.size <= 50:
+      auc_log.info('Keeping features %s' % str(self.feat_bool.astype(int)))
     self.cl_lab = d.cl_lab
     self.aucs = aucs.reshape(d.feat_shape)
 
