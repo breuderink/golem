@@ -79,5 +79,6 @@ def plot_roc(d, fname=None):
   a = pylab.gca()
   a.set_aspect('equal')
   pylab.axis([0, 1, 0, 1])
+  pylab.grid()
   pylab.xlabel('False positives')
   pylab.ylabel('True positives')

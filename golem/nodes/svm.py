@@ -24,7 +24,6 @@ class SVM:
     ys = d.ys
 
     # See "Learning with Kernels", Schölkopf and Smola, p205
-    log.info('Start SVM')
     log.debug('Calculate kernel matrix')
     # linear kernel, so each entry contains the dot-product:
     kernel_matrix = build_kernel_matrix(xs, xs, kernel=self.kernel, 

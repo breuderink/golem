@@ -1,8 +1,6 @@
 import copy
 import logging
 
-log = logging.getLogger('golem.ModelSelect')
-
 class ModelSelect:
   def __init__(self, nodes, critic):
     assert(isinstance(nodes, list))
@@ -13,13 +11,14 @@ class ModelSelect:
   def train(self, d):
     best_node = None
     for node in self.nodes:
-      log.info('Evaluating: %s' % str(node))
+      logging.getLogger('golem.ModelSelect').info('Evaluating: %s' % str(node))
       perf = self.critic(d, copy.deepcopy(node))
       if best_node == None or perf > best_perf:
         best_perf = perf
         best_node = node
     best_node.train(d) 
     self.best_node = best_node
+    logging.getLogger('golem.ModelSelect').info('Best: %s' % str(best_node))
 
   def test(self, d):
     return self.best_node.test(d)
