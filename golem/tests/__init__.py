@@ -10,7 +10,6 @@ from testzscore import *
 from testmodelselect import *
 from testpca import *
 from testlsreg import *
-from testcsp import *
 from testhelpers import *
 from testfeatsel import *
 from testcache import *

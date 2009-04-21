@@ -14,7 +14,7 @@ class ModelSelect:
     best_node = None
     for node in self.nodes:
       log.info('Evaluating: %s' % str(node))
-      perf =  self.critic(d, copy.deepcopy(node))
+      perf = self.critic(d, copy.deepcopy(node))
       if best_node == None or perf > best_perf:
         best_perf = perf
         best_node = node
