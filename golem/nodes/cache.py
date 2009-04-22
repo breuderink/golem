@@ -23,8 +23,8 @@ class Cache:
         'Caching saved %.2f seconds.' % saved_time)
     else:
       logging.getLogger('golem.nodes.Cache').warning(
-        'Caching took %.2f seconds (from %.2f to %.2f).' % (
-        saved_time, uncached_time, cached_time))
+        'Caching added %.2f seconds (from %.2f to %.2f).' % (
+        -saved_time, uncached_time, cached_time))
 
   def train(self, d):
     '''
