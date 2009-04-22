@@ -313,6 +313,16 @@ class TestDataSet(unittest.TestCase):
     d.nd_xs[0, 0, 0] = 1000
     self.assertEqual(d.xs[0, 0], 1000)
   
+  def test_shuffle(self):
+    '''Test shuffling the DataSet'''
+    xs, ys = np.random.random((6, 2)), np.ones((6, 1)) 
+    d = DataSet(xs, ys)
+
+    # shuffle and sort
+    ds = d.shuffled()
+    self.failIfEqual(ds, d)
+    self.assertEqual(ds[np.argsort(ds.ids.flat)], d)
+
   def test_sorted(self):
     '''Test sorting the DataSet'''
     ids = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]]).T
@@ -321,17 +331,13 @@ class TestDataSet(unittest.TestCase):
     d2d = DataSet(xs, ys, ids)
 
     # shuffle and sort
-    shuf_i = np.arange(d1d.ninstances)
-    np.random.shuffle(shuf_i)
-    d1ds, d2ds = d1d[shuf_i], d2d[shuf_i]
+    d1ds = d1d.shuffled()
     self.failIfEqual(d1d, d1ds)
+    self.assertEqual(d1d, d1ds.sorted())
+
+    d2ds = d2d.shuffled()
     self.failIfEqual(d2d, d2ds)
-    d1ds = d1ds.sorted()
-    d2ds = d2ds.sorted()
-    
-    # verify that ids are sorted
-    self.assertEqual(d1d, d1ds)
-    self.assertEqual(d2d, d2ds)
+    self.assertEqual(d2d, d2ds.sorted())
 
   def test_str(self):
     '''Test string representation.'''

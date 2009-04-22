@@ -108,8 +108,14 @@ class DataSet:
     return self[self.ys[:, i] == 1]
 
   def sorted(self):
-    '''Sort by id'''
+    '''Return a by ids sorted DataSet'''
     return self[np.argsort(self.ids[:,0])] # sort on first col of .ids
+
+  def shuffled(self):
+    '''Return a shuffled DataSet'''
+    si = np.arange(self.ninstances)
+    np.random.shuffle(si)
+    return self[si]
     
   def __getitem__(self, i):
     if isinstance(i, slice) or isinstance(i, list) or isinstance(i, np.ndarray):
