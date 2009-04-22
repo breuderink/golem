@@ -60,3 +60,13 @@ def cross_validate(subsets, node):
     tnode.train(tr)
     yield tnode.test(te)
     del tnode
+
+
+def rep_cv(d, node, repeats=5, K=10):
+  '''
+  Repeated cross-validation stratified subsets of d. 
+  Returns a list with the output of node on the testsets.
+  '''
+  for ri in range(repeats):
+    for td in cross_validate(stratified_split(d.shuffled), node):
+      yield td
