@@ -18,11 +18,10 @@ def stratified_split(d, K=10):
     ind = np.arange(cid.ninstances) % K
     for si in range(K):
       # Loop over future subsets
-      indices = np.where(ind == si)[0].copy().tolist()
       if si < len(subsets):
-        subsets[si] += cid[indices] # Grow subset
+        subsets[si] += cid[ind == si] # Grow subset
       else:
-        subsets.append(cid[indices]) # Create subset
+        subsets.append(cid[ind == si]) # Create subset
   return subsets
 
 def sequential_split(d, K=10):

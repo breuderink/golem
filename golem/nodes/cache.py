@@ -8,8 +8,8 @@ class Cache:
     self.cache = DirCache(cachedir)
 
   @classmethod
-  def calc_hash(cls, d):
-    return sha1(cPickle.dumps(d, cPickle.HIGHEST_PROTOCOL)).hexdigest()
+  def calc_hash(cls, n):
+    return sha1(cPickle.dumps(n, cPickle.HIGHEST_PROTOCOL)).hexdigest()
 
   def log_duration(self, cached_time, uncached_time):
     saved_time = uncached_time - cached_time
