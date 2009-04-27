@@ -36,7 +36,15 @@ class TestLoss(unittest.TestCase):
   
   def testFormatConfusionMatrix(self):
     c = loss.format_confmat(self.d)
-    self.assert_(hash(c) == 630198187)
+    target = \
+      '-----------------------------------\n' + \
+      'True\\Pred.|  class0  class1  class2\n' + \
+      '-----------------------------------\n' + \
+      '    class0|       3       1       0\n'+ \
+      '    class1|       0       3       1\n' + \
+      '    class2|       1       0       3\n' + \
+      '-----------------------------------'
+    self.assertEqual(c, target)
   
   def testAUC(self):
     d1 = DataSet(helpers.to_one_of_n([0, 0, 1, 1, 1, 1]),
