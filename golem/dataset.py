@@ -184,7 +184,7 @@ class DataSet:
       if member in ['xs', 'ys', 'ids']:
         hash.update(np.ascontiguousarray(v).view(np.uint8))
       else:
-        hash.update(cPickle.dumps(v))
+        hash.update(repr(v))
     return hash.digest()
     
   @property
