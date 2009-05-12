@@ -51,13 +51,12 @@ class TestAUCFilter(unittest.TestCase):
     d2 = n.test(d)
     self.assertEqual(d2.nfeatures, 6)
 
-  def test_AUCFilterr_too_strong(self):
+  def test_AUCFilter_too_strong(self):
     d = self.d
     n = featsel.AUCFilter(min_auc=1)
     n.train(d)
     d2 = n.test(d)
     self.assertEqual(d2.nfeatures, 0)
-    self.assertFalse(n.feat_bool.all())
 
   def test_AUCFilter_is_symmetric(self):
     d = self.d
