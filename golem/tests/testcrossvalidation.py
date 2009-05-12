@@ -1,4 +1,4 @@
-import unittest, sets, operator
+import unittest, operator
 import numpy as np
 from .. import crossval, data
 
@@ -45,5 +45,5 @@ class TestCrossValidation(unittest.TestCase):
   def check_disjoint(self, subsets):
     '''Test that subsets are disjoint datasets'''
     for (tr, te) in crossval.cross_validation_sets(subsets):
-      intersection = sets.Set(tr.ids.flatten()).intersection(te.ids.flatten()) 
+      intersection = set(tr.ids.flatten()).intersection(te.ids.flatten()) 
       self.assertEqual(len(intersection), 0)
