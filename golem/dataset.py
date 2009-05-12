@@ -6,7 +6,7 @@ import helpers
 
 class DataSet:
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
-    feat_shape=None, feat_dim_units=None, feat_nd_lab=None, extra=None, 
+    feat_shape=None, feat_dim_lab=None, feat_nd_lab=None, extra=None, 
     default=None):
     '''Create a new dataset.'''
     # First, take care of xs, ys and ids
@@ -57,10 +57,10 @@ class DataSet:
     # Now we are basically done, but let's add optional info
     if default != None:  
       # fill in from default arg
-      if feat_dim_units == None:
-        feat_dim_units = default.feat_dim_units
-        if len(default.feat_dim_units) != len(self.feat_shape):
-          feat_dim_units = None
+      if feat_dim_lab == None:
+        feat_dim_lab = default.feat_dim_lab
+        if len(default.feat_dim_lab) != len(self.feat_shape):
+          feat_dim_lab = None
       if feat_nd_lab == None:
         feat_nd_lab = default.feat_nd_lab
         if feat_nd_lab != None:
@@ -68,7 +68,7 @@ class DataSet:
             feat_nd_lab = None
       extra = extra if extra != None else default.extra
 
-    self.feat_dim_units = feat_dim_units if feat_dim_units else \
+    self.feat_dim_lab = feat_dim_lab if feat_dim_lab else \
       ['feat_dim%d' % i for i in range(len(self.feat_shape))]
     self.feat_nd_lab = feat_nd_lab if feat_nd_lab else None
     self.extra = extra if extra else {}
@@ -80,7 +80,7 @@ class DataSet:
     assert self.feat_lab == None or isinstance(self.feat_lab, list), \
       'Feature labels not a list'
     assert isinstance(self.feat_shape, tuple), 'feat_shape not a tuple'
-    assert isinstance(self.feat_dim_units, list), 'feat_dim_units not a list'
+    assert isinstance(self.feat_dim_lab, list), 'feat_dim_lab not a list'
     assert isinstance(self.extra, dict), 'extra not a dict'
 
     if self.feat_lab != None and len(self.feat_lab) != self.nfeatures:
@@ -91,10 +91,10 @@ class DataSet:
       raise ValueError('%d features does not match feat_shape %s' % \
         (self.nfeatures, self.feat_shape))
 
-    if self.feat_dim_units != None:
-      if len(self.feat_shape) != len(self.feat_dim_units):
-        raise ValueError('feat_dim_units %s does not match feat_shape %s' %
-          (repr(self.feat_dim_units), repr(self.feat_shape)))
+    if self.feat_dim_lab != None:
+      if len(self.feat_shape) != len(self.feat_dim_lab):
+        raise ValueError('feat_dim_lab %s does not match feat_shape %s' %
+          (repr(self.feat_dim_lab), repr(self.feat_shape)))
     if self.feat_nd_lab != None:
       assert len(self.feat_nd_lab) == len(self.feat_shape)
       for i, dlab in enumerate(self.feat_nd_lab):

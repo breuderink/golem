@@ -19,7 +19,7 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d.nclasses, 2)
     np.testing.assert_equal(d.nd_xs, d.xs)
     np.testing.assert_equal(d.ids, np.arange(d.ninstances).reshape(-1, 1))
-    self.assertEqual(d.feat_dim_units, ['feat_dim0'])
+    self.assertEqual(d.feat_dim_lab, ['feat_dim0'])
     self.assertEqual(d.feat_nd_lab, None)
     self.assertEqual(d.cl_lab, ['class0', 'class1'])
     self.assertEqual(d.feat_lab, None)
@@ -57,7 +57,7 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, extra='baz')
 
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, 
-      feat_dim_units='baz')
+      feat_dim_lab='baz')
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_nd_lab=['a'])
     
   def test_construction_dims(self):
@@ -93,15 +93,15 @@ class TestDataSetConstruction(unittest.TestCase):
     DataSet(xs, ys, feat_shape=(1, 12))
     self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=(1, 1))
 
-  def test_construction_feat_dim_units(self):
-    '''Test feat_dim_units in construction of DataSet'''
+  def test_construction_feat_dim_lab(self):
+    '''Test feat_dim_lab in construction of DataSet'''
     xs = np.arange(12 * 3).reshape(3, -1)
     ys = np.arange(3).reshape(-1, 1)
 
-    DataSet(xs, ys, feat_dim_units=['sec'])
-    DataSet(xs, ys, feat_shape=(1, 12), feat_dim_units=['sec', 'm'])
+    DataSet(xs, ys, feat_dim_lab=['sec'])
+    DataSet(xs, ys, feat_shape=(1, 12), feat_dim_lab=['sec', 'm'])
     self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=(1, 12), 
-      feat_dim_units=['sec'])
+      feat_dim_lab=['sec'])
 
   def test_construction_feat_nd_labs(self):
     '''Test feat_nd_lab in construction of DataSet'''
@@ -117,7 +117,7 @@ class TestDataSetConstruction(unittest.TestCase):
   def test_from_default(self):
     xs = ys = ids = np.arange(12).reshape(-1, 1)
     d = DataSet(xs, ys, ids, cl_lab= ['c1'], feat_lab=['f1'], 
-      feat_shape=(1, 1), feat_dim_units=['sec', 'm'], 
+      feat_shape=(1, 1), feat_dim_lab=['sec', 'm'], 
       feat_nd_lab=[['y'], ['x']], extra={'foo':'bar'})
 
     # test xs
@@ -156,11 +156,11 @@ class TestDataSetConstruction(unittest.TestCase):
     d2 = DataSet(feat_shape=None, default=d)
     self.assertEqual(d2.feat_shape, d.feat_shape)
 
-    # test feat_dim_units
-    d2 = DataSet(feat_dim_units=['m', 's'], default=d)
-    self.assertEqual(d2.feat_dim_units, ['m', 's'])
-    d2 = DataSet(feat_dim_units=None, default=d)
-    self.assertEqual(d2.feat_dim_units, d.feat_dim_units)
+    # test feat_dim_lab
+    d2 = DataSet(feat_dim_lab=['m', 's'], default=d)
+    self.assertEqual(d2.feat_dim_lab, ['m', 's'])
+    d2 = DataSet(feat_dim_lab=None, default=d)
+    self.assertEqual(d2.feat_dim_lab, d.feat_dim_lab)
 
     # test feat_nd_lab
     d2 = DataSet(feat_nd_lab=[['a'], ['b']], default=d)
@@ -182,7 +182,7 @@ class TestDataSet(unittest.TestCase):
     ys = np.array([[0, 1], [1, 0]])
     ids = np.array([[3], [4]])
     self.d = d = DataSet(xs, ys, ids, feat_lab=['f1', 'f2', 'f3'], 
-      cl_lab=['A', 'B'], feat_shape=(3, 1), feat_dim_units=['d0', 'd1'], 
+      cl_lab=['A', 'B'], feat_shape=(3, 1), feat_dim_lab=['d0', 'd1'], 
       feat_nd_lab=[['f1', 'f2', 'f3'],['n']], extra={'foo':'bar'})
 
     self.diff_ds = [DataSet(xs=d.xs+1, default=d),
@@ -191,7 +191,7 @@ class TestDataSet(unittest.TestCase):
       DataSet(cl_lab=['a', 'b'], default=d),
       DataSet(feat_lab=['F1', 'F2', 'F3'], default=d),
       DataSet(feat_shape=(1, 3), feat_nd_lab=[], default=d),
-      DataSet(feat_dim_units=['da', 'db'], default=d),
+      DataSet(feat_dim_lab=['da', 'db'], default=d),
       DataSet(feat_nd_lab=[['F1', 'F2', 'F3'],['N']], default=d),
       DataSet(extra={'foo':'baz'}, default=d)]
       
@@ -200,7 +200,7 @@ class TestDataSet(unittest.TestCase):
     self.assertEqual(d, d)
     self.assertEqual(d, DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
       cl_lab=d.cl_lab, feat_shape=d.feat_shape, 
-      feat_dim_units=d.feat_dim_units, feat_nd_lab=d.feat_nd_lab, 
+      feat_dim_lab=d.feat_dim_lab, feat_nd_lab=d.feat_nd_lab, 
       extra=d.extra))
 
     # test all kinds of differences
@@ -217,7 +217,7 @@ class TestDataSet(unittest.TestCase):
     self.assertEqual(d.hash(), d.hash())
     self.assertEqual(d.hash(), DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
       cl_lab=d.cl_lab, feat_shape=d.feat_shape, 
-      feat_dim_units=d.feat_dim_units, feat_nd_lab=d.feat_nd_lab, 
+      feat_dim_lab=d.feat_dim_lab, feat_nd_lab=d.feat_nd_lab, 
       extra=d.extra).hash())
 
     # test all kinds of differences
@@ -257,9 +257,9 @@ class TestDataSet(unittest.TestCase):
     self.assertRaises(ValueError, da.__add__,
       DataSet(cl_lab=['c0', 'c1', 'c2'], default=db))
 
-    # different feat_dim_units
+    # different feat_dim_lab
     self.assertRaises(ValueError, da.__add__,
-      DataSet(feat_dim_units=['cm'], default=db))
+      DataSet(feat_dim_lab=['cm'], default=db))
 
     # different feat_nd_lab
     self.assertRaises(ValueError, da.__add__,
