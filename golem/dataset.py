@@ -43,7 +43,10 @@ class DataSet:
     if default != None:  
       # fill in from default arg
       if cl_lab == None: cl_lab = default.cl_lab
-      if feat_lab == None: feat_lab = default.feat_lab
+      if feat_lab == None: 
+        feat_lab = default.feat_lab
+        if feat_lab != None and len(feat_lab) != self.nfeatures:
+          feat_lab = None
       if feat_shape == None:
         feat_shape = default.feat_shape
         if np.prod(default.feat_shape) != self.nfeatures:
@@ -59,12 +62,12 @@ class DataSet:
       # fill in from default arg
       if feat_dim_lab == None:
         feat_dim_lab = default.feat_dim_lab
-        if len(default.feat_dim_lab) != len(self.feat_shape):
+        if len(feat_dim_lab) != len(self.feat_shape):
           feat_dim_lab = None
       if feat_nd_lab == None:
         feat_nd_lab = default.feat_nd_lab
         if feat_nd_lab != None:
-          if len(feat_nd_lab) != len(self.feat_shape):
+          if tuple(len(dim_lab) for dim_lab in feat_nd_lab) != self.feat_shape:
             feat_nd_lab = None
       extra = extra if extra != None else default.extra
 

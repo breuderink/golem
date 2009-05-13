@@ -149,6 +149,8 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d2.feat_lab, ['altf0'])
     d2 = DataSet(feat_lab=None, default=d)
     self.assertEqual(d2.feat_lab, d.feat_lab)
+    d2 = DataSet(xs=np.random.rand(12, 6), feat_shape=(2, 3), default=d)
+    self.assertEqual(d2.feat_lab, None)
     
     # test feat_shape
     d2 = DataSet(feat_shape=(1, 1, 1), default=d)
@@ -167,12 +169,17 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d2.feat_nd_lab, [['a'], ['b']])
     d2 = DataSet(feat_nd_lab=None, default=d)
     self.assertEqual(d2.feat_nd_lab, d.feat_nd_lab)
+    d2 = DataSet(xs=np.random.rand(12, 6), feat_shape=(2, 3), default=d)
+    self.assertEqual(d2.feat_nd_lab, None)
 
     # test extra
     d2 = DataSet(extra={'foo':'baz'}, default=d)
     self.assertEqual(d2.extra, {'foo':'baz'})
     d2 = DataSet(extra=None, default=d)
     self.assertEqual(d2.extra, d.extra)
+
+    # test access of emtpy members
+    d2 = DataSet(default=DataSet(xs=d.xs, ys=d.ys))
   
 
 class TestDataSet(unittest.TestCase):
