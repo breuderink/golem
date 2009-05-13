@@ -40,12 +40,12 @@ class FeatFilter:
       feat_lab = None
     return DataSet(xs=d.xs[:, self.feat_bool], feat_lab=feat_lab, default=d)
 
-def auc_filter(xs, ys):
+def pos_auc_filter(xs, ys):
     assert ys.shape[1] == 2, 'Cannot use AUC for > 2 classes'
     aucs = helpers.auc(xs, ys[:,-1])
     return np.abs(aucs - .5) + .5
 
 class AUCFilter(FeatFilter):
   def __init__(self, min_auc=.6, min_nfeatures=0):
-    FeatFilter.__init__(self, auc_filter, threshold=min_auc, 
+    FeatFilter.__init__(self, pos_auc_filter, threshold=min_auc, 
       min_nfeatures=min_nfeatures)
