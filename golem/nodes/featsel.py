@@ -6,29 +6,39 @@ from .. import helpers
 log = logging.getLogger('FeatFilter')
 auc_log = logging.getLogger('AUCFilter')
 
-class FeatFilter:
-  def __init__(self, statistic, min_nfeatures=0, threshold=0):
-    self.min_nfeatures = min_nfeatures
+class FeatStats:
+  def __init__(self, statistic):
     self.statistic = statistic
+
+  def train(self, d):
+    stats = [self.statistic(d.xs[:,fi], d.ys) for fi in xrange(d.nfeatures)]
+    self.feat_stats = np.asarray(stats).reshape(d.feat_shape)
+
+  def test(self, d):
+    return d
+
+
+class FeatFilter(FeatStats):
+  def __init__(self, statistic, min_nfeatures=0, threshold=0):
+    FeatStats.__init__(self, statistic)
+    self.min_nfeatures = min_nfeatures
     self.threshold = threshold
 
   def train(self, d):
-    stats = np.asarray(
-      [self.statistic(d.xs[:,fi], d.ys) for fi in xrange(d.nfeatures)])
+    FeatStats.train(self, d)
     feat_bool = np.zeros(d.nfeatures, bool)
 
     if self.min_nfeatures > 0:
-      feat_bool[np.argsort(stats)[-self.min_nfeatures:]] = True
+      feat_bool[np.argsort(self.feat_stats)[-self.min_nfeatures:]] = True
       log.debug('Selector after min_nfeatures: %s' % str(feat_bool.astype(int)))
 
-    feat_bool[stats >= self.threshold] = True
+    feat_bool[self.feat_stats >= self.threshold] = True
     log.debug('Selector after thresholding: %s' % str(feat_bool.astype(int)))
 
     log.info('Keeping %d%% of the features' % (100 * feat_bool.mean()))
     if feat_bool.size <= 50:
       log.info('Keeping features %s' % str(feat_bool.astype(int)))
 
-    self.stats = stats.reshape(d.feat_shape)
     self.feat_bool = feat_bool
 
   def test(self, d):
