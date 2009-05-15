@@ -3,15 +3,13 @@ import numpy as np
 from ..dataset import DataSet
 from .. import helpers
 
-# Requires:
-# - A set with classifiers
-# - A splitter (OVO, OVR, Bagging, Boosting?)
-# - A combiner (Average?)
-
-
 def copy_splitter(d):
   while True:
     yield d
+
+def bagging_splitter(d):
+  while True:
+    yield d[np.random.random_integers(0, d.ninstances, d.ninstances)]
 
 def average_combiner(ds):
   xs = np.zeros(ds[0].xs.shape)
@@ -20,20 +18,22 @@ def average_combiner(ds):
   return DataSet(xs=xs/float(len(ds)), default=ds[0])
 
 class Ensemble:
-  def __init__(self, nodes, splitter=copy_splitter, combiner=average_combiner):
+  def __init__(self, nodes, tr_splitter=copy_splitter, 
+    te_splitter=copy_splitter, combiner=average_combiner):
     assert isinstance(nodes, list)
     self.nodes = nodes 
-    self.splitter = splitter
+    self.tr_splitter = tr_splitter
+    self.te_splitter = te_splitter
     self.combiner = combiner
   
   def train(self, d):
-    for (n, nd) in itertools.izip(self.nodes, self.splitter(d)):
+    for (n, nd) in itertools.izip(self.nodes, self.tr_splitter(d)):
       n.train(nd)
 
   def test(self, d):
     xs = np.zeros(d.xs.shape)
     results = [n.test(nd) for (n, nd) in itertools.izip(self.nodes, 
-      self.splitter(d))]
+      self.te_splitter(d))]
     assert len(results) == len(self.nodes), 'Not all nodes were used'
     return self.combiner(results)
 
@@ -111,3 +111,7 @@ class OneVsRest:
 
   def test(self, d):
     return self.ensemble.test(d)
+
+class Bagging(Ensemble):
+  def __init__(self, n, base_node):
+    Ensemble.__init__(self, [copy.deepcopy(base_node) for i in range(n)])
