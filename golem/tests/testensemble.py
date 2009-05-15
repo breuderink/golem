@@ -35,3 +35,18 @@ class TestOneVsRest(unittest.TestCase):
     accs = [loss.accuracy(r) for r in 
       crossval.cross_validate(crossval.stratified_split(d, 2), cl)]
     self.assertEqual(np.mean(accs), 1)
+
+class TestBagging(unittest.TestCase):
+  def setUp(self):
+    # Construct a *very* predictable DataSet with 4 classes
+    ys = helpers.to_one_of_n(np.arange(60) % 4)
+    self.d = DataSet(xs=ys[:, :-1], ys=ys)
+
+  def test_bagging(self):
+    d = self.d
+    self.assertEqual(d.nclasses, 4)
+    wcl = nodes.WeakClassifier()
+    wcl.train(d)
+    bcl = nodes.Bagging(nodes.WeakClassifier(), 20)
+    bcl.train(d)
+    self.assert_(loss.accuracy(wcl.test(d)) < loss.accuracy(bcl.test(d)))

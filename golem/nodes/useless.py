@@ -29,3 +29,13 @@ class RandomClassifier:
     return DataSet(xs, d.ys, d.ids, cl_lab=d.cl_lab)
 
   def __str__(self): return 'RandomClassifier ()'
+
+class WeakClassifier:
+  def train(self, d):
+    self.nclasses = d.nclasses
+
+  def test(self, d):
+    xs = np.random.random((d.ninstances, self.nclasses)) + .10 * d.ys
+    return DataSet(xs, d.ys, d.ids, cl_lab=d.cl_lab)
+
+  def __str__(self): return 'RandomClassifier ()'

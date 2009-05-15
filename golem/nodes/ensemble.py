@@ -7,10 +7,6 @@ def copy_splitter(d):
   while True:
     yield d
 
-def bagging_splitter(d):
-  while True:
-    yield d[np.random.random_integers(0, d.ninstances, d.ninstances)]
-
 def average_combiner(ds):
   xs = np.zeros(ds[0].xs.shape)
   for d in ds:
@@ -112,6 +108,12 @@ class OneVsRest:
   def test(self, d):
     return self.ensemble.test(d)
 
+def bagging_splitter(d):
+  while True:
+    i = np.random.random_integers(0, d.ninstances-1, d.ninstances)
+    yield DataSet(xs=d.xs[i, :], ys=d.ys[i,:], ids=None, default=d)
+
 class Bagging(Ensemble):
-  def __init__(self, n, base_node):
-    Ensemble.__init__(self, [copy.deepcopy(base_node) for i in range(n)])
+  def __init__(self, base_node, n):
+    Ensemble.__init__(self, [copy.deepcopy(base_node) for i in range(n)], 
+      tr_splitter=bagging_splitter)

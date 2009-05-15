@@ -4,7 +4,7 @@ from pca import PCA
 from lsreg import LSReg
 from chain import Chain, RationedChain
 from zscore import ZScore
-from useless import PriorClassifier, RandomClassifier
+from useless import PriorClassifier, RandomClassifier, WeakClassifier
 from featsel import AUCFilter
 from cache import Cache
-from ensemble import Ensemble, OneVsOne, OneVsRest
+from ensemble import Ensemble, OneVsOne, OneVsRest, Bagging
