@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from .. import DataSet, helpers, nodes, crossval, loss
+from ..nodes.ensemble import bagging_splitter
 
 class TestOneVsOne(unittest.TestCase):
   def setUp(self):
@@ -41,6 +42,15 @@ class TestBagging(unittest.TestCase):
     # Construct a *very* predictable DataSet with 4 classes
     ys = helpers.to_one_of_n(np.arange(60) % 4)
     self.d = DataSet(xs=ys[:, :-1], ys=ys)
+
+  def test_baggging_split(self):
+    d = self.d
+    bs = bagging_splitter(d)
+    for i in range(10):
+      di = bs.next()
+      self.assertEqual(di.ninstances, d.ninstances)
+      self.assertEqual(di.nclasses, d.nclasses)
+      self.assertNotEqual(di, d)
 
   def test_bagging(self):
     d = self.d
