@@ -4,8 +4,6 @@ from testkernel import *
 from testsvm import *
 from testloss import *
 from testcrossvalidation import *
-from testonevsrest import *
-from testonevsone import *
 from testzscore import *
 from testmodelselect import *
 from testpca import *
@@ -14,3 +12,4 @@ from testhelpers import *
 from testfeatsel import *
 from testcache import *
 from testchain import *
+from testensemble import *

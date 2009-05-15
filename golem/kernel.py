@@ -3,7 +3,6 @@ import numpy as np
 
 def build_kernel_matrix(instances_row, instances_col, kernel=None, **params):
   '''Build Gramm-matrix or kernel-matrix'''
-  # @@TODO investigate sparse options
   assert(instances_row.dtype == instances_col.dtype == np.float64)
   irow, icol = instances_row, instances_col
 
