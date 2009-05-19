@@ -358,3 +358,8 @@ class TestDataSet(unittest.TestCase):
     _, tfname = tempfile.mkstemp('.goldat')
     self.d.save(tfname)
     self.assertEqual(self.d, DataSet.load(tfname))
+
+  def test_write_protected(self):
+    d = self.d
+    for att in [d.xs, d.ys, d.ids]:
+      self.assertRaises(RuntimeError, att.__setitem__, (0, 0), -1)
