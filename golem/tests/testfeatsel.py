@@ -10,7 +10,7 @@ class TestAUCFilter(unittest.TestCase):
     ys = helpers.to_one_of_n(np.linspace(0, 1, 400).round())
     xs = ys[:, 1].reshape(-1, 1) + (np.linspace(.5, 10, 10) * 
       np.random.randn(400, 10))
-    self.d = DataSet(xs=xs, ys=ys)
+    self.d = DataSet(xs=xs, ys=ys, feat_shape=(2, 5))
 
   def test_AUCFilter(self):
     d = self.d

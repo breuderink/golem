@@ -29,10 +29,11 @@ class FeatFilter(FeatStats):
     feat_bool = np.zeros(d.nfeatures, bool)
 
     if self.min_nfeatures > 0:
-      feat_bool[np.argsort(self.feat_stats)[-self.min_nfeatures:]] = True
+      feat_bool[np.argsort(self.feat_stats.flatten())[-self.min_nfeatures:]]\
+        = True
       log.debug('Selector after min_nfeatures: %s' % str(feat_bool.astype(int)))
 
-    feat_bool[self.feat_stats >= self.threshold] = True
+    feat_bool[self.feat_stats.flatten() >= self.threshold] = True
     log.debug('Selector after thresholding: %s' % str(feat_bool.astype(int)))
 
     log.info('Keeping %d%% of the features' % (100 * feat_bool.mean()))
