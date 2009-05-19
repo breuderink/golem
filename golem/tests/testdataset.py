@@ -315,10 +315,6 @@ class TestDataSet(unittest.TestCase):
       d.nd_xs[0,:,:], np.arange(10).reshape(2, 1, 5))
     np.testing.assert_equal(
       d.nd_xs[2,:,:], np.arange(20, 30).reshape(2, 1, 5))
-
-    # test modification
-    d.nd_xs[0, 0, 0] = 1000
-    self.assertEqual(d.xs[0, 0], 1000)
   
   def test_shuffle(self):
     '''Test shuffling the DataSet'''

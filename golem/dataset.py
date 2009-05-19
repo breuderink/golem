@@ -38,6 +38,10 @@ class DataSet:
       raise ValueError('Number of rows does not match')
     if np.unique(self.ids[:,0]).size != self.ninstances:
       raise ValueError('The ids not unique.')
+    
+    # Lock xs, ys, ids:
+    for arr in [self.xs, self.ys, self.ids]:
+      arr.flags.writeable = False
 
     # Ok, xs, ys, and ids are ok. Now wel add required structural info
     if default != None:  
