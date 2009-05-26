@@ -74,7 +74,6 @@ class SVM:
     model['b'] = np.mean(model['labels'] - 
       np.dot(sv_kernel, (model['labels'] * model['alphas'])).T)
     self.model = model
-    self.cl_lab = d.cl_lab
 
   def test(self, d):
     xs = d.xs
@@ -89,7 +88,7 @@ class SVM:
     # Transform into two-colum hyperplane distance format
     labels = labels.reshape(-1, 1)
     xs = np.hstack([labels, -labels])
-    return DataSet(xs, feat_lab=self.cl_lab, default=d)
+    return DataSet(xs, default=d)
 
   def __str__(self):
     return 'SVM (C=%g, kernel=%s, params=%s)' % (self.C, self.kernel, 

@@ -12,10 +12,7 @@ Unit-test wish-list
 
 Node wish-list
 ==============
-2 CacheNode
-2 CombineFeatures
-2 AdaBoost
-3 ForwardFeatSel
-2 Group
-3 KNN
-3 SMLR
+LogReg
+BayesNormal
+Map
+Node
