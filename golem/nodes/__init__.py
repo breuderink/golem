@@ -8,3 +8,4 @@ from useless import PriorClassifier, RandomClassifier, WeakClassifier
 from featsel import AUCFilter
 from cache import Cache
 from ensemble import Ensemble, OneVsOne, OneVsRest, Bagging
+from simple import FeatMap

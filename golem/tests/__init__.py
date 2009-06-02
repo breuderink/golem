@@ -13,3 +13,4 @@ from testfeatsel import *
 from testcache import *
 from testchain import *
 from testensemble import *
+from testsimple import *
