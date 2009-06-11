@@ -62,7 +62,7 @@ def cross_validate(subsets, node):
     del tnode
 
 
-def rep_cv(d, node, repeats=5, K=10):
+def rep_cv(d, node, reps=5, K=10):
   '''
   Repeated cross-validation stratified subsets of d. 
   Returns a list with the output of node on the testsets.
