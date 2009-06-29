@@ -4,6 +4,7 @@ from .. import DataSet, loss, helpers
 
 class TestLoss(unittest.TestCase):
   def setUp(self):
+    np.random.seed(1)
     self.d = DataSet(
       xs=helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]),
       ys=helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]))
@@ -57,3 +58,10 @@ class TestLoss(unittest.TestCase):
     self.assertEqual(loss.auc(d0), 0)
     self.assertEqual(loss.auc(d1), 1)
     self.assertEqual(loss.auc(dr), .5)
+
+  def test_mean_std(self):
+    ds = [DataSet(xs=np.random.rand(30, 2), ys=helpers.to_one_of_n(
+      np.arange(30) % 2)) for i in range(20)]
+    m, s = loss.mean_std(loss.auc, ds)
+    self.assertAlmostEqual(m, 0.5, 1)
+    self.assertAlmostEqual(s, 0.1, 1)
