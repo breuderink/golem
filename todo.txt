@@ -2,7 +2,6 @@
 1 Change to new-style classes (class A(object):)
 1 Add base-class for Nodes, implement train_ and test_ (like MDP)
 2 Search for asserts and replace with useful errors
-2 Add shuffle to crossvalidation
 3 Automated tests for derivatives of Node
 2 Use numpy.matrix when more natural (Yes you SVM!)
 
@@ -14,5 +13,4 @@ Node wish-list
 ==============
 LogReg
 BayesNormal
-Map
 Node
