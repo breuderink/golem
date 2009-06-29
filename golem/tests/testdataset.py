@@ -344,8 +344,15 @@ class TestDataSet(unittest.TestCase):
 
   def test_str(self):
     '''Test string representation.'''
-    self.assertEqual("DataSet with 2 instances, 3 features, 2 classes: [1, 1]"
-      ", extras: ['foo']", str(self.d))
+    self.assertEqual(
+      "DataSet with 2 instances, 3 features [3x1], 2 classes: [1, 1], " + 
+        "extras: ['foo']", str(self.d))
+
+  def test_repr(self):
+    '''Test string representation.'''
+    self.assertEqual(
+      "DataSet with 2 instances, 3 features [3x1], 2 classes: [1, 1], " + 
+        "extras: ['foo']", repr(self.d))
 
   def test_save_load(self):
     '''Test loading and saving datasets'''
