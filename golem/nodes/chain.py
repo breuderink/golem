@@ -1,6 +1,6 @@
 import operator
 import numpy as np
-from ..crossval import stratified_split
+from ..cv import stratified_split
 
 class Chain:
   def __init__(self, nodes):

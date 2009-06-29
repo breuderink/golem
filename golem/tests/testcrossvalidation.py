@@ -1,6 +1,6 @@
 import unittest, operator
 import numpy as np
-from .. import crossval, data
+from .. import cv, data
 
 class TestCrossValidation(unittest.TestCase):
   def setUp(self):
@@ -10,7 +10,7 @@ class TestCrossValidation(unittest.TestCase):
     '''Test stratified splitting of a DataSet'''
     d = self.d
 
-    subsets = crossval.stratified_split(d, 10)
+    subsets = cv.stratified_split(d, 10)
     self.assertEqual(len(subsets), 10)
     for s in subsets:
       self.assertEqual(s.ninstances_per_class, [3, 2, 1])
@@ -24,7 +24,7 @@ class TestCrossValidation(unittest.TestCase):
     '''Test sequentially splitting of a DataSet'''
     d = self.d
     for K in [3, 9, 10]:
-      subsets = crossval.sequential_split(d, K)
+      subsets = cv.sequential_split(d, K)
       self.assertEqual(len(subsets), K)
       for s in subsets:
         self.assert_(s.ninstances >= np.floor(d.ninstances/float(K)))
@@ -36,14 +36,14 @@ class TestCrossValidation(unittest.TestCase):
   
   def test_crossvalidation_sets(self):
     '''Test the generation of cross-validation training and test sets'''
-    subsets = crossval.stratified_split(self.d, 8)
-    cv_sets = [tu for tu in crossval.cross_validation_sets(subsets)]
+    subsets = cv.stratified_split(self.d, 8)
+    cv_sets = [tu for tu in cv.cross_validation_sets(subsets)]
     self.assertEqual(len(cv_sets), 8)
     for (tr, te) in cv_sets:
       self.assertEqual((tr + te).sorted(), self.d.sorted()) # tr + te == d
 
   def check_disjoint(self, subsets):
     '''Test that subsets are disjoint datasets'''
-    for (tr, te) in crossval.cross_validation_sets(subsets):
+    for (tr, te) in cv.cross_validation_sets(subsets):
       intersection = set(tr.ids.flatten()).intersection(te.ids.flatten()) 
       self.assertEqual(len(intersection), 0)
