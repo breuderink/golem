@@ -10,7 +10,7 @@ class TestCrossValidation(unittest.TestCase):
     '''Test stratified splitting of a DataSet'''
     d = self.d
 
-    subsets = cv.stratified_split(d, 10)
+    subsets = cv.strat_splits(d, 10)
     self.assertEqual(len(subsets), 10)
     for s in subsets:
       self.assertEqual(s.ninstances_per_class, [3, 2, 1])
@@ -24,7 +24,7 @@ class TestCrossValidation(unittest.TestCase):
     '''Test sequentially splitting of a DataSet'''
     d = self.d
     for K in [3, 9, 10]:
-      subsets = cv.sequential_split(d, K)
+      subsets = cv.seq_splits(d, K)
       self.assertEqual(len(subsets), K)
       for s in subsets:
         self.assert_(s.ninstances >= np.floor(d.ninstances/float(K)))
@@ -36,7 +36,7 @@ class TestCrossValidation(unittest.TestCase):
   
   def test_crossvalidation_sets(self):
     '''Test the generation of cross-validation training and test sets'''
-    subsets = cv.stratified_split(self.d, 8)
+    subsets = cv.strat_splits(self.d, 8)
     cv_sets = [tu for tu in cv.cross_validation_sets(subsets)]
     self.assertEqual(len(cv_sets), 8)
     for (tr, te) in cv_sets:

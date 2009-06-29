@@ -1,6 +1,6 @@
 import operator
 import numpy as np
-from ..cv import stratified_split
+from ..cv import strat_splits
 
 class Chain:
   def __init__(self, nodes):
@@ -32,7 +32,7 @@ class RationedChain:
       zip(np.cumsum([0] + parts[:-1]), np.cumsum(parts))]
       
   def train(self, d):
-    ds = stratified_split(d, K=np.sum(self.parts))
+    ds = strat_splits(d, K=np.sum(self.parts))
     ds = [reduce(operator.add, [ds[i] for i in pi]) for pi in self.pis]
     
     for (i, tr_n) in enumerate(self.nodes):

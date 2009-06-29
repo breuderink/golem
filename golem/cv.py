@@ -5,7 +5,7 @@ from dataset import DataSet
 import helpers
 
 log = logging.getLogger('CV')
-def stratified_split(d, K=10):
+def strat_splits(d, K=10):
   '''
   Splits a dataset in K non-overlapping subsets. The classes are distributed
   evenly over the subsets.
@@ -24,7 +24,7 @@ def stratified_split(d, K=10):
         subsets.append(cid[ind == si]) # Create subset
   return subsets
 
-def sequential_split(d, K=10):
+def seq_splits(d, K=10):
   '''
   Splits a dataset in K non-overlapping subsets. The first subset is created
   from the first Kth part of d, the second subset from thet second Kth part of
@@ -64,7 +64,7 @@ def cross_validate(subsets, node):
 
 def rep_cv(d, node, reps=5, K=10):
   '''
-  Repeated cross-validation stratified subsets of d. 
+  Repeated cross-validation shuffled stratified subsets of d. 
   Returns a list with the output of node on the testsets.
   '''
   for ri in range(reps):
