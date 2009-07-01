@@ -1,10 +1,17 @@
 import unittest, operator
 import numpy as np
-from .. import cv, data
+from .. import cv, data, loss
+from ..nodes import PriorClassifier
 
 class TestCrossValidation(unittest.TestCase):
   def setUp(self):
     self.d = data.gaussian_dataset([30, 20, 10])
+
+  def check_disjoint(self, subsets):
+    '''Test that subsets are disjoint datasets'''
+    for (tr, te) in cv.cross_validation_sets(subsets):
+      intersection = set(tr.ids.flatten()).intersection(te.ids.flatten()) 
+      self.assertEqual(len(intersection), 0)
 
   def test_stratified_split(self):
     '''Test stratified splitting of a DataSet'''
@@ -42,8 +49,8 @@ class TestCrossValidation(unittest.TestCase):
     for (tr, te) in cv_sets:
       self.assertEqual((tr + te).sorted(), self.d.sorted()) # tr + te == d
 
-  def check_disjoint(self, subsets):
-    '''Test that subsets are disjoint datasets'''
-    for (tr, te) in cv.cross_validation_sets(subsets):
-      intersection = set(tr.ids.flatten()).intersection(te.ids.flatten()) 
-      self.assertEqual(len(intersection), 0)
+  def test_rep_cv(self):
+    c = PriorClassifier()  
+    tds = list(cv.rep_cv(self.d, c))
+    self.assertEqual(len(tds), 50)
+    self.assertAlmostEqual(loss.mean_std(loss.accuracy, tds)[0], .5)

@@ -9,3 +9,4 @@ from featsel import AUCFilter, FeatStats
 from cache import Cache
 from ensemble import Ensemble, OneVsOne, OneVsRest, Bagging
 from simple import FeatMap
+from rda import RDA

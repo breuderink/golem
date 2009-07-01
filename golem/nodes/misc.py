@@ -12,7 +12,7 @@ class PriorClassifier:
   def test(self, d):
     xs = np.zeros((d.ninstances, self.nclasses))
     xs[:, self.mfc] = 1
-    return DataSet(xs, d.ys, d.ids, class_labels=d.class_labels)
+    return DataSet(xs, d.ys, d.ids, cl_lab=d.cl_lab)
 
   def __str__(self): 
     if self.mfc <> None:

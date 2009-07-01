@@ -70,12 +70,12 @@ def plot_classifier_hyperplane(classifier, heat_map=False, heat_map_alpha=1):
 
 def plot_roc(d, fname=None):
   '''
-  Plot the ROC curve for a DataSet d. The first column of d.xs and d.ys is used
-  to compute the ROC.
+  Plot the ROC curve for a DataSet d. The diff of d.xs and the diff of d.ys
+  is used to calculate the ranking
   '''
   assert d.nclasses == 2
-  TPs, FPs = helpers.roc(d.xs[:, 0], d.ys[:, 0])
-  pylab.plot(TPs, FPs)
+  TPs, FPs = helpers.roc(np.diff(d.xs, axis=1).flat, np.diff(d.ys, axis=1).flat)
+  pylab.plot(FPs, TPs)
   a = pylab.gca()
   a.set_aspect('equal')
   pylab.axis([0, 1, 0, 1])

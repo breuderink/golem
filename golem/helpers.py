@@ -24,6 +24,7 @@ def hard_max(xs):
 
 def roc(scores, labels):
   '''Calc (TPs, FPs) for ROC plotting and AUC-ROC calculation.''' 
+  scores, labels = np.asarray(scores), np.asarray(labels)
   assert(scores.ndim == labels.ndim ==  1)
   si = np.argsort(scores)[::-1]
   scores, labels = scores[si], labels[si]
@@ -43,7 +44,7 @@ def roc(scores, labels):
 
 def auc(scores, labels):
   assert len(np.unique(labels)) == 2
-  TPs, FPs = roc(np.asarray(scores), np.asarray(labels))
+  TPs, FPs = roc(scores, labels)
   return np.trapz(TPs, FPs)
 
 def auc_confidence(N, rho=.5, delta=.05):

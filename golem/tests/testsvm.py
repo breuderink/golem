@@ -77,8 +77,8 @@ class TestSVMPlot(unittest.TestCase):
 
     # Plot SVs and scatter
     SVs = svm.model['SVs']
+    pylab.clf()
     pylab.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
     plots.scatter_plot(d)
     plots.plot_classifier_hyperplane(svm, heat_map=True)
     pylab.savefig('test_nonlinear_svm.eps')
-    pylab.close()

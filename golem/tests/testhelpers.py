@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pylab
 from numpy.testing import assert_equal
-from .. import data, plots, DataSet
+from .. import data, plots, DataSet, loss
 from ..helpers import to_one_of_n, roc, auc, auc_confidence
 
 class TestOneOfN(unittest.TestCase):
@@ -75,7 +75,7 @@ class TestROC(unittest.TestCase):
     np.testing.assert_equal(f0, f1)
   
   def test_known(self):
-    '''Test ROC for know input'''
+    '''Test ROC for known input'''
     scores = np.array([-1, 0, 0, 0, 0, 0, 0, 1])
     labels = np.array([ 0, 0, 0, 0, 1, 1, 1, 1])
     t0, f0 = roc(scores, labels)
@@ -85,10 +85,13 @@ class TestROC(unittest.TestCase):
 
   def test_plot(self):
     '''Test plotting ROC'''
-    d = DataSet(xs = np.round(self.d.xs, 1), default=self.d)
-    plots.plot_roc(d)
+    d = self.d
+    rd = DataSet(xs=np.round(d.ys +  np.random.randn(d.ninstances, 2), 1), 
+      default=self.d)
+    pylab.clf()
+    plots.plot_roc(rd)
+    pylab.title('ROC-plot, AUC=%.2f' % loss.auc(rd))
     pylab.savefig('roc.eps')
-    pylab.close()
 
 class TestAUC(unittest.TestCase):
   def test_AUC_extrema(self):

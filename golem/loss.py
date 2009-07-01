@@ -41,7 +41,8 @@ def format_confmat(dataset):
 
 def auc(dataset):
   assert(dataset.nclasses == 2)
-  return helpers.auc(dataset.xs[:, 0], dataset.ys[:, 0])
+  return helpers.auc(np.diff(dataset.xs, axis=1).flat, 
+    np.diff(dataset.ys, axis=1).flat)
 
 def mean_std(loss_f, ds):
   '''Calc mean and std for loss function loss_f over a list with DataSets ds'''

@@ -68,5 +68,5 @@ def rep_cv(d, node, reps=5, K=10):
   Returns a list with the output of node on the testsets.
   '''
   for ri in range(reps):
-    for td in cross_validate(stratified_split(d.shuffled()), node):
+    for td in cross_validate(strat_splits(d.shuffled()), node):
       yield td
