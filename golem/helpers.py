@@ -26,6 +26,7 @@ def roc(scores, labels):
   '''Calc (TPs, FPs) for ROC plotting and AUC-ROC calculation.''' 
   scores, labels = np.asarray(scores), np.asarray(labels)
   assert(scores.ndim == labels.ndim ==  1)
+  assert len(np.unique(labels)) == 2
   si = np.argsort(scores)[::-1]
   scores, labels = scores[si], labels[si]
   
@@ -38,12 +39,11 @@ def roc(scores, labels):
   TPs, FPs = TPs[ui], FPs[ui]
 
   # add (0, 0) to ROC
-  TPs = np.concatenate([np.array([0]), TPs])
-  FPs = np.concatenate([np.array([0]), FPs])
+  TPs = np.concatenate([[0], TPs])
+  FPs = np.concatenate([[0], FPs])
   return (TPs, FPs)
 
 def auc(scores, labels):
-  assert len(np.unique(labels)) == 2
   TPs, FPs = roc(scores, labels)
   return np.trapz(TPs, FPs)
 
