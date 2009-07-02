@@ -74,6 +74,7 @@ def plot_roc(d, fname=None):
   is used to calculate the ranking
   '''
   assert d.nclasses == 2
+  assert d.nfeatures == 2
   TPs, FPs = helpers.roc(np.diff(d.xs, axis=1).flat, np.diff(d.ys, axis=1).flat)
   pylab.plot(FPs, TPs)
   a = pylab.gca()

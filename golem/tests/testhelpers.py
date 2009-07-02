@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pylab
 from numpy.testing import assert_equal
-from .. import data, plots, DataSet, loss
-from ..helpers import to_one_of_n, roc, auc, auc_confidence
+from .. import data, plots, DataSet
+from ..helpers import to_one_of_n, roc, auc, auc_confidence, hard_max
 
 class TestOneOfN(unittest.TestCase):
   def test_simple(self):
@@ -35,28 +35,19 @@ class TestOneOfN(unittest.TestCase):
     assert_equal(ok_2d, np.array([[1, 0], [0, 1], [0, 1]]))
     self.assertRaises(ValueError, to_one_of_n, np.ones((3, 3)))
 
-class TestHardMax:
+class TestHardMax(unittest.TestCase):
   def test_hardmax(self):
-    np.testing.assert_equal(helpers.hard_max(self.d.xs), self.d.xs)
-
     soft_votes = np.array([[-.3, -.1], [9, 4], [.1, .101]])
-    np.testing.assert_equal(helpers.hard_max(soft_votes), 
-      helpers.to_one_of_n([1, 0, 1]))
+    np.testing.assert_equal(hard_max(soft_votes), to_one_of_n([1, 0, 1]))
 
     tie_votes = np.array([[-1, -1], [0, 0], [1, 1]])
-    np.testing.assert_equal(helpers.hard_max(tie_votes),  
-      helpers.to_one_of_n([0, 0, 0], [0, 1]))
+    np.testing.assert_equal(hard_max(tie_votes), to_one_of_n([0, 0, 0], [0, 1]))
 
 class TestROC(unittest.TestCase):
-  def setUp(self):
-    self.d = data.gaussian_dataset([100, 100])
-
   def test_roc(self):
     '''Test bounds and ordering of ROC'''
-    d = self.d
-    TPs, FPs = roc(d.xs[:,0], d.ys[:,0])
-    # test mononely increasing
-    np.testing.assert_equal(np.sort(TPs), TPs)
+    TPs, FPs = roc(np.random.rand(100), np.random.rand(100).round())
+    # test mononely increasing TPs and FPs
     np.testing.assert_equal(np.sort(TPs), TPs)
     np.testing.assert_equal(np.sort(FPs), FPs)
     
@@ -85,13 +76,12 @@ class TestROC(unittest.TestCase):
 
   def test_plot(self):
     '''Test plotting ROC'''
-    d = self.d
-    rd = DataSet(xs=np.round(d.ys +  np.random.randn(d.ninstances, 2), 1), 
-      default=self.d)
-    pylab.clf()
-    plots.plot_roc(rd)
-    pylab.title('ROC-plot, AUC=%.2f' % loss.auc(rd))
+    d = DataSet(xs=(np.linspace(-1, 1, 100).reshape(-1, 1) + 
+      np.random.rand(100, 2)),
+      ys=to_one_of_n(np.linspace(0, 1, 100).round()))
+    plots.plot_roc(d)
     pylab.savefig('roc.eps')
+    pylab.close()
 
 class TestAUC(unittest.TestCase):
   def test_AUC_extrema(self):
