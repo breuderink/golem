@@ -75,7 +75,7 @@ def plot_roc(d, fname=None):
   '''
   assert d.nclasses == 2
   assert d.nfeatures == 2
-  TPs, FPs = helpers.roc(np.diff(d.xs, axis=1).flat, np.diff(d.ys, axis=1).flat)
+  TPs, FPs = helpers.roc(d.xs[:, 1] - d.xs[:, 0], d.ys[:, 1] - d.ys[:, 0])
   pylab.plot(FPs, TPs)
   a = pylab.gca()
   a.set_aspect('equal')

@@ -53,7 +53,7 @@ class FeatFilter(FeatStats):
 
 def pos_auc_filter(xs, ys):
     assert ys.shape[1] == 2, 'Cannot use AUC for > 2 classes'
-    aucs = helpers.auc(xs, np.diff(ys, axis=1).flat)
+    aucs = helpers.auc(xs, ys[:, 1] - ys[:, 0])
     return np.abs(aucs - .5) + .5
 
 class AUCFilter(FeatFilter):
