@@ -5,7 +5,7 @@ import numpy as np
 import cvxopt.base as cvx
 import cvxopt.solvers
 
-from ..kernel import *
+from ..kernel import build_kernel_matrix
 from ..dataset import DataSet
 from ..helpers import hard_max
 
