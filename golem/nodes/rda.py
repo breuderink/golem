@@ -1,3 +1,4 @@
+import operator
 import numpy as np
 from scipy import stats
 from .. import DataSet
@@ -25,8 +26,8 @@ class RDA:
       covs.append(np.cov(cd.xs, rowvar=False))
 
     a, b = self.alpha, self.beta
-    ss = np.var(d.xs)
     S = np.cov(d.xs, rowvar=False)
+    ss = np.mean(np.diag(S))
     self.covs = [a * ss * np.eye(d.nfeatures) + b * S + 
       (1 - a - b) * Si for Si in covs]
 
@@ -48,9 +49,8 @@ class RDA:
         0.5 * np.log(np.linalg.det(S)) + np.log(P)
 
       # Vectorized variant of (1):
-      gi = np.sum(np.dot(d.xs, Wi) * d.xs, axis=1)  + np.dot(wi.T, d.xs.T) + wi0
+      gi = np.sum(np.dot(d.xs, Wi) * d.xs, axis=1) + np.dot(wi.T, d.xs.T) + wi0
       xs.append(gi.reshape(-1, 1))
 
     xs = np.hstack(xs)
     return DataSet(xs=xs, default=d)
-      
