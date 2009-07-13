@@ -9,12 +9,6 @@ class TestRDA(unittest.TestCase):
   def setUp(self):
     self.d = gaussian_dataset([100, 50, 100])
 
-  def test_lda_cov(self):
-    lda = RDA(alpha=0, beta=1)
-    lda.train(self.d)
-    for ccov in lda.covs:
-      np.testing.assert_equal(ccov, np.cov(self.d.xs, rowvar=False))
-
   def test_qdc(self):
     cl = RDA(alpha=0, beta=0)
     self.assert_(loss.mean_std(loss.accuracy, cv.rep_cv(self.d, cl))[0] > .90)
@@ -27,7 +21,6 @@ class TestRDA(unittest.TestCase):
     plots.scatter_plot(self.d)
     plots.plot_classifier_hyperplane(cl)
     pylab.savefig('rda.eps')
-
 
   def test_visual_qda(self):
     cl = RDA(alpha=0, beta=0)

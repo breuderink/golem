@@ -26,7 +26,7 @@ class RDA:
       covs.append(np.cov(cd.xs, rowvar=False))
 
     a, b = self.alpha, self.beta
-    S = np.cov(d.xs, rowvar=False)
+    S = reduce(operator.add, ([p * c for (p, c) in zip(self.priors, covs)]))
     ss = np.mean(np.diag(S))
     self.covs = [a * ss * np.eye(d.nfeatures) + b * S + 
       (1 - a - b) * Si for Si in covs]
