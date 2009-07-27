@@ -1,4 +1,4 @@
-import unittest
+import unittest, os.path
 import numpy as np
 import pylab
 from ..data import gaussian_dataset
@@ -20,7 +20,7 @@ class TestRDA(unittest.TestCase):
     pylab.clf()
     plots.scatter_plot(self.d)
     plots.plot_classifier_hyperplane(cl)
-    pylab.savefig('rda.eps')
+    pylab.savefig(os.path.join('out', 'rda.eps'))
 
   def test_visual_qda(self):
     cl = RDA(alpha=0, beta=0)
@@ -29,7 +29,7 @@ class TestRDA(unittest.TestCase):
     pylab.clf()
     plots.scatter_plot(self.d)
     plots.plot_classifier_hyperplane(cl)
-    pylab.savefig('qda.eps')
+    pylab.savefig(os.path.join('out', 'qda.eps'))
 
   def test_visual_lda(self):
     cl = RDA(alpha=0, beta=1)
@@ -38,7 +38,7 @@ class TestRDA(unittest.TestCase):
     pylab.clf()
     plots.scatter_plot(self.d)
     plots.plot_classifier_hyperplane(cl)
-    pylab.savefig('lda.eps')
+    pylab.savefig(os.path.join('out', 'lda.eps'))
 
   def test_visual_nm(self):
     cl = RDA(alpha=1, beta=0)
@@ -48,4 +48,4 @@ class TestRDA(unittest.TestCase):
     plots.scatter_plot(self.d)
     pylab.axis('equal')
     plots.plot_classifier_hyperplane(cl)
-    pylab.savefig('nm.eps')
+    pylab.savefig(os.path.join('out', 'nm.eps'))

@@ -1,7 +1,9 @@
 import numpy as np
+import csv
 
 def to_one_of_n(ints, class_cols=None):
-  '''Convert a list with ints to one-of-N coding for to use in a DataSet.
+  '''
+  Convert a list with ints to one-of-N coding for to use in a DataSet.
   Note that the columns correspond to the classes in *sorted* order.
   '''
   a = np.array(ints, int).squeeze()
@@ -15,7 +17,8 @@ def to_one_of_n(ints, class_cols=None):
   return ys
 
 def hard_max(xs):
-  '''Find the maximum of each row and return an array containing 1 on the
+  '''
+  Find the maximum of each row and return an array containing 1 on the
   location of each maximum.
   '''
   result = np.zeros(xs.shape)
@@ -60,3 +63,15 @@ def auc_confidence(N, rho=.5, delta=.05):
   Information Processing Systems, volume 17, pages 9-16, 2005.
   '''
   return np.sqrt(np.log(2. / delta) / (2 * rho * (1 - rho) * N))
+
+def write_csv_table(rows, fname):
+  f = open(fname, 'w')
+  csv.writer(f).writerows(rows)
+  f.close()
+
+def write_latex_table(rows, fname):
+  f = open(fname, 'w')
+  f.write('\\begin{tablular}\n')
+  csv.writer(f, delimiter='&', lineterminator='\\\n').writerows(rows)
+  f.write('\\end{tablular}\n')
+  f.close()

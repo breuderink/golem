@@ -1,6 +1,4 @@
-import unittest
-import os
-import random
+import unittest, os.path, random
 import numpy as np
 import numpy.linalg as la
 import pylab
@@ -81,4 +79,4 @@ class TestSVMPlot(unittest.TestCase):
     pylab.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
     plots.scatter_plot(d)
     plots.plot_classifier_hyperplane(svm, heat_map=True)
-    pylab.savefig('test_nonlinear_svm.eps')
+    pylab.savefig(os.path.join('out', 'test_nonlinear_svm.eps'))

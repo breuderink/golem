@@ -4,7 +4,7 @@ import numpy as np
 import pylab
 from numpy.testing import assert_equal
 from .. import data, plots, DataSet, loss
-from ..helpers import to_one_of_n, roc, auc, auc_confidence, hard_max
+from ..helpers import *
 
 class TestOneOfN(unittest.TestCase):
   def test_simple(self):
@@ -82,7 +82,7 @@ class TestROC(unittest.TestCase):
     pylab.clf()
     plots.plot_roc(d)
     pylab.title('AUC = %.2f' % loss.auc(d))
-    pylab.savefig('roc.eps')
+    pylab.savefig(os.path.join('out', 'roc.eps'))
     pylab.close()
 
 class TestAUC(unittest.TestCase):
@@ -137,3 +137,16 @@ class TestAUC(unittest.TestCase):
           e_p = np.mean(dev > epsilon)
           self.assert_(e_p <= delta, 
             'empirical p (=%f) > delta (=%f)' % (e_p, delta))
+
+class testTables(unittest.TestCase):
+  def setUp(self):
+    self.table = [['H1', 'H2', 'H3'],
+      ['row1,1', 'row2,2', 'row3,3'],
+      ['S0', '10.1 (3.2)', '11.0 (2.9)'],
+      [1, 1.3, -6]]
+
+  def test_csv(self):
+    write_csv_table(self.table, os.path.join('out', 'table.csv'))
+
+  def test_latex(self):
+    write_latex_table(self.table, os.path.join('out', 'table.tex'))
