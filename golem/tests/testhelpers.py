@@ -138,7 +138,28 @@ class TestAUC(unittest.TestCase):
           self.assert_(e_p <= delta, 
             'empirical p (=%f) > delta (=%f)' % (e_p, delta))
 
-class testTables(unittest.TestCase):
+class TestMutualInformation(unittest.TestCase):
+  def test_max_bits(self):
+    for i in range(4):
+      conf = np.eye(2 ** i)
+      self.assertAlmostEqual(mut_inf(conf), i, 5)
+
+  def test_uniform(self):
+    for i in range(4):
+      conf = np.ones((i, i + 1))
+      self.assertAlmostEqual(mut_inf(conf), 0)
+
+  def test_symmetrical(self):
+    for i in range(4):
+      conf = np.random.rand(3, 8)
+      self.assertAlmostEqual(mut_inf(conf), mut_inf(conf.T))
+
+  def test_malformed(self):
+    self.assertRaises(AssertionError, mut_inf, -np.ones((3, 3)))
+    self.assertRaises(AssertionError, mut_inf, np.eye(3), regularize=False)
+    
+
+class TestTables(unittest.TestCase):
   def setUp(self):
     self.table = [['H1', 'H2', 'H3'],
       ['row1,1', 'row2,2', 'row3,3'],

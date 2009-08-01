@@ -1,5 +1,5 @@
+import csv, itertools
 import numpy as np
-import csv
 
 def to_one_of_n(ints, class_cols=None):
   '''
@@ -63,6 +63,25 @@ def auc_confidence(N, rho=.5, delta=.05):
   Information Processing Systems, volume 17, pages 9-16, 2005.
   '''
   return np.sqrt(np.log(2. / delta) / (2 * rho * (1 - rho) * N))
+
+def mut_inf(conf_mat, regularize=True):
+  '''
+  Calculate mutual information from conf_mat. The boolean regularize
+  controls the addition of a very small value to conditional probabilities
+  to prevent errors due to P_{XY}(x, y) = 0.
+  Returns the mutual information in bits.
+  '''
+  pxy = np.asarray(conf_mat, float)
+  if regularize:
+    pxy += 1e-10 * np.ones(pxy.shape)
+  assert (pxy > 0).all(), 'Cannot handle marginal probabilites P_{XY} \le 0'
+  pxy /= np.sum(pxy)
+  pxs = np.sum(pxy, axis=1)
+  pys = np.sum(pxy, axis=0)
+  bits = 0
+  for (x, y) in itertools.product(range(pxy.shape[0]), range(pxy.shape[1])):
+    bits += pxy[x, y] * np.log2(pxy[x, y]/(pxs[x] * pys[y]))
+  return bits
 
 def write_csv_table(rows, fname):
   f = open(fname, 'w')
