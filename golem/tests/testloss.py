@@ -30,12 +30,12 @@ class TestLoss(unittest.TestCase):
   def test_accurracy(self):
     self.assertEqual(loss.accuracy(self.d), (12 - 3) / 12.)
 
-  def testConfusionMatrix(self):
+  def test_confusion_matrix(self):
     c = loss.confusion_matrix(self.d)
     ct = np.array([[3, 1, 0], [0, 3, 1], [1, 0, 3]])
     np.testing.assert_equal(c, ct)
   
-  def testFormatConfusionMatrix(self):
+  def test_format_confusion_matrix(self):
     c = loss.format_confmat(self.d)
     target = \
       '-----------------------------------\n' + \
@@ -47,7 +47,7 @@ class TestLoss(unittest.TestCase):
       '-----------------------------------'
     self.assertEqual(c, target)
   
-  def testAUC(self):
+  def test_AUC(self):
     d1 = DataSet(helpers.to_one_of_n([0, 0, 1, 1, 1, 1]),
       helpers.to_one_of_n([0, 0, 1, 1, 1, 1]))
     d0 = DataSet(helpers.to_one_of_n([1, 1, 0, 0, 0, 0]),
@@ -58,6 +58,18 @@ class TestLoss(unittest.TestCase):
     self.assertEqual(loss.auc(d0), 0)
     self.assertEqual(loss.auc(d1), 1)
     self.assertEqual(loss.auc(dr), .5)
+
+  def test_I(self):
+    d1 = DataSet(helpers.to_one_of_n([0, 0, 0, 1, 1, 1]),
+      helpers.to_one_of_n([0, 0, 0, 1, 1, 1]))
+    d0 = DataSet(helpers.to_one_of_n([1, 1, 1, 0, 0, 0]),
+      helpers.to_one_of_n([0, 0, 0, 1, 1, 1]))
+    dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]),
+      helpers.to_one_of_n([1, 1, 1, 1, 0, 0]))
+
+    self.assertAlmostEqual(loss.I(d1), 1)
+    self.assertAlmostEqual(loss.I(d0), 1)
+    self.assertAlmostEqual(loss.I(dr), 0)
 
   def test_mean_std(self):
     ds = [DataSet(xs=np.random.rand(30, 2), ys=helpers.to_one_of_n(

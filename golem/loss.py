@@ -47,3 +47,7 @@ def mean_std(loss_f, ds):
   '''Calc mean and std for loss function loss_f over a list with DataSets ds'''
   losses = [loss_f(d) for d in ds]
   return (np.mean(losses), np.std(losses))
+
+def I(d):
+  '''Mutual information'''
+  return helpers.mut_inf(confusion_matrix(d))
