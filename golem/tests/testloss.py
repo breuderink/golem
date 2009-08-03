@@ -30,8 +30,8 @@ class TestLoss(unittest.TestCase):
   def test_accurracy(self):
     self.assertEqual(loss.accuracy(self.d), (12 - 3) / 12.)
 
-  def test_confusion_matrix(self):
-    c = loss.confusion_matrix(self.d)
+  def test_conf_mat(self):
+    c = loss.conf_mat(self.d)
     ct = np.array([[3, 1, 0], [0, 3, 1], [1, 0, 3]])
     np.testing.assert_equal(c, ct)
   

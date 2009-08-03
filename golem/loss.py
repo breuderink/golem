@@ -12,7 +12,7 @@ def class_loss(d):
 def accuracy(d):
   return 1 - np.mean(class_loss(d))
 
-def confusion_matrix(d):
+def conf_mat(d):
   '''Make a confusion matrix. Rows contain the label, columns the prediction.'''
   result = []
   hmd = DataSet(helpers.hard_max(d.xs), d.ys, None)
@@ -22,7 +22,7 @@ def confusion_matrix(d):
   return np.array(result).astype(int)
 
 def format_confmat(d):
-  c = confusion_matrix(d)
+  c = conf_mat(d)
   formatter = lambda items : '%10s' % items[0][:10] + '|' + \
     ''.join(['%8s' % i[:8] for i in items[1:]]) 
   labels = [label[:6] for label in d.cl_lab]
@@ -50,4 +50,4 @@ def mean_std(loss_f, ds):
 
 def I(d):
   '''Mutual information'''
-  return helpers.mut_inf(confusion_matrix(d))
+  return helpers.mut_inf(conf_mat(d))
