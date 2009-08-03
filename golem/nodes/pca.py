@@ -5,7 +5,7 @@ from ..dataset import DataSet
 log = logging.getLogger('PCA')
 
 class PCA:
-  def __init__(self, retain=None, ndims=None):
+  def __init__(self, retain=.95, ndims=None):
     self.eigen_cols = None
     self.retain = retain
     self.ndims = ndims

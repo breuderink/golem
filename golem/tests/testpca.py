@@ -12,7 +12,7 @@ class TestPCA(unittest.TestCase):
   def test_nocov_descending(self):
     '''Test that the PCA-transformed features are uncorrelated, and ordered'''
     d = self.d
-    n = nodes.PCA()
+    n = nodes.PCA(ndims=d.nfeatures)
     n.train(d)
     d2 = n.test(d)
 
