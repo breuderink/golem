@@ -21,23 +21,18 @@ def conf_mat(d):
     result.append(np.sum(cid.xs, axis=0))
   return np.array(result).astype(int)
 
-def format_confmat(d):
-  c = conf_mat(d)
-  formatter = lambda items : '%10s' % items[0][:10] + '|' + \
-    ''.join(['%8s' % i[:8] for i in items[1:]]) 
-  labels = [label[:6] for label in d.cl_lab]
-  hline = '-' * len(formatter([''] + labels))
-  result = []
-  
-  result.append(hline)
-  result.append(formatter(['True\Pred.'] + labels))
-  result.append(hline)
-  for ri in range(c.shape[0]):
-    items = [labels[ri]] + [str(v) for v in c[ri, :]]
-    result.append(formatter(items))
-  result.append(hline)
+def format_confmat(conf_mat, d):
+  '''
+  Formats a confusion matrix conf_mat using class_labels found in DataSet d.
+  '''
+  conf_mat = np.asarray(conf_mat)
+  assert conf_mat.shape == (d.nclasses, d.nclasses)
 
-  return '\n'.join(result)
+  labels = [label[:6] for label in d.cl_lab]
+  result = [['Label\Pred.'] + labels]
+  for ri in range(d.nclasses):
+    result.append([labels[ri]] + conf_mat[ri].tolist())
+  return result
 
 def auc(d):
   assert d.nclasses == 2 and d.nfeatures == 2

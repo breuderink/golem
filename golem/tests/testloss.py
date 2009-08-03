@@ -36,15 +36,11 @@ class TestLoss(unittest.TestCase):
     np.testing.assert_equal(c, ct)
   
   def test_format_confusion_matrix(self):
-    c = loss.format_confmat(self.d)
-    target = \
-      '-----------------------------------\n' + \
-      'True\\Pred.|  class0  class1  class2\n' + \
-      '-----------------------------------\n' + \
-      '    class0|       3       1       0\n'+ \
-      '    class1|       0       3       1\n' + \
-      '    class2|       1       0       3\n' + \
-      '-----------------------------------'
+    c = loss.format_confmat(loss.conf_mat(self.d), self.d)
+    target = [['Label\\Pred.', 'class0', 'class1', 'class2'],
+      ['class0', 3, 1, 0],
+      ['class1', 0, 3, 1],
+      ['class2', 1, 0, 3]]
     self.assertEqual(c, target)
   
   def test_AUC(self):
