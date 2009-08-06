@@ -1,3 +1,0 @@
-golem
-cvxopt>=1.0
-numpy
