@@ -71,7 +71,7 @@ def mut_inf(conf_mat, regularize=True):
   to prevent errors due to P_{XY}(x, y) = 0.
   Returns the mutual information in bits.
   '''
-  pxy = np.asarray(conf_mat, float)
+  pxy = np.array(conf_mat, float)
   if regularize:
     pxy += 1e-10 * np.ones(pxy.shape)
   assert (pxy > 0).all(), 'Cannot handle marginal probabilites P_{XY} \le 0'

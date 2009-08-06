@@ -149,6 +149,11 @@ class TestMutualInformation(unittest.TestCase):
       conf = np.ones((i, i + 1))
       self.assertAlmostEqual(mut_inf(conf), 0)
 
+  def test_no_modification(self):
+    conf = np.ones((4, 3))
+    mut_inf(conf)
+    np.testing.assert_equal(conf, np.ones((4, 3)))
+
   def test_symmetrical(self):
     for i in range(4):
       conf = np.random.rand(3, 8)
