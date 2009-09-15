@@ -64,22 +64,20 @@ def auc_confidence(N, rho=.5, delta=.05):
   '''
   return np.sqrt(np.log(2. / delta) / (2 * rho * (1 - rho) * N))
 
-def mut_inf(conf_mat, regularize=True):
+def mut_inf(conf_mat):
   '''
-  Calculate mutual information from conf_mat. The boolean regularize
-  controls the addition of a very small value to conditional probabilities
-  to prevent errors due to P_{XY}(x, y) = 0.
-  Returns the mutual information in bits.
+  Calculate mutual information from conf_mat. Returns the mutual information 
+  in bits.
   '''
   pxy = np.array(conf_mat, float)
-  if regularize:
-    pxy += 1e-10 * np.ones(pxy.shape)
-  assert (pxy > 0).all(), 'Cannot handle marginal probabilites P_{XY} \le 0'
+  assert (pxy >= 0).all(), 'Cannot handle marginal probabilites P_{XY} \lt 0'
   pxy /= np.sum(pxy)
   pxs = np.sum(pxy, axis=1)
   pys = np.sum(pxy, axis=0)
   bits = 0
   for (x, y) in itertools.product(range(pxy.shape[0]), range(pxy.shape[1])):
+    if pxy[x, y] == 0 or pxs[x] == 0 or pys[y] == 0: 
+      continue
     bits += pxy[x, y] * np.log2(pxy[x, y]/(pxs[x] * pys[y]))
   return bits
 

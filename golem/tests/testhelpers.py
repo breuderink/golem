@@ -142,7 +142,7 @@ class TestMutualInformation(unittest.TestCase):
   def test_max_bits(self):
     for i in range(4):
       conf = np.eye(2 ** i)
-      self.assertAlmostEqual(mut_inf(conf), i, 5)
+      self.assertAlmostEqual(mut_inf(conf), i)
 
   def test_uniform(self):
     for i in range(4):
@@ -161,7 +161,6 @@ class TestMutualInformation(unittest.TestCase):
 
   def test_malformed(self):
     self.assertRaises(AssertionError, mut_inf, -np.ones((3, 3)))
-    self.assertRaises(AssertionError, mut_inf, np.eye(3), regularize=False)
     
 
 class TestTables(unittest.TestCase):
