@@ -7,7 +7,7 @@ markers = ['o', 'o', 's', 'd', 'v']
 colors = ['w', 'k', 'r', 'y', 'b']
 
 def scatter_plot(dataset):
-  ''' Display the dataset with a scatterplot using Matplotlib/pylab. The user is
+  ''' Display the dataset with a scatterplot using Matplotlib/Pylab. The user is
   responsible for calling pylab.show() to display the plot.
   '''
   assert dataset.nfeatures == 2
@@ -19,7 +19,8 @@ def scatter_plot(dataset):
     # plot features
     f0 = [x[0] for x in xs]
     f1 = [x[1] for x in xs]
-    pylab.scatter(f0, f1, c=color, marker=marker, label=dataset.cl_lab[ci])
+    pylab.scatter(f0, f1, s=10, c=color, marker=marker, 
+      label=dataset.cl_lab[ci])
   pylab.legend()
 
   if dataset.feat_lab != None:
