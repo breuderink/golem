@@ -91,6 +91,7 @@ def write_latex_table(rows, fname):
   ncols = max(len(r) for r in rows)
   f = open(fname, 'w')
   f.write('\\begin{tabular}{%s}\n' % ' '.join('c'*ncols))
-  csv.writer(f, delimiter='&', lineterminator='\\\\\n').writerows(rows)
+  for r in rows:
+    f.write(' & '.join(map(str, r)) + '\\\\\n')
   f.write('\\end{tabular}\n')
   f.close()
