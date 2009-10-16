@@ -12,6 +12,7 @@ def strat_splits(d, K=10):
   '''
   subsets = []
   assert(K <= max(d.ninstances_per_class))
+  d = d.shuffled()
   # Loop over classes
   for ci in range(d.nclasses):
     cid = d.get_class(ci)
@@ -68,5 +69,5 @@ def rep_cv(d, node, reps=5, K=10):
   Returns a list with the output of node on the testsets.
   '''
   for ri in range(reps):
-    for td in cross_validate(strat_splits(d.shuffled()), node):
+    for td in cross_validate(strat_splits(d), node):
       yield td

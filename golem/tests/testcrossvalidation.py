@@ -50,7 +50,12 @@ class TestCrossValidation(unittest.TestCase):
       self.assertEqual((tr + te).sorted(), self.d.sorted()) # tr + te == d
 
   def test_rep_cv(self):
+    d = self.d
     c = PriorClassifier()  
-    tds = list(cv.rep_cv(self.d, c))
+    tds = list(cv.rep_cv(d, c))
     self.assertEqual(len(tds), 50)
     self.assertAlmostEqual(loss.mean_std(loss.accuracy, tds)[0], .5)
+    fold_ids = np.array([td.ids.flatten() for td in tds])
+    self.failIf(
+      (np.var(fold_ids.reshape(-1, d.ninstances), axis=0) == 0).any(),
+      'No variance in folds for rep_cv!')
