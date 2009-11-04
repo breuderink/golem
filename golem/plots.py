@@ -1,4 +1,4 @@
-import pylab
+import matplotlib.pyplot as plt
 import numpy as np
 from dataset import DataSet
 import helpers
@@ -8,9 +8,10 @@ colors = ['w', 'k', 'r', 'y', 'b']
 
 def scatter_plot(dataset):
   ''' Display the dataset with a scatterplot using Matplotlib/Pylab. The user is
-  responsible for calling pylab.show() to display the plot.
+  responsible for calling plt.show() to display the plot.
   '''
   assert dataset.nfeatures == 2
+  scatters = []
   # loop over classes
   for ci in range(dataset.nclasses):
     color, marker = colors[ci], markers[ci]
@@ -19,22 +20,23 @@ def scatter_plot(dataset):
     # plot features
     f0 = [x[0] for x in xs]
     f1 = [x[1] for x in xs]
-    pylab.scatter(f0, f1, s=10, c=color, marker=marker, 
-      label=dataset.cl_lab[ci])
-  pylab.legend()
+    scatters.append(plt.scatter(f0, f1, s=10, c=color, marker=marker))
+
+  assert dataset.cl_lab != []
+  plt.legend(scatters, dataset.cl_lab)
 
   if dataset.feat_lab != None:
     xlab, ylab = dataset.feat_lab
   else:
     xlab, ylab = 'feat0', 'feat1'
-  pylab.xlabel(xlab)
-  pylab.ylabel(ylab)
+  plt.xlabel(xlab)
+  plt.ylabel(ylab)
 
 
 def classifier_grid(classifier):
   RESOLUTION = 40
-  xlim = pylab.xlim()
-  ylim = pylab.ylim()
+  xlim = plt.xlim()
+  ylim = plt.ylim()
 
   # Build grid
   x = np.arange(xlim[0], xlim[1], (xlim[1]-xlim[0])/RESOLUTION)
@@ -62,11 +64,11 @@ def plot_classifier_hyperplane(classifier, heat_map=False, heat_map_alpha=1):
   '''
   (X, Y, Zs) = classifier_grid(classifier)
   for Z in Zs:
-    pylab.contour(X, Y, Z, [0, .5, 1], linewidths=[2, .5, .5], colors='k')
+    plt.contour(X, Y, Z, [0, .5, 1], linewidths=[2, .5, .5], colors='k')
   if heat_map:
     if len(Zs) > 2: 
       raise ValueError, 'Cannot draw a heat map for nclasses > 2'
-    pylab.imshow(Z, origin='lower', cmap=pylab.cm.RdBu_r, alpha=heat_map_alpha, 
+    plt.imshow(Z, origin='lower', cmap=plt.cm.RdBu_r, alpha=heat_map_alpha, 
       aspect='auto', extent=[X.min(), X.max(), Y.min(), Y.max()])
 
 def plot_roc(d, fname=None):
@@ -77,10 +79,10 @@ def plot_roc(d, fname=None):
   assert d.nclasses == 2
   assert d.nfeatures == 2
   TPs, FPs = helpers.roc(d.xs[:, 1] - d.xs[:, 0], d.ys[:, 1] - d.ys[:, 0])
-  pylab.plot(FPs, TPs)
-  a = pylab.gca()
+  plt.plot(FPs, TPs)
+  a = plt.gca()
   a.set_aspect('equal')
-  pylab.axis([0, 1, 0, 1])
-  pylab.grid()
-  pylab.xlabel('False positives')
-  pylab.ylabel('True positives')
+  plt.axis([0, 1, 0, 1])
+  plt.grid()
+  plt.xlabel('False positives')
+  plt.ylabel('True positives')
