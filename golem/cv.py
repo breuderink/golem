@@ -66,7 +66,7 @@ def cross_validate(subsets, node):
     tnode.train(tr)
 
     # create a test set stripped of labels
-    te_stripped = DataSet(ys=np.zeros(te.ys.shape), default=te)
+    te_stripped = DataSet(ys=np.nan * te.ys, default=te)
 
     pred = tnode.test(te_stripped)
 
