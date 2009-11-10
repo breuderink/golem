@@ -2,6 +2,7 @@ import unittest, operator
 import numpy as np
 from .. import cv, data, loss
 from ..nodes import PriorClassifier
+from .. import DataSet
 
 class TestCrossValidation(unittest.TestCase):
   def setUp(self):
@@ -48,6 +49,35 @@ class TestCrossValidation(unittest.TestCase):
     self.assertEqual(len(cv_sets), 8)
     for (tr, te) in cv_sets:
       self.assertEqual((tr + te).sorted(), self.d.sorted()) # tr + te == d
+
+  def test_crossvalidation_label_prot(self):
+    '''Test protection against reading labels in cross-validation'''
+    class CheatNode:
+      def train(self, d): pass
+      def test(self, d): 
+        return DataSet(xs=d.ys, default=d)
+
+    perf = loss.mean_std(loss.accuracy,
+      cv.cross_validate(cv.strat_splits(self.d, 8), CheatNode()))
+    self.assertAlmostEqual(perf[0], .5, 1)
+
+  def test_crossvalidation_mem_prot(self):
+    '''Test protection against remembering over repetitions'''
+    class MemNode:
+      def __init__(self):
+        self.mem = {}
+
+      def train(self, d):
+        pairs = zip(d.ids.flat, d.ys.tolist())
+        self.mem = dict(self.mem.items() + pairs)
+
+      def test(self, d): 
+        xs = np.asarray([self.mem.get(i, [0, 0, 0]) for i in d.ids.flat])
+        return DataSet(xs=xs, default=d)
+
+    perf = loss.mean_std(loss.accuracy,
+      cv.cross_validate(cv.strat_splits(self.d, 4), MemNode()))
+    self.assertAlmostEqual(perf[0], .5, 1)
 
   def test_rep_cv(self):
     d = self.d

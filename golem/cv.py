@@ -55,12 +55,26 @@ def cross_validate(subsets, node):
   '''
   Crossvalidate on subsets using node. Returns a list with the output of node
   on the testsets.
+  This methods has a few safety measures:
+  - for every fold, we start with a fresh copy of node
+  - the test method of the trained node can *never* see the labels
   '''
   for (tr, te) in cross_validation_sets(subsets):
-    tnode = copy.deepcopy(node) # To be sure we don't cheat
+    # fresh copy, no cheating by remembering
+    tnode = copy.deepcopy(node)
+
     tnode.train(tr)
-    yield tnode.test(te)
+
+    # create a test set stripped of labels
+    te_stripped = DataSet(ys=np.zeros(te.ys.shape), default=te)
+
+    pred = tnode.test(te_stripped)
+
+    # reattach labels
+    pred = DataSet(ys=te.ys, default=pred)
+
     del tnode
+    yield pred
 
 
 def rep_cv(d, node, reps=5, K=10):
