@@ -1,4 +1,5 @@
 from testdataset import *
+from testbasenode import *
 from testartificialdata import *
 from testkernel import *
 from testsvm import *

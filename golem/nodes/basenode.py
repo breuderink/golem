@@ -30,7 +30,7 @@ class BaseNode:
     '''Verify that dataset has exactly two classes'''
     if d.nclasses != 2:
       raise ValueError('Expected a DataSet with only 2 classes, got %d (%s)' %
-        (d.ninstances % str(d.cl_lab)))
+        (d.ninstances, str(d.cl_lab)))
 
   def __str__(self):
-    return name
+    return self.name
