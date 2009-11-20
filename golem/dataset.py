@@ -174,10 +174,11 @@ class DataSet:
       return False
     for member in a.__dict__.keys():
       am, bm = a.__dict__[member], b.__dict__[member]
-      if member in ['xs', 'ys', 'ids']:
-        if not (am == bm).all():  
+      cmp = am == bm
+      if isinstance(cmp, np.ndarray):
+        if not cmp.all():  
           return False
-      elif am != bm:
+      elif not cmp:
         return False
     return True
     

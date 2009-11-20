@@ -218,6 +218,7 @@ class TestDataSet(unittest.TestCase):
     self.assertEqual(d, DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
       default=d))
     self.failIfEqual(d, 3)
+    self.failIfEqual(d[:0], d) # triggered special cast in np.array comparison.
 
   def test_hash(self):
     d = self.d[::2] # noncontiguous arrays can pose a problem
