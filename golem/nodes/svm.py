@@ -1,27 +1,28 @@
 # coding: utf8
-import logging
-
 import numpy as np
 import cvxopt.base as cvx
 import cvxopt.solvers
 
+from basenode import BaseNode
 from ..kernel import build_kernel_matrix
 from ..dataset import DataSet
 from ..helpers import hard_max
 
-log = logging.getLogger('SVM')
 QP_ACCURACY = 1e-8
 
-class SVM:
+class SVM(BaseNode):
   def __init__(self, C=2, kernel=None, **params):
+    BaseNode.__init__(self, 'SVM')
     self.C = C
     self.kernel = kernel
     self.params = params
 
   def train(self, d):
-    assert(d.nclasses == 2)
-    xs = d.xs
-    ys = d.ys
+    BaseNode.train(self, d)
+    self.assert_two_class(d)
+
+    xs, ys = d.xs, d.ys
+    log = self.log
 
     # See "Learning with Kernels", Schölkopf and Smola, p205
     log.debug('Calculate kernel matrix')
@@ -55,7 +56,7 @@ class SVM:
     cvxopt.solvers.options['abstol'] = QP_ACCURACY
     cvxopt.solvers.options['feastol'] = QP_ACCURACY
     sol = cvxopt.solvers.qp(Q, q, G, h, A, b)
-    assert(sol['status'] == 'optimal')
+    assert sol['status'] == 'optimal', 'QP solution not optimal.'
     alphas = np.array(sol['x'])
 
     log.debug('Extracting Support Vectors')
@@ -76,6 +77,7 @@ class SVM:
     self.model = model
 
   def test(self, d):
+    BaseNode.test(self, d)
     xs = d.xs
     model = self.model
     SVs, alphas = model['SVs'], model['alphas']
