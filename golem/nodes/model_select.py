@@ -1,29 +1,30 @@
 import copy
 import logging
 
-class ModelSelect:
-  def __init__(self, nodes, critic):
-    assert(isinstance(nodes, list))
-    self.nodes = nodes
-    self.critic = critic
-    self.best_node = None
+from basenode import BaseNode
 
-  def train(self, d):
+class ModelSelect(BaseNode):
+  def __init__(self, nodes, critic):
+    BaseNode.__init__(self)
+    self.nodes = list(nodes)
+    self.critic = critic
+
+  def train_(self, d):
     best_node = None
     for node in self.nodes:
-      logging.getLogger('golem.ModelSelect').info('Evaluating: %s' % str(node))
+      self.log.info('Evaluating: %s' % str(node))
       perf = self.critic(d, copy.deepcopy(node))
       if best_node == None or perf > best_perf:
         best_perf = perf
         best_node = node
     best_node.train(d) 
     self.best_node = best_node
-    logging.getLogger('golem.ModelSelect').info('Best: %s' % str(best_node))
+    self.log.info('Best node: %s' % str(best_node))
 
-  def test(self, d):
+  def test_(self, d):
     return self.best_node.test(d)
 
   def __str__(self):
-    if self.best_node <> None:
-      return 'ModelSelect (best_node = %s)' % self.best_node
-    return 'ModelSelect (untrained)'
+    if hasattr(self, best_node):
+      return 'ModelSelect (selected %s)' % self.best_node
+    return 'ModelSelect'

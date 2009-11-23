@@ -12,13 +12,12 @@ QP_ACCURACY = 1e-8
 
 class SVM(BaseNode):
   def __init__(self, C=2, kernel=None, **params):
-    BaseNode.__init__(self, 'SVM')
+    BaseNode.__init__(self)
     self.C = C
     self.kernel = kernel
     self.params = params
 
-  def train(self, d):
-    BaseNode.train(self, d)
+  def train_(self, d):
     self.assert_two_class(d)
 
     xs, ys = d.xs, d.ys
@@ -76,8 +75,7 @@ class SVM(BaseNode):
       np.dot(sv_kernel, (model['labels'] * model['alphas'])).T)
     self.model = model
 
-  def test(self, d):
-    BaseNode.test(self, d)
+  def test_(self, d):
     xs = d.xs
     model = self.model
     SVs, alphas = model['SVs'], model['alphas']

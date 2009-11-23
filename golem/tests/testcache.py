@@ -78,24 +78,21 @@ class TestCache(unittest.TestCase):
     # test second time
     n = PickleMockNode()
     cn = Cache(n, cache_name) 
-    d = cn.train(self.d)
-    self.assertEqual(d, self.d)
+    cn.train(self.d)
     self.assert_(cn.node.trained)
     self.assertEqual(cn.node.serialization_count, 1)
 
     # test with different node
     n = PickleMockNode(nid=2)
     cn = Cache(n, cache_name) 
-    d = cn.train(self.d)
-    self.assertEqual(d, self.d)
+    cn.train(self.d)
     self.assert_(cn.node.trained)
     self.assertEqual(cn.node.serialization_count, 0)
 
     # test with different dataset
     n = PickleMockNode()
     cn = Cache(n, cache_name) 
-    d2 = cn.train(self.d2)
-    self.assertEqual(d2, self.d2)
+    cn.train(self.d2)
     self.assert_(cn.node.trained)
     self.assertEqual(cn.node.serialization_count, 0)
 

@@ -1,9 +1,11 @@
 import cPickle, os, logging
 from hashlib import sha1
 from time import clock
+from basenode import BaseNode
 
-class Cache:
+class Cache(BaseNode):
   def __init__(self, node, cachedir):
+    BaseNode.__init__(self)
     self.node = node
     self.cache = DirCache(cachedir)
 
@@ -15,18 +17,15 @@ class Cache:
     saved_time = uncached_time - cached_time
     if saved_time > 0:
       gain = saved_time / (uncached_time + 1e-8)
-      logging.getLogger('golem.nodes.Cache').info(
-        'Caching saved %.2f seconds (%.1f%%).' % (
+      self.log.info('Caching saved %.2f seconds (%.1f%%).' % ( 
         saved_time, gain * 100.))
     elif saved_time == 0:
-      logging.getLogger('golem.nodes.Cache').info(
-        'Caching saved %.2f seconds.' % saved_time)
+      self.log.info('Caching saved %.2f seconds.' % saved_time)
     else:
-      logging.getLogger('golem.nodes.Cache').warning(
-        'Caching added %.2f seconds (from %.2f to %.2f).' % (
+      self.log.warning('Caching added %.2f seconds (from %.2f to %.2f).' % (
         -saved_time, uncached_time, cached_time))
 
-  def train(self, d):
+  def train_(self, d):
     '''
     Trains the node, but uses cached node and results if possible.
     (node_hash, d_hash) -> dict
@@ -34,7 +33,7 @@ class Cache:
     key = 'train' + d.hash() + Cache.calc_hash(self.node)
     return self.cached_call(key, self.node.train, d)
 
-  def test(self, d):
+  def test_(self, d):
     '''
     Test using the node, but uses cached node and results if possible.
     (node_hash, d_hash) -> dict

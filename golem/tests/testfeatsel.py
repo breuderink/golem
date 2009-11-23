@@ -15,10 +15,15 @@ class TestAUCFilter(unittest.TestCase):
   def test_AUCFilter(self):
     d = self.d
     n = featsel.AUCFilter()
+    self.assertEqual(str(n), 'AUCFilter (using statatistic "onesided_auc")')
+
     n.train(d)
     d2 = n.test(d)
     self.assertEqual(d2.nfeatures, 2)
-    self.assert_(n.feat_bool[:2].all())
+    np.testing.assert_equal(d2.xs, d.xs[:, :2])
+    np.testing.assert_equal(n.feat_bool, [1, 1, 0, 0, 0, 0, 0, 0, 0, 0])
+    self.assertEqual(str(n), 
+      'AUCFilter (2 of 10 features using statistic "onesided_auc")')
   
   def test_AUCFilter_strong(self):
     d = self.d

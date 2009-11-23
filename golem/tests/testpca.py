@@ -13,6 +13,7 @@ class TestPCA(unittest.TestCase):
     '''Test that the PCA-transformed features are uncorrelated, and ordered'''
     d = self.d
     n = nodes.PCA(ndims=d.nfeatures)
+
     n.train(d)
     d2 = n.test(d)
 
@@ -29,7 +30,9 @@ class TestPCA(unittest.TestCase):
     for td in range(0, d.nfeatures + 1):
       # Build PCA
       p = nodes.PCA(ndims=td)
+      self.assertEqual(str(p), 'PCA')
       p.train(d)
+      self.assertEqual(str(p), 'PCA (6D -> %dD)' % td)
       d2 = p.test(d)
 
       self.assertEqual(d2.nfeatures, td)

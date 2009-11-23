@@ -1,9 +1,12 @@
 import operator
 import numpy as np
 from scipy import stats
-from .. import DataSet
 
-class RDA:
+from .. import DataSet
+from basenode import BaseNode
+
+
+class RDA(BaseNode):
   def __init__(self, alpha=.3, beta=.3):
     '''
     Regularized Discriminant Analysis, Alpaydin, p.98, Eq. 5.29:
@@ -13,10 +16,11 @@ class RDA:
     alpha = 0, beta = 1 results in a linear classifier,
     alpha = 1, beta = 0 results in a nearest mean classifier.
     '''
+    BaseNode.__init__(self)
     self.alpha = float(alpha)
     self.beta = float(beta)
 
-  def train(self, d):
+  def train_(self, d):
     self.means = means = []
     covs = []
     self.priors = np.asarray(d.ninstances_per_class) / float(d.ninstances)
@@ -31,7 +35,7 @@ class RDA:
     self.covs = [a * ss * np.eye(d.nfeatures) + b * S + 
       (1 - a - b) * Si for Si in covs]
 
-  def test(self, d):
+  def test_(self, d):
     '''Ouput log(p(x | class_i))'''
     xs = []
     for (ci, (m, S, P)) in enumerate(zip(self.means, self.covs, self.priors)):
@@ -54,3 +58,15 @@ class RDA:
 
     xs = np.hstack(xs)
     return DataSet(xs=xs, default=d)
+
+class NMC(RDA):
+  def __init__(self):
+    RDA.__init__(self, alpha=1, beta=0)
+
+class LDA(RDA):
+  def __init__(self):
+    RDA.__init__(self, alpha=0, beta=1)
+
+class QDA(RDA):
+  def __init__(self):
+    RDA.__init__(self, alpha=0, beta=0)

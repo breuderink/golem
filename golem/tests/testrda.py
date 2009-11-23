@@ -2,7 +2,7 @@ import unittest, os.path
 import numpy as np
 import pylab
 from ..data import gaussian_dataset
-from ..nodes import RDA
+from ..nodes import RDA, NMC, LDA, QDA
 from .. import plots, cv, loss
 
 class TestRDA(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestRDA(unittest.TestCase):
     self.d = gaussian_dataset([100, 50, 100])
 
   def test_qdc(self):
-    cl = RDA(alpha=0, beta=0)
+    cl = QDA()
     self.assert_(loss.mean_std(loss.accuracy, cv.rep_cv(self.d, cl))[0] > .90)
 
   def test_visual_rda(self):
@@ -23,7 +23,7 @@ class TestRDA(unittest.TestCase):
     pylab.savefig(os.path.join('out', 'rda.eps'))
 
   def test_visual_qda(self):
-    cl = RDA(alpha=0, beta=0)
+    cl = QDA()
     cl.train(self.d)
 
     pylab.clf()
@@ -32,7 +32,7 @@ class TestRDA(unittest.TestCase):
     pylab.savefig(os.path.join('out', 'qda.eps'))
 
   def test_visual_lda(self):
-    cl = RDA(alpha=0, beta=1)
+    cl = LDA()
     cl.train(self.d)
 
     pylab.clf()
@@ -41,7 +41,7 @@ class TestRDA(unittest.TestCase):
     pylab.savefig(os.path.join('out', 'lda.eps'))
 
   def test_visual_nm(self):
-    cl = RDA(alpha=1, beta=0)
+    cl = NMC()
     cl.train(self.d)
 
     pylab.clf()

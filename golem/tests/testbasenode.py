@@ -10,19 +10,36 @@ class TestBaseNode(unittest.TestCase):
     self.d = DataSet(xs, ys)
     self.n = BaseNode()
 
+  def test_existing_methods(self):
+    class MaskTrain(BaseNode):
+      def train(self, d):
+        pass
+
+    class MaskTest(BaseNode):
+      def test(self, d):
+        pass
+    self.assertRaises(Exception, MaskTrain)
+    self.assertRaises(Exception, MaskTest)
+
   def test_same_train_test(self):
     d = self.d
     n = self.n
     n.train(d)
-    n.test(d)
+    n.test(d) # no exception
 
     n.train(d)
     self.assertRaises(ValueError, n.test, DataSet(feat_shape=(2, 2), 
       default=d))
 
   def test_logger(self):
-    n = BaseNode(name='testlog') 
-    self.assertEqual(n.log.name, 'nodes.testlog')
+    class TestNode(BaseNode):
+      pass
+
+    n = BaseNode() 
+    self.assertEqual(n.log.name, 'golem.nodes.BaseNode')
+
+    tn = TestNode()
+    self.assertEqual(tn.log.name, 'golem.nodes.TestNode')
 
   def test_assert_two_class(self):
     d = self.d

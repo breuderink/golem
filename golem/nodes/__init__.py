@@ -1,13 +1,18 @@
 from basenode import BaseNode
-from svm import SVM
-from model_select import ModelSelect
+
+# basic nodes
 from pca import PCA
-from lsreg import LSReg
-from chain import Chain, RationedChain
-from zscore import ZScore
-from misc import PriorClassifier, RandomClassifier, WeakClassifier
 from featsel import AUCFilter, FeatStats
+
+# meta nodes
+from simple import FeatMap, ZScore
 from cache import Cache
+from chain import Chain
 from ensemble import Ensemble, OneVsOne, OneVsRest, Bagging
-from simple import FeatMap
-from rda import RDA
+from model_select import ModelSelect
+
+# classifiers
+from baseline import PriorClassifier, RandomClassifier, WeakClassifier
+from rda import NMC, LDA, QDA, RDA
+from lsreg import LSReg
+from svm import SVM

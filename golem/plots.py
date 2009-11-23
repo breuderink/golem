@@ -45,12 +45,12 @@ def classifier_grid(classifier):
   xs = np.array([X.flatten(), Y.flatten()]).T
 
   # Get scores
-  dxy = DataSet(xs, np.zeros((xs.shape[0], 2)), None)
+  dxy = DataSet(xs=xs, ys=np.zeros((xs.shape[0], classifier.nclasses)))
   dz = classifier.test(dxy)
   Zs = []
   for ci in range(dz.nfeatures):
     pt = dz.xs[:, ci]
-    prest = np.vstack([dz.xs[:, i] for i in range(dz.nfeatures) if i <> ci]).T
+    prest = np.vstack([dz.xs[:, i] for i in range(dz.nfeatures) if i != ci]).T
     Z = pt - np.max(prest, axis=1)
     Z = Z.reshape(X.shape)
     Zs.append(Z)
