@@ -64,7 +64,7 @@ class SVM(BaseNode):
     
     model = {}
     model['alphas'] = alphas[sv_ids]
-    model['SVs'] = np.array(xs)[sv_ids, :]
+    model['SVs'] = xs[sv_ids, :]
     model['labels'] = np.array(labels)[sv_ids, :]
     
     # Calculate b in f(x) = <w, x> + b
