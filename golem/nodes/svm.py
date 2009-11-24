@@ -8,7 +8,6 @@ from ..kernel import build_kernel_matrix
 from ..dataset import DataSet
 
 QP_ACCURACY = 1e-8
-MIN_WEIGHT = QP_ACCURACY
 
 class SVM(BaseNode):
   def __init__(self, C=2, kernel=None, **params):
@@ -59,7 +58,7 @@ class SVM(BaseNode):
 
     log.debug('Extracting Support Vectors')
     # a_i gets close to zero, but does not always equal zero
-    sv_ids = np.where(alphas >= MIN_WEIGHT)[0]
+    sv_ids = np.where(alphas >= QP_ACCURACY)[0]
     log.info('Found %d SVs (%.2f%%)'% (len(sv_ids), len(sv_ids) * 100./m))
     log.debug('Found SVs with indices: ' + str(sv_ids))
     
