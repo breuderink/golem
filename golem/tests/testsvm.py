@@ -1,7 +1,6 @@
-import unittest, os.path, random
+import unittest, os.path
 import numpy as np
-import numpy.linalg as la
-import pylab
+import matplotlib.pyplot as plt
 
 from .. import DataSet, loss, data, plots, helpers
 from ..nodes import SVM
@@ -67,16 +66,17 @@ class TestSVM(unittest.TestCase):
 class TestSVMPlot(unittest.TestCase):
   def test_svm_plot(self):
     '''Create hyperplane plot for SVM'''
-    random.seed(1) # use same seed to make this test reproducible
+    np.random.seed(0) # use same seed to make this test reproducible
     d = data.gaussian_dataset([50, 50])
 
     svm = SVM(C=1e2, kernel='rbf', sigma=1.5)
     svm.train(d)
+    self.assertEqual(len(svm.model['SVs']), 49)
 
     # Plot SVs and scatter
     SVs = svm.model['SVs']
-    pylab.clf()
-    pylab.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
+    plt.clf()
+    plt.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
     plots.scatter_plot(d)
     plots.plot_classifier_hyperplane(svm, heat_map=True)
-    pylab.savefig(os.path.join('out', 'test_nonlinear_svm.eps'))
+    plt.savefig(os.path.join('out', 'test_nonlinear_svm.eps'))

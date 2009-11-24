@@ -6,9 +6,9 @@ import cvxopt.solvers
 from basenode import BaseNode
 from ..kernel import build_kernel_matrix
 from ..dataset import DataSet
-from ..helpers import hard_max
 
 QP_ACCURACY = 1e-8
+MIN_WEIGHT = QP_ACCURACY
 
 class SVM(BaseNode):
   def __init__(self, C=2, kernel=None, **params):
@@ -18,8 +18,7 @@ class SVM(BaseNode):
     self.params = params
 
   def train_(self, d):
-    self.assert_two_class(d)
-
+    self.assert_two_class(d) 
     xs, ys = d.xs, d.ys
     log = self.log
 
@@ -28,7 +27,7 @@ class SVM(BaseNode):
     # linear kernel, so each entry contains the dot-product:
     kernel_matrix = build_kernel_matrix(xs, xs, kernel=self.kernel, 
       **self.params)
-    m = xs.shape[0]
+    m = d.ninstances
     
     log.debug('Creating QP-target')
     # (4) min W(a) = -sum(a_i) + (1/2) * a' * Q * a
@@ -60,7 +59,7 @@ class SVM(BaseNode):
 
     log.debug('Extracting Support Vectors')
     # a_i gets close to zero, but does not always equal zero
-    sv_ids = np.where(alphas >= QP_ACCURACY)[0]
+    sv_ids = np.where(alphas >= MIN_WEIGHT)[0]
     log.info('Found %d SVs (%.2f%%)'% (len(sv_ids), len(sv_ids) * 100./m))
     log.debug('Found SVs with indices: ' + str(sv_ids))
     
