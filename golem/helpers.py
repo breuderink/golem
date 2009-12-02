@@ -75,10 +75,11 @@ def mut_inf(conf_mat):
   pxs = np.sum(pxy, axis=1)
   pys = np.sum(pxy, axis=0)
   bits = 0
-  for (x, y) in itertools.product(range(pxy.shape[0]), range(pxy.shape[1])):
-    if pxy[x, y] == 0 or pxs[x] == 0 or pys[y] == 0: 
-      continue
-    bits += pxy[x, y] * np.log2(pxy[x, y]/(pxs[x] * pys[y]))
+  for x in range(pxy.shape[0]):
+    for y in range(pxy.shape[1]):
+      if pxy[x, y] == 0 or pxs[x] == 0 or pys[y] == 0: 
+        continue
+      bits += pxy[x, y] * np.log2(pxy[x, y]/(pxs[x] * pys[y]))
   return bits
 
 def write_csv_table(rows, fname):
