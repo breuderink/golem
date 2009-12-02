@@ -4,7 +4,8 @@ import numpy as np
 import pylab
 from numpy.testing import assert_equal
 from .. import data, plots, DataSet, loss
-from ..helpers import to_one_of_n, hard_max, roc, auc, auc_confidence, mut_inf, write_csv_table, write_latex_table
+from ..helpers import to_one_of_n, hard_max, roc, auc, auc_confidence, \
+  mut_inf, write_csv_table, write_latex_table
 
 class TestOneOfN(unittest.TestCase):
   def test_simple(self):
