@@ -11,6 +11,7 @@ class TestOneOfN(unittest.TestCase):
   def test_simple(self):
     '''Test to_one_of_n in simple use case'''
     # test construction with one class
+    assert_equal(to_one_of_n([0]), np.ones((1, 1)))
     assert_equal(to_one_of_n([0, 0, 0, 0]), np.ones((4, 1)))
     assert_equal(to_one_of_n([1, 1, 1]), np.ones((3, 1)))
 
@@ -31,10 +32,7 @@ class TestOneOfN(unittest.TestCase):
     np.testing.assert_equal(to_one_of_n([0, 1, 2], [5, 6, 7]), np.zeros((3, 3)))
 
   def test_2d_input(self):
-    '''Test to_one_of_n with 2D input'''
-    ok_2d = to_one_of_n(np.atleast_2d([0, 1, 1]))
-    assert_equal(ok_2d, np.array([[1, 0], [0, 1], [0, 1]]))
-    self.assertRaises(ValueError, to_one_of_n, np.ones((3, 3)))
+    self.assertRaises(ValueError, to_one_of_n, np.ones((3, 1)))
 
 class TestHardMax(unittest.TestCase):
   def test_hardmax(self):

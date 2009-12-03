@@ -1,12 +1,12 @@
 import csv, itertools
 import numpy as np
 
-def to_one_of_n(ints, class_cols=None):
+def to_one_of_n(labels, class_cols=None):
   '''
   Convert a list with ints to one-of-N coding for to use in a DataSet.
   Note that the columns correspond to the classes in *sorted* order.
   '''
-  a = np.array(ints, int).squeeze()
+  a = np.asarray(labels, int)
   if a.ndim != 1:
     raise ValueError('Labels should be 1D')
   if not class_cols:
