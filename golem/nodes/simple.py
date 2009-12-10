@@ -13,7 +13,7 @@ class FeatMap(BaseNode):
       default=d)
 
   def __str__(self):
-    return '%s (with mapping "%s")' % self.name, self.mapping.__name__
+    return '%s (with mapping "%s")' % (self.name, self.mapping.__name__)
 
 class ZScore(BaseNode):
   def train_(self, d):
