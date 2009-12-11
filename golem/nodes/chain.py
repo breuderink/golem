@@ -9,15 +9,17 @@ class Chain(BaseNode):
     self.nodes = list(nodes)
       
   def train_(self, d):
-    for (i, n) in enumerate(self.nodes[:-1]):
+    for n in self.nodes:
       self.log.info('Training %s...' % str(n))
+      self.log.debug('d = %s' % d)
       n.train(d)
-      d = n.test(d)
-    self.nodes[-1].train(d)
+      if n != self.nodes[-1]:
+        d = n.test(d)
     
   def test_(self, d):
     for n in self.nodes:
       self.log.info('Testing with %s...' % str(n))
+      self.log.debug('d = %s' % d)
       d = n.test(d)
     return d
 

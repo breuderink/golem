@@ -164,7 +164,7 @@ class DataSet:
     for member in a.__dict__.keys():
       if member not in ['xs', 'ys', 'ids']:
         if a.__dict__[member] != b.__dict__[member]:
-          raise ValueError('Cannot add DataSets: %s is different')
+          raise ValueError('Cannot add DataSets: %s is different' % member)
 
     return DataSet(np.vstack([a.xs, b.xs]), np.vstack([a.ys, b.ys]),
       ids=np.vstack([a.ids, b.ids]), default=a)
