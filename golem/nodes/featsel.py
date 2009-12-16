@@ -62,7 +62,6 @@ class FeatFilter(FeatStats):
       return '%s (using statatistic "%s")' % (self.name, 
         self.statistic.__name__)
 
-
 def onesided_auc(xs, ys):
     assert ys.shape[1] == 2, 'Use AUC with two classes.'
     aucs = helpers.auc(xs, ys[:, 1] - ys[:, 0])

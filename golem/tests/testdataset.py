@@ -29,12 +29,12 @@ class TestDataSetConstruction(unittest.TestCase):
   def test_construction_empty(self):
     '''Test empty construction of DataSet'''
     xs = np.zeros((0, 0))
-    ys = np.zeros((0, 0))
+    ys = np.zeros((0, 1))
     d = DataSet(xs, ys)
     self.assertEqual(d.ninstances, 0)
-    self.assertEqual(d.ninstances_per_class, [])
+    self.assertEqual(d.ninstances_per_class, [0])
     self.assertEqual(d.nfeatures, 0)
-    self.assertEqual(d.nclasses, 0)
+    self.assertEqual(d.nclasses, 1)
     self.assertEqual(d.extra, {})
 
     self.assertRaises(ValueError, DataSet) # no xs, no ys
@@ -371,3 +371,34 @@ class TestDataSet(unittest.TestCase):
     d = self.d
     for att in [d.xs, d.ys, d.ids]:
       self.assertRaises(RuntimeError, att.__setitem__, (0, 0), -1)
+
+class TestEmpty(unittest.TestCase):
+  def setUp(self):
+    self.d0 = DataSet(xs=np.zeros((0, 10)), ys=np.zeros((0, 3)))
+
+  def test_props(self):
+    d0 = self.d0
+    self.assertEqual(d0.ninstances, 0)
+    self.assertEqual(d0.nfeatures, 10)
+    self.assertEqual(d0.nclasses, 3)
+    self.assertEqual(d0.ninstances_per_class, [0, 0, 0])
+
+  def test_sort(self): 
+    d0 = self.d0
+    ds = d0.sorted()
+    self.assertEqual(ds, d0)
+    self.assertNotEqual(id(ds), id(d0))
+
+  def test_shuffle(self): 
+    d0 = self.d0
+    ds = d0.shuffled()
+    self.assertEqual(ds, d0)
+    self.assertNotEqual(id(ds), id(d0))
+
+  def test_bounds(self):
+    d0 = self.d0
+    self.assertRaises(IndexError, d0.__getitem__, 0)
+    self.assertRaises(IndexError, d0.__getitem__, 1)
+    self.assertEqual(d0[:], d0)
+    self.assertEqual(d0[[]], d0)
+    self.assertEqual(d0[np.asarray([])], d0)

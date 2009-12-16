@@ -12,8 +12,8 @@ def to_one_of_n(labels, class_cols=None):
   if not class_cols:
     class_cols = np.unique(a) # is automatically sorted
   ys = np.zeros((a.size, len(class_cols)))
-  for i in range(len(class_cols)):
-    ys[a == class_cols[i], i] = 1
+  for i, n in enumerate(class_cols):
+    ys[a == n, i] = 1
   return ys
 
 def hard_max(xs):

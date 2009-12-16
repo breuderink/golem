@@ -126,11 +126,17 @@ class DataSet:
     
   def __getitem__(self, i):
     if isinstance(i, slice) or isinstance(i, list) or isinstance(i, np.ndarray):
-      return DataSet(xs=self.xs[i, :], ys=self.ys[i,:], ids=self.ids[i, :], 
+      if self.ninstances == 0:
+        if not isinstance(i, slice) and len(i) == 0:
+          # Because np.zeros((0, 10)[[]] raises error, we use a workaround 
+          # using slice to index in a empty dataset.
+          # see http://projects.scipy.org/numpy/ticket/1171
+          i = slice(0) 
+      return DataSet(xs=self.xs[i], ys=self.ys[i], ids=self.ids[i], 
         default=self)
     elif isinstance(i, int):
-      return DataSet(xs=self.xs[i, :].reshape(1, -1), 
-        ys=self.ys[i,:].reshape(1, -1), ids=self.ids[i,:].reshape(1, -1),
+      return DataSet(xs=self.xs[i].reshape(1, -1), 
+        ys=self.ys[i].reshape(1, -1), ids=self.ids[i].reshape(1, -1),
         default=self)
     else:
       raise ValueError, 'Unkown indexing type.'
@@ -213,8 +219,6 @@ class DataSet:
     
   @property
   def ninstances_per_class(self):
-    if self.ninstances == 0:
-      return []
     return np.sum(helpers.hard_max(self.ys), axis=0).astype(int).tolist()
 
   @property
