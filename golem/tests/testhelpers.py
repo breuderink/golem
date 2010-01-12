@@ -1,7 +1,7 @@
 import unittest
 import os
 import numpy as np
-import pylab
+import matplotlib.pyplot as plt
 from numpy.testing import assert_equal
 from .. import data, plots, DataSet, loss
 from ..helpers import to_one_of_n, hard_max, roc, auc, auc_confidence, \
@@ -76,13 +76,15 @@ class TestROC(unittest.TestCase):
   def test_plot(self):
     '''Test plotting ROC'''
     ys=to_one_of_n(np.linspace(0, 1, 100).round())
-    d = DataSet(xs=(ys + np.random.randn(100, 2)).round(1), ys=ys)
+    d1 = DataSet(xs=(ys + np.random.randn(100, 2) * .5), ys=ys)
+    d2 = DataSet(xs=(ys + np.random.randn(100, 2)).round(1), ys=ys)
 
-    pylab.clf()
-    plots.plot_roc(d)
-    pylab.title('AUC = %.2f' % loss.auc(d))
-    pylab.savefig(os.path.join('out', 'roc.eps'))
-    pylab.close()
+    plt.clf()
+    plots.plot_roc(d1)
+    plots.plot_roc(d2)
+    plt.title('AUC d_1 = %.4f' % loss.auc(d1))
+    plt.savefig(os.path.join('out', 'roc.eps'))
+    plt.close()
 
 class TestAUC(unittest.TestCase):
   def test_AUC_extrema(self):
