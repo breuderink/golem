@@ -96,8 +96,12 @@ def plot_hyperplane((X, Y, Zs)):
     plt.contour(X, Y, Z, [0], linewidths=2, colors='k')
 
 def plot_densities((X, Y, Zs)):
-  # Draw
-  heights = np.linspace(np.min(Zs), np.max(Zs), 7)
+  '''
+  Plots the iso-lines for the densities, given the results of classifier_grid.
+  '''
+  heights = np.linspace(0, np.max(Zs), 7) # p < 0 is nonsense. Using 0 
+                                          # prevents to dense graphs for for
+                                          # example the SVM
   for ci in range(Zs.shape[-1]):
     Z = Zs[:, :, ci]
     cs = plt.contour(X, Y, Z, heights, linewidths=.3, colors='k')
