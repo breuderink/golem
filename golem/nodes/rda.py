@@ -59,14 +59,17 @@ class RDA(BaseNode):
     xs = np.hstack(xs)
     return DataSet(xs=xs, default=d)
 
+  def __str__(self):
+    return 'RDA (alpha=%.2f, beta=%.2f)' % (self.alpha, self.beta)
+
 class NMC(RDA):
-  def __init__(self):
-    RDA.__init__(self, alpha=1, beta=0)
+  def __init__(self): RDA.__init__(self, alpha=1, beta=0)
+  def __str__(self): return 'NMC'
 
 class LDA(RDA):
-  def __init__(self):
-    RDA.__init__(self, alpha=0, beta=1)
+  def __init__(self): RDA.__init__(self, alpha=0, beta=1)
+  def __str__(self): return 'LDA'
 
 class QDA(RDA):
-  def __init__(self):
-    RDA.__init__(self, alpha=0, beta=0)
+  def __init__(self): RDA.__init__(self, alpha=0, beta=0)
+  def __str__(self): return 'QDA'

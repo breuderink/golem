@@ -18,8 +18,7 @@ class TestRDA(unittest.TestCase):
     cl.train(self.d)
 
     pylab.clf()
-    plots.scatter_plot(self.d)
-    plots.plot_classifier_hyperplane(cl)
+    plots.plot_classifier(cl, self.d, densities=True, log_p=True)
     pylab.savefig(os.path.join('out', 'rda.eps'))
 
   def test_visual_qda(self):
@@ -27,8 +26,7 @@ class TestRDA(unittest.TestCase):
     cl.train(self.d)
 
     pylab.clf()
-    plots.scatter_plot(self.d)
-    plots.plot_classifier_hyperplane(cl)
+    plots.plot_classifier(cl, self.d, densities=True, log_p=True)
     pylab.savefig(os.path.join('out', 'qda.eps'))
 
   def test_visual_lda(self):
@@ -36,8 +34,7 @@ class TestRDA(unittest.TestCase):
     cl.train(self.d)
 
     pylab.clf()
-    plots.scatter_plot(self.d)
-    plots.plot_classifier_hyperplane(cl)
+    plots.plot_classifier(cl, self.d, densities=True, log_p=True)
     pylab.savefig(os.path.join('out', 'lda.eps'))
 
   def test_visual_nm(self):
@@ -45,7 +42,6 @@ class TestRDA(unittest.TestCase):
     cl.train(self.d)
 
     pylab.clf()
-    plots.scatter_plot(self.d)
     pylab.axis('equal')
-    plots.plot_classifier_hyperplane(cl)
+    plots.plot_classifier(cl, self.d, densities=True, log_p=True)
     pylab.savefig(os.path.join('out', 'nm.eps'))

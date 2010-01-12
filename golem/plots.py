@@ -3,24 +3,24 @@ import numpy as np
 from dataset import DataSet
 import helpers
 
-markers = ['o', 'o', 's', 'd', 'v']
-colors = ['w', 'k', 'r', 'y', 'b']
+MARKERS = ['o', 'o', 's', 'd', 'v']
+COLORS = ['w', 'k', 'r', 'y', 'b']
 
 def scatter_plot(dataset):
   ''' Display the dataset with a scatterplot using Matplotlib/Pylab. The user is
   responsible for calling plt.show() to display the plot.
   '''
-  assert dataset.nfeatures == 2
+  assert dataset.nfeatures == 2, 'Can only scatter a DataSet with 2 features.'
   scatters = []
   # loop over classes
   for ci in range(dataset.nclasses):
-    color, marker = colors[ci], markers[ci]
+    color, marker = COLORS[ci], MARKERS[ci]
     xs = dataset.get_class(ci).xs
 
     # plot features
     f0 = [x[0] for x in xs]
     f1 = [x[1] for x in xs]
-    scatters.append(plt.scatter(f0, f1, s=10, c=color, marker=marker))
+    scatters.append(plt.scatter(f0, f1, s=15, c=color, marker=marker))
 
   assert dataset.cl_lab != []
   plt.legend(scatters, dataset.cl_lab)
@@ -32,44 +32,73 @@ def scatter_plot(dataset):
   plt.xlabel(xlab)
   plt.ylabel(ylab)
 
+def classifier_grid(classifier, x, y):
+  '''
+  Evaluate a classifier at a 2D grid, specified by coordinates x and y.
+  Used for hyperplane and density plots.
 
-def classifier_grid(classifier):
-  RESOLUTION = 40
-  xlim = plt.xlim()
-  ylim = plt.ylim()
-
+  Returns (X, Y, Zs), where X contains all x-coords, Y contains all y-coords,
+  and Zs is [NY x NX x nclasses] matrix.
+  '''
   # Build grid
-  x = np.arange(xlim[0], xlim[1], (xlim[1]-xlim[0])/RESOLUTION)
-  y = np.arange(ylim[0], ylim[1], (ylim[1]-ylim[0])/RESOLUTION)
   X, Y = np.meshgrid(x, y)
   xs = np.array([X.flatten(), Y.flatten()]).T
 
   # Get scores
   dxy = DataSet(xs=xs, ys=np.zeros((xs.shape[0], classifier.nclasses)))
-  dz = classifier.test(dxy)
-  Zs = []
-  for ci in range(dz.nfeatures):
-    pt = dz.xs[:, ci]
-    prest = np.vstack([dz.xs[:, i] for i in range(dz.nfeatures) if i != ci]).T
-    Z = pt - np.max(prest, axis=1)
-    Z = Z.reshape(X.shape)
-    Zs.append(Z)
+  Zs = classifier.test(dxy).xs.reshape(X.shape[0], X.shape[1], -1)
   return (X, Y, Zs)
 
-def plot_classifier_hyperplane(classifier, heat_map=False, heat_map_alpha=1):
+def plot_hyperplane((X, Y, Zs)):
+  # Rescale probabilities to classifier magnitudes; > 0 for most probable class
+  zs = Zs.reshape(-1, Zs.shape[-1])
+  zs_sorted = np.sort(zs, axis=1)
+  zs = np.where(helpers.hard_max(zs),
+    zs - zs_sorted[:, -2].reshape(-1, 1),
+    zs - zs_sorted[:, -1].reshape(-1, 1))
+  Zs0 = zs.reshape(Zs.shape)
+
+  # Draw
+  for ci in range(Zs0.shape[-1]):
+    Z = Zs0[:, :, ci]
+    plt.contour(X, Y, Z, [0], linewidths=2, colors='k')
+
+def plot_densities((X, Y, Zs)):
+  # Draw
+  heights = np.linspace(np.min(Zs), np.max(Zs), 7)
+  for ci in range(Zs.shape[-1]):
+    Z = Zs[:, :, ci]
+    cs = plt.contour(X, Y, Z, heights, linewidths=.3, colors='k')
+    plt.clabel(cs, fontsize=6)
+
+def plot_classifier(classifier, d, densities=True, log_p=True):
   '''
-  Plot the decision-function of a classifier. The labels of the contours can
-  be enabled with contour_label, plotting the heatmap can be disabled with the
-  heat_map argument.
+  High level function to plot a 2D classifier. This function makes a 
+  scatterplot of d, uses the limits of this plot to evaluate the classifier
+  on a grid.
+  The hyperplane(s) are drawn, as are the densities of the classifier if
+  dens_map provided. The function dens_map maps the output values of the 
+  classifier to a probability.
   '''
-  (X, Y, Zs) = classifier_grid(classifier)
-  for Z in Zs:
-    plt.contour(X, Y, Z, [0, .5, 1], linewidths=[2, .5, .5], colors='k')
-  if heat_map:
-    if len(Zs) > 2: 
-      raise ValueError, 'Cannot draw a heat map for nclasses > 2'
-    plt.imshow(Z, origin='lower', cmap=plt.cm.RdBu_r, alpha=heat_map_alpha, 
-      aspect='auto', extent=[X.min(), X.max(), Y.min(), Y.max()])
+  RESOLUTION = 80
+  # Manually calculate limits
+  center = np.mean(d.xs, axis=0)
+  max_dev = np.std(np.abs(d.xs-center), axis=0) * 5
+  lims = np.array([center - max_dev, center + max_dev])
+  xlim, ylim = lims[:, 0], lims[:, 1]
+
+  # Evaluate on grid.
+  (X, Y, Zs) = classifier_grid(classifier, 
+    np.linspace(xlim[0], xlim[1], RESOLUTION), 
+    np.linspace(ylim[0], ylim[1], RESOLUTION))
+  plot_hyperplane((X, Y, Zs))
+  if densities:
+    plot_densities((X, Y, np.exp(Zs) if log_p else Zs))
+  scatter_plot(d) 
+  plt.title(str(classifier))
+  plt.xlim(xlim)
+  plt.ylim(ylim)
+
 
 def plot_roc(d, fname=None):
   '''
