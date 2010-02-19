@@ -12,7 +12,7 @@ class ModelSelect(BaseNode):
   def train_(self, d):
     best_node = None
     for node in self.nodes:
-      self.log.info('Evaluating: %s' % str(node))
+      self.log.debug('Evaluating: %s' % str(node))
       perf = self.critic(d, copy.deepcopy(node))
       if best_node == None or perf > best_perf:
         best_perf = perf
