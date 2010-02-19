@@ -53,7 +53,9 @@ class SVM(BaseNode):
     cvxopt.solvers.options['abstol'] = QP_ACCURACY
     cvxopt.solvers.options['feastol'] = QP_ACCURACY
     sol = cvxopt.solvers.qp(Q, q, G, h, A, b)
-    assert sol['status'] == 'optimal', 'QP solution not optimal.'
+    if sol['status'] != 'optimal':
+      log.warning('QP solution status: ' + sol['status'])
+
     alphas = np.array(sol['x'])
 
     log.debug('Extracting Support Vectors')

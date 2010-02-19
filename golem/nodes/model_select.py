@@ -25,6 +25,6 @@ class ModelSelect(BaseNode):
     return self.best_node.test(d)
 
   def __str__(self):
-    if hasattr(self, best_node):
+    if hasattr(self, 'best_node'):
       return 'ModelSelect (selected %s)' % self.best_node
     return 'ModelSelect'
