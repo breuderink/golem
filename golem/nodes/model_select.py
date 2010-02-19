@@ -19,7 +19,7 @@ class ModelSelect(BaseNode):
         best_node = node
     best_node.train(d) 
     self.best_node = best_node
-    self.log.info('Best node: %s' % str(best_node))
+    self.log.info('Best node: %s @ %.2f' % str(best_node, best_perf))
 
   def test_(self, d):
     return self.best_node.test(d)

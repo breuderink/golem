@@ -40,7 +40,7 @@ def auc(d):
 
 def mean_std(loss_f, ds):
   '''Calc mean and std for loss function loss_f over a list with DataSets ds'''
-  losses = map(loss, ds)
+  losses = map(loss_f, ds)
   return (np.mean(losses, axis=0), np.std(losses, axis=0))
 
 def I(d):
