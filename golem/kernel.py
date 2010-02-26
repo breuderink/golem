@@ -1,10 +1,12 @@
 import math
 import numpy as np
 
-def build_kernel_matrix(instances_row, instances_col, kernel=None, **params):
+def build_kernel_matrix(xs_row, xs_col, kernel=None, **params):
   '''Build Gramm-matrix or kernel-matrix'''
-  assert(instances_row.dtype == instances_col.dtype == np.float64)
-  irow, icol = instances_row, instances_col
+  for xs in [xs_row, xs_col]:
+    assert xs.dtype in [np.float32, np.float64, np.int], \
+      'dtype %s is not supported in kernel' % xs.dtype
+  irow, icol = xs_row.astype(np.float32), xs_col.astype(np.float32)
 
   if kernel == None or kernel == 'linear':
     kernel_matrix = build_kernel_matrix(irow, icol, 'poly', degree=1)

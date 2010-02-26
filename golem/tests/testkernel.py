@@ -9,9 +9,9 @@ def test_kernel_function(kernel_matrix, kernel, x1, x2):
   (m, n) = kernel_matrix.shape
   for r in range(m):
     for c in range(n):
-      if kernel(x1[r,:], x2[c, :]) != kernel_matrix[r, c]:
-        raise AssertionError(
-          kernel(x1[r,:], x2[c, :]) , '!=', kernel_matrix[r, c])
+      k = np.float32(kernel(x1[r,:], x2[c, :]))
+      if (k - kernel_matrix[r, c]) ** 2 > 1e-10:
+        raise AssertionError(k, '!=', kernel_matrix[r, c])
   return True
 
 def test_kernel_props(kernel_matrix):
@@ -27,9 +27,9 @@ class TestKernel(unittest.TestCase):
     self.x1 = np.array(([0., 0], [1, 0], [-4, 4]))
     self.x2 = np.array(([-1.5, -5], [1e-5, 1e5]));
 
-  def test_int_features(self): 
-    '''Verify that int-featues are not accepted by build_kernel_matrix.'''
-    x1_bad = np.array(([0, 0], [1, 0], [-4, 4]));
+  def test_complex_features(self): 
+    '''Verify that complex-featues are not accepted by build_kernel_matrix.'''
+    x1_bad = np.array(([0, 0], [1, 0], [-4, 4])).astype(complex)
     self.assertRaises(Exception, build_kernel_matrix, x1_bad, x1_bad)
 
   def test_linear(self):
@@ -54,8 +54,8 @@ class TestKernel(unittest.TestCase):
     for s in [.1, 5, 20]:
       k11 = build_kernel_matrix(x1, x1, 'rbf', sigma=s)
       k12 = build_kernel_matrix(x1, x2, 'rbf', sigma=s)
-      self.assertEqual(k11.dtype, np.float64)
-      self.assertEqual(k12.dtype, np.float64)
+      self.assertEqual(k11.dtype, np.float32)
+      self.assertEqual(k12.dtype, np.float32)
       
       test_kernel_props(k11)
       test_kernel_function(k11, lambda a, b: kernel(a, b, s), x1, x1)
@@ -75,8 +75,8 @@ class TestKernel(unittest.TestCase):
       k11 = build_kernel_matrix(x1, x1, 'poly', degree=d)
       k12 = build_kernel_matrix(x1, x2, 'poly', degree=d)
       
-      self.assertEqual(k11.dtype, np.float64)
-      self.assertEqual(k12.dtype, np.float64)
+      self.assertEqual(k11.dtype, np.float32)
+      self.assertEqual(k12.dtype, np.float32)
       
       test_kernel_props(k11)
       test_kernel_function(k11, lambda a, b: kernel(a, b, d), x1, x1)
