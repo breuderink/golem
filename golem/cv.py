@@ -4,7 +4,7 @@ import numpy as np
 from dataset import DataSet
 import helpers
 
-log = logging.getLogger('CV')
+log = logging.getLogger('golem.cv')
 def strat_splits(d, K=10):
   '''
   Splits a dataset in K non-overlapping subsets. The classes are distributed
@@ -48,7 +48,7 @@ def cross_validation_sets(subsets):
     training_set = (reduce(lambda a, b: a + b, 
       [subsets[i] for i in range(len(subsets)) if i <> ki]))
     test_set = subsets[ki]
-    log.info('Building training and testset %d of %d' % (ki, K))
+    log.info('Building training and testset %d of %d' % (ki + 1, K))
     yield training_set, test_set
 
 def cross_validate(subsets, node):
@@ -83,5 +83,5 @@ def rep_cv(d, node, reps=5, K=10):
   Returns a list with the output of node on the testsets.
   '''
   for ri in range(reps):
-    for td in cross_validate(strat_splits(d), node):
+    for td in cross_validate(strat_splits(d, K), node):
       yield td
