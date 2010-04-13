@@ -10,7 +10,8 @@ def test_kernel_props(kernel_matrix):
     raise AssertionError('Kernel is not symmetric')
   if np.trace(kernel_matrix) < 0: 
     raise AssertionError('Kernel has a negative trace')
-  return True
+  if np.any(np.linalg.eigvals(kernel_matrix) + 1e8 < 0):
+    raise AssertionError('Kernel is not postive semidefinite')
 
 class TestKernel(unittest.TestCase):
   def setUp(self):
