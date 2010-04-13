@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from .. import DataSet, loss, data, plots, helpers
 from ..nodes import SVM
 
-
 class TestSVM(unittest.TestCase):
   def test_linear(self): 
     '''Test simple linear SVM'''
@@ -71,7 +70,7 @@ class TestSVMPlot(unittest.TestCase):
 
     svm = SVM(C=1e2, kernel='rbf', sigma=1.5)
     svm.train(d)
-    self.assertEqual(len(svm.model['SVs']), 49)
+    self.assertEqual(len(svm.model['SVs']), 40)
 
     # Plot SVs and scatter
     SVs = svm.model['SVs']

@@ -7,7 +7,7 @@ from basenode import BaseNode
 from ..kernel import build_kernel_matrix
 from ..dataset import DataSet
 
-QP_ACCURACY = 1e-8
+QP_ACCURACY = 1e-5
 
 class SVM(BaseNode):
   def __init__(self, C=2, kernel=None, **params):
@@ -50,8 +50,6 @@ class SVM(BaseNode):
 
     log.debug('Solving QP')
     cvxopt.solvers.options['show_progress'] = False
-    cvxopt.solvers.options['abstol'] = QP_ACCURACY
-    cvxopt.solvers.options['feastol'] = QP_ACCURACY
     sol = cvxopt.solvers.qp(Q, q, G, h, A, b)
     if sol['status'] != 'optimal':
       log.warning('QP solution status: ' + sol['status'])
