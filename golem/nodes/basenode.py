@@ -48,7 +48,7 @@ class BaseNode:
     # check format of d
     if self.empty_d != None and self.empty_d != d[:0]:
       raise ValueError('Got %s, expected %s in %s' % 
-        (self.empty_d, d, str(self)))
+        (d, self.empty_d, str(self)))
 
     # delegate call
     return self.test_(d)
