@@ -53,5 +53,12 @@ class BaseNode:
     # delegate call
     return self.test_(d)
 
+  def train_test(self, dtrain, dtest):
+    '''
+    Convenience method to train the node on dtrain, and apply it to dtest.
+    '''
+    self.train(dtrain)
+    return self.test(dtest)
+
   def __str__(self):
     return self.name

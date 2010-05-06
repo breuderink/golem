@@ -62,12 +62,12 @@ class FeatFilter(FeatStats):
       return '%s (using statatistic "%s")' % (self.name, 
         self.statistic.__name__)
 
-def onesided_auc(xs, ys):
+def auc_dev(xs, ys):
     assert ys.shape[1] == 2, 'Use AUC with two classes.'
     aucs = helpers.auc(xs, ys[:, 1] - ys[:, 0])
     return np.abs(aucs - .5) + .5
 
 class AUCFilter(FeatFilter, BaseNode):
   def __init__(self, min_auc=.6, min_nfeatures=0):
-    FeatFilter.__init__(self, onesided_auc, threshold=min_auc, 
+    FeatFilter.__init__(self, auc_dev, threshold=min_auc, 
       min_nfeatures=min_nfeatures)
