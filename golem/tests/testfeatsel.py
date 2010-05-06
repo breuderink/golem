@@ -22,14 +22,12 @@ class TestAUCFilter(unittest.TestCase):
     self.assertEqual(d2.nfeatures, 2)
     np.testing.assert_equal(d2.xs, d.xs[:, :2])
     np.testing.assert_equal(n.keep, [0, 1])
-    self.assertEqual(str(n), 
-      'AUCFilter (2 features using statistic "auc_dev")')
+    self.assertEqual(str(n), 'AUCFilter (2 features using statistic "auc_dev")')
   
   def test_AUCFilter_strong(self):
     d = self.d
     n = featsel.AUCFilter(min_auc=.8)
-    n.train(d)
-    d2 = n.test(d)
+    d2 = n.train_test(d, d)
     self.assertEqual(d2.nfeatures, 1)
 
   def test_AUCFilter_min_feat(self):

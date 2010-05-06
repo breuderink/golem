@@ -1,4 +1,4 @@
-import logging
+import logging, warnings
 
 class BaseNode:
   def __init__(self):
@@ -43,6 +43,12 @@ class BaseNode:
     pass
 
   def test(self, d):
+    warnings.warn('Method [Node].test() is deprecated,' + 
+      'use [Node].apply() instead.',
+      DeprecationWarning)
+    return self.apply(d)
+
+  def apply(self, d):
     self.log.info('testing on ' + str(d))
 
     # check format of d
