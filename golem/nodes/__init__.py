@@ -2,7 +2,7 @@ from basenode import BaseNode
 
 # basic nodes
 from pca import PCA
-from featsel import AUCFilter, FeatStats
+from featsel import AUCFilter, FeatFilter
 
 # meta nodes
 from simple import FeatMap, ZScore

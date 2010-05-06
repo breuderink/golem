@@ -7,23 +7,23 @@ class TestAUCFilter(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
     # generate dataset with features based on labels with increasing noise
-    ys = helpers.to_one_of_n(np.linspace(0, 1, 400).round())
+    ys = helpers.to_one_of_n(np.linspace(0, 1, 1000).round())
     xs = ys[:, 1].reshape(-1, 1) + (np.linspace(.5, 10, 10) * 
-      np.random.randn(400, 10))
+      np.random.randn(1000, 10))
     self.d = DataSet(xs=xs, ys=ys, feat_shape=(2, 5))
 
   def test_AUCFilter(self):
     d = self.d
     n = featsel.AUCFilter()
-    self.assertEqual(str(n), 'AUCFilter (using statatistic "auc_dev")')
+    self.assertEqual(str(n), 'AUCFilter (using statistic "auc_dev")')
 
     n.train(d)
     d2 = n.test(d)
     self.assertEqual(d2.nfeatures, 2)
     np.testing.assert_equal(d2.xs, d.xs[:, :2])
-    np.testing.assert_equal(n.feat_bool, [1, 1, 0, 0, 0, 0, 0, 0, 0, 0])
+    np.testing.assert_equal(n.keep, [0, 1])
     self.assertEqual(str(n), 
-      'AUCFilter (2 of 10 features using statistic "auc_dev")')
+      'AUCFilter (2 features using statistic "auc_dev")')
   
   def test_AUCFilter_strong(self):
     d = self.d
@@ -36,24 +36,21 @@ class TestAUCFilter(unittest.TestCase):
     d = self.d
     for nf in range(d.nfeatures):
       n = featsel.AUCFilter(min_auc=1, min_nfeatures=nf)
-      n.train(d)
-      d2 = n.test(d)
+      d2 = n.train_test(d, d)
       self.assertEqual(d2.nfeatures, nf)
-      if nf <= 2:
-        self.assert_(n.feat_bool[:nf].all())
+      if nf < 4: # higher numbers are too noisy to test reliably
+        self.assertEqual(n.keep.tolist(), range(nf))
 
   def test_AUCFilter_auc_nfeat_combo(self):
     # test with more strict min_auc
     d = self.d
     n = featsel.AUCFilter(min_auc=.6, min_nfeatures=1)
-    n.train(d)
-    d2 = n.test(d)
+    d2 = n.train_test(d, d)
     self.assertEqual(d2.nfeatures, 2)
 
     # test with more strict min_nfeatures
     n = featsel.AUCFilter(min_auc=.6, min_nfeatures=6)
-    n.train(d)
-    d2 = n.test(d)
+    d2 = n.train_test(d, d)
     self.assertEqual(d2.nfeatures, 6)
 
   def test_AUCFilter_too_strong(self):
@@ -72,4 +69,4 @@ class TestAUCFilter(unittest.TestCase):
         nn = featsel.AUCFilter(min_auc=min_auc, min_nfeatures=nf)
         n.train(d)
         nn.train(dn)
-        np.testing.assert_equal(n.feat_bool, nn.feat_bool)
+        np.testing.assert_equal(n.keep, nn.keep)
