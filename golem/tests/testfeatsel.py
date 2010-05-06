@@ -27,14 +27,14 @@ class TestAUCFilter(unittest.TestCase):
   def test_AUCFilter_strong(self):
     d = self.d
     n = featsel.AUCFilter(min_auc=.8)
-    d2 = n.train_test(d, d)
+    d2 = n.train_apply(d, d)
     self.assertEqual(d2.nfeatures, 1)
 
   def test_AUCFilter_min_feat(self):
     d = self.d
     for nf in range(d.nfeatures):
       n = featsel.AUCFilter(min_auc=1, min_nfeatures=nf)
-      d2 = n.train_test(d, d)
+      d2 = n.train_apply(d, d)
       self.assertEqual(d2.nfeatures, nf)
       if nf < 4: # higher numbers are too noisy to test reliably
         self.assertEqual(n.keep.tolist(), range(nf))
@@ -43,12 +43,12 @@ class TestAUCFilter(unittest.TestCase):
     # test with more strict min_auc
     d = self.d
     n = featsel.AUCFilter(min_auc=.6, min_nfeatures=1)
-    d2 = n.train_test(d, d)
+    d2 = n.train_apply(d, d)
     self.assertEqual(d2.nfeatures, 2)
 
     # test with more strict min_nfeatures
     n = featsel.AUCFilter(min_auc=.6, min_nfeatures=6)
-    d2 = n.train_test(d, d)
+    d2 = n.train_apply(d, d)
     self.assertEqual(d2.nfeatures, 6)
 
   def test_AUCFilter_too_strong(self):
