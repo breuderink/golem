@@ -40,10 +40,3 @@ class TestBaseNode(unittest.TestCase):
 
     tn = TestNode()
     self.assertEqual(tn.log.name, 'golem.nodes.TestNode')
-
-  def test_assert_two_class(self):
-    d = self.d
-    d3 = DataSet(ys=np.ones((10, 3)), cl_lab=['a','b','c'], default=d)
-    n = self.n
-    n.assert_two_class(self.d)
-    self.assertRaises(ValueError, n.assert_two_class, d3)

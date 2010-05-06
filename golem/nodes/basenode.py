@@ -53,12 +53,5 @@ class BaseNode:
     # delegate call
     return self.test_(d)
 
-
-  def assert_two_class(self, d):
-    '''Verify that dataset has exactly two classes'''
-    if d.nclasses != 2:
-      raise ValueError('Expected a DataSet with only 2 classes, got %d (%s)' %
-        (d.ninstances, str(d.cl_lab)))
-
   def __str__(self):
     return self.name

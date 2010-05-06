@@ -17,7 +17,7 @@ class SVM(BaseNode):
     self.params = params
 
   def train_(self, d):
-    self.assert_two_class(d) 
+    assert d.nclasses == 2
     xs, ys = d.xs, d.ys
     log = self.log
 
