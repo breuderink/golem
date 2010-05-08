@@ -4,7 +4,7 @@ from testartificialdata import *
 from testkernel import *
 from testsvm import *
 from testloss import *
-from testcrossvalidation import *
+from testcv import *
 from testzscore import *
 from testmodelselect import *
 from testpca import *
