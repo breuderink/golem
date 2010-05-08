@@ -57,9 +57,9 @@ class TestCrossValidation(unittest.TestCase):
       def test(self, d): 
         return DataSet(xs=d.ys, default=d)
 
-    perf = loss.mean_std(loss.accuracy,
-      cv.cross_validate(cv.strat_splits(self.d, 8), CheatNode()))
-    self.assertAlmostEqual(perf[0], .5, 1)
+    preds = cv.cross_validate(cv.strat_splits(self.d, 8), CheatNode())
+    for d in preds:
+      self.assert_(np.all(np.isnan(d.xs)))
 
   def test_crossvalidation_mem_prot(self):
     '''Test protection against remembering over repetitions'''

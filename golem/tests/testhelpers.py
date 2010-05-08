@@ -42,6 +42,14 @@ class TestHardMax(unittest.TestCase):
     tie_votes = np.array([[-1, -1], [0, 0], [1, 1]])
     np.testing.assert_equal(hard_max(tie_votes), to_one_of_n([0, 0, 0], [0, 1]))
 
+  def test_nan(self):
+    soft_votes = np.array([[0, 1], [1, 0], [np.nan, 0]])
+    np.testing.assert_equal(hard_max(soft_votes), 
+      np.asarray([[0, 1], [1, 0], [np.nan, np.nan]]))
+
+  def test_empty(self):
+    hard_max(np.zeros((0, 3)))
+
 class TestROC(unittest.TestCase):
   def test_roc(self):
     '''Test bounds and ordering of ROC'''

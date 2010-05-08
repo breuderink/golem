@@ -3,11 +3,8 @@ from dataset import DataSet
 import helpers
 
 def class_loss(d):
-  hm = helpers.hard_max(d.xs)
-  ys = d.ys
-  loss = np.where(np.sum(np.abs(hm - ys), axis=1).reshape(-1, 1), 
-    np.ones((ys.shape[0], 1)), np.zeros((ys.shape[0], 1)))
-  return loss
+  return np.any(helpers.hard_max(d.xs) != helpers.hard_max(d.ys), 
+    axis=1).reshape(-1, 1)
 
 def accuracy(d):
   return 1 - np.mean(class_loss(d))

@@ -23,7 +23,9 @@ def hard_max(xs):
   '''
   result = np.zeros(xs.shape)
   result[range(xs.shape[0]), np.argmax(xs, axis=1)] = 1
-  return result
+  nans = np.where(np.any(np.isnan(xs), axis=1).reshape(-1, 1),
+    np.ones(xs.shape) * np.nan, np.zeros(xs.shape))
+  return result + nans
 
 def roc(scores, labels):
   '''Calc (TPs, FPs) for ROC plotting and AUC-ROC calculation.''' 
@@ -35,7 +37,7 @@ def roc(scores, labels):
   
   # slide threshold from above
   TPs = np.cumsum(labels == 1) / np.sum(labels == 1).astype(float)
-  FPs = np.cumsum(labels <> 1) / np.sum(labels <> 1).astype(float)
+  FPs = np.cumsum(labels != 1) / np.sum(labels != 1).astype(float)
   
   # handle equal scoress
   ui = np.concatenate([np.diff(scores), np.array([1])]) != 0

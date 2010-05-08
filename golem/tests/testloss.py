@@ -9,17 +9,6 @@ class TestLoss(unittest.TestCase):
       xs=helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]),
       ys=helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]))
 
-  def test_hardmax(self):
-    np.testing.assert_equal(helpers.hard_max(self.d.xs), self.d.xs)
-
-    soft_votes = np.array([[-.3, -.1], [9, 4], [.1, .101]])
-    np.testing.assert_equal(helpers.hard_max(soft_votes), 
-      helpers.to_one_of_n([1, 0, 1]))
-
-    tie_votes = np.array([[-1, -1], [0, 0], [1, 1]])
-    np.testing.assert_equal(helpers.hard_max(tie_votes),  
-      helpers.to_one_of_n([0, 0, 0], [0, 1]))
-  
   def test_class_loss(self):
     targets = np.array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]).reshape(-1, 1)
     d = self.d
