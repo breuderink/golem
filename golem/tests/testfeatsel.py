@@ -18,7 +18,7 @@ class TestAUCFilter(unittest.TestCase):
     self.assertEqual(str(n), 'AUCFilter (using statistic "auc_dev")')
 
     n.train(d)
-    d2 = n.test(d)
+    d2 = n.apply(d)
     self.assertEqual(d2.nfeatures, 2)
     np.testing.assert_equal(d2.xs, d.xs[:, :2])
     np.testing.assert_equal(n.keep, [0, 1])
@@ -55,7 +55,7 @@ class TestAUCFilter(unittest.TestCase):
     d = self.d
     n = featsel.AUCFilter(min_auc=1)
     n.train(d)
-    d2 = n.test(d)
+    d2 = n.apply(d)
     self.assertEqual(d2.nfeatures, 0)
 
   def test_AUCFilter_is_symmetric(self):

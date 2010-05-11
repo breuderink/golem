@@ -7,7 +7,7 @@ class FeatMap(BaseNode):
     BaseNode.__init__(self)
     self.mapping = mapping
 
-  def test_(self, d):
+  def apply_(self, d):
     xs = np.asarray(map(self.mapping, d.nd_xs))
     return DataSet(xs=xs.reshape(d.ninstances, -1), feat_shape=xs.shape[1:],
       default=d)
@@ -20,5 +20,5 @@ class ZScore(BaseNode):
     self.mean = np.mean(d.xs, axis=0)
     self.std = np.std(d.xs, axis=0)
 
-  def test_(self, d):
+  def apply_(self, d):
     return DataSet(xs=(d.xs - self.mean) / self.std, default=d)

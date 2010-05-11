@@ -68,7 +68,7 @@ def cross_validate(subsets, node):
     # create a test set stripped of labels
     te_stripped = DataSet(ys=np.nan * te.ys, default=te)
 
-    pred = tnode.test(te_stripped)
+    pred = tnode.apply(te_stripped)
 
     # reattach labels
     pred = DataSet(ys=te.ys, default=pred)

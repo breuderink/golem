@@ -28,9 +28,9 @@ class Ensemble(BaseNode):
     for (n, nd) in itertools.izip(self.nodes, self.tr_splitter(d)):
       n.train(nd)
 
-  def test_(self, d):
+  def apply_(self, d):
     xs = np.zeros(d.xs.shape)
-    results = [n.test(nd) for (n, nd) in itertools.izip(self.nodes, 
+    results = [n.apply(nd) for (n, nd) in itertools.izip(self.nodes, 
       self.te_splitter(d))]
     return self.combiner(results)
 
@@ -48,9 +48,9 @@ class OVONode(BaseNode):
     cl_lab = [d.cl_lab[cia], d.cl_lab[cib]]
     self.node.train(DataSet(ys=ys, cl_lab=cl_lab, default=pair_d))
 
-  def test_(self, d):
+  def apply_(self, d):
     cia, cib = self.cia, self.cib
-    td = self.node.test(DataSet(ys=d.ys[:,[cia, cib]], cl_lab=[d.cl_lab[cia], 
+    td = self.node.apply(DataSet(ys=d.ys[:,[cia, cib]], cl_lab=[d.cl_lab[cia], 
       d.cl_lab[cib]], default=d))
     xs = np.zeros((d.ninstances, d.nclasses))
     xs[:, [self.cia, self.cib]] = td.xs
@@ -70,8 +70,8 @@ class OneVsOne(BaseNode):
     self.ensemble = Ensemble(pairs)
     self.ensemble.train(d)
 
-  def test_(self, d):
-    return self.ensemble.test(d)
+  def apply_(self, d):
+    return self.ensemble.apply(d)
 
 class OVRNode(BaseNode):
   def __init__(self, class_i, node):
@@ -89,8 +89,8 @@ class OVRNode(BaseNode):
   def train_(self, d):
     self.node.train(self.ovr_d(d))
 
-  def test_(self, d):
-    td = self.node.test(self.ovr_d(d))
+  def apply_(self, d):
+    td = self.node.apply(self.ovr_d(d))
     xs = []
     for i in range(d.nclasses):
       if i == self.class_i:
@@ -110,8 +110,8 @@ class OneVsRest(BaseNode):
     self.ensemble = Ensemble(nodes)
     self.ensemble.train(d)
 
-  def test_(self, d):
-    return self.ensemble.test(d)
+  def apply_(self, d):
+    return self.ensemble.apply(d)
 
 def bagging_splitter(d):
   while True:

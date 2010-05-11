@@ -21,7 +21,7 @@ class TestSVM(unittest.TestCase):
     svm.train(d)
     
     # Test if the instances are correctly classified
-    self.assertEqual(loss.accuracy(svm.test(d)), 1)
+    self.assertEqual(loss.accuracy(svm.apply(d)), 1)
     
     # Check if the right Support Vectors are found
     np.testing.assert_equal(svm.model['SVs'], xs[2:6])
@@ -33,11 +33,11 @@ class TestSVM(unittest.TestCase):
 
     # Test b in f(x) = ax + b
     hyperplane_d = DataSet(xs=np.array([[.5, 0], [.5, 1]]), ys=np.zeros((2, 2)))
-    np.testing.assert_almost_equal(svm.test(hyperplane_d).xs, hyperplane_d.ys)
+    np.testing.assert_almost_equal(svm.apply(hyperplane_d).xs, hyperplane_d.ys)
 
     # Test SVs
     sv_d = d[2:6]
-    np.testing.assert_almost_equal(svm.test(sv_d).xs, sv_d.ys * 2. - 1)
+    np.testing.assert_almost_equal(svm.apply(sv_d).xs, sv_d.ys * 2. - 1)
   
   def test_nonlinear(self): 
     '''Test simple RBF SVM on a XOR problem'''
@@ -52,7 +52,7 @@ class TestSVM(unittest.TestCase):
     svm.train(d)
 
     # Test if the instances are correctly classified
-    self.assertEqual(loss.accuracy(svm.test(d)), 1)
+    self.assertEqual(loss.accuracy(svm.apply(d)), 1)
     
     # Check if all instances are support vectors
     self.assertEqual(len(svm.model['SVs']), 4)

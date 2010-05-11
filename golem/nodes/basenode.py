@@ -9,7 +9,9 @@ class BaseNode:
     if self.__class__.train != BaseNode.train:
       raise Exception('Do not override methode train(). Use train_() instead.')
     if self.__class__.test != BaseNode.test:
-      raise Exception('Do not override methode test(). Use test_() instead.')
+      raise Exception('Do not override methode test(). Use apply_() instead.')
+    if self.__class__.apply != BaseNode.apply:
+      raise Exception('Do not override methode apply(). Use apply_() instead.')
 
   @property
   def log(self):
@@ -36,14 +38,14 @@ class BaseNode:
     Placeholder, meant to be replaced with the derived nodes train method.
     '''
 
-  def test_(self, d):
+  def apply_(self, d):
     '''
-    Placeholder, meant to be replaced with the derived nodes test method.
+    Placeholder, meant to be replaced with the derived nodes apply method.
     '''
     pass
 
   def test(self, d):
-    warnings.warn('Method [Node].test() is deprecated,' + 
+    warnings.warn('Method [Node].test() is deprecated, ' + 
       'use [Node].apply() instead.',
       DeprecationWarning)
     return self.apply(d)
@@ -57,7 +59,7 @@ class BaseNode:
         (d, self.empty_d, str(self)))
 
     # delegate call
-    return self.test_(d)
+    return self.apply_(d)
 
   def train_apply(self, dtrain, dtest):
     '''

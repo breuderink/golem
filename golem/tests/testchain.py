@@ -13,7 +13,7 @@ class AddSumNode:
     self.sum = np.sum(d.xs)
     self.train_calls += 1
 
-  def test(self, d):
+  def apply(self, d):
     self.test_calls += 1
     return DataSet(xs=d.xs + self.sum, default=d)
 
@@ -31,5 +31,5 @@ class TestChain(unittest.TestCase):
     np.testing.assert_equal([n.sum for n in nodes], 
       [10, (1 + 10) * 10, (1 + 10 + 110) * 10])
 
-    np.testing.assert_equal(c.test(d).xs, 
+    np.testing.assert_equal(c.apply(d).xs, 
       1 + 10 + (1 + 10) * 10 + (1 + 10 + (1 + 10) * 10) * 10 * np.ones((10, 1)))

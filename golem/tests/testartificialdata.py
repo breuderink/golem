@@ -19,10 +19,6 @@ class TestGaussianData(unittest.TestCase):
     d = self.d
     self.assert_(d.ninstances_per_class == [200, 200, 100])
   
-  def test_ids(self):
-    '''Test for sequential ids'''
-    np.testing.assert_equal(self.d.ids, np.arange(500).reshape(-1, 1))
- 
   def test_means_cov(self):
     '''Test if the means and covariance of gaussian_data are correct.'''
     mus = [[0, 0], [2, 1], [5, 6]]
@@ -34,7 +30,6 @@ class TestGaussianData(unittest.TestCase):
     d = self.d
     for ci in range(d.nclasses):
       xs = d.get_class(ci).xs
-      np.testing.assert_almost_equal(
-        np.mean(xs, axis=0), mus[ci], decimal=0)
+      np.testing.assert_almost_equal(np.mean(xs, axis=0), mus[ci], decimal=0)
       np.testing.assert_almost_equal(
         np.cov(xs, rowvar=0), sigmas[ci], decimal=0)

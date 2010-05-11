@@ -15,7 +15,7 @@ class TestPCA(unittest.TestCase):
     n = nodes.PCA(ndims=d.nfeatures)
 
     n.train(d)
-    d2 = n.test(d)
+    d2 = n.apply(d)
 
     self.assertEqual(d2.nfeatures, d.nfeatures)
     self.assertEqual(d2.nclasses, d.nclasses)
@@ -33,7 +33,7 @@ class TestPCA(unittest.TestCase):
       self.assertEqual(str(p), 'PCA')
       p.train(d)
       self.assertEqual(str(p), 'PCA (6D -> %dD)' % td)
-      d2 = p.test(d)
+      d2 = p.apply(d)
 
       self.assertEqual(d2.nfeatures, td)
       if td > 1:
@@ -49,7 +49,7 @@ class TestPCA(unittest.TestCase):
       # Build PCA
       n = nodes.PCA(retain=retain_v)
       n.train(d)
-      d2 = n.test(d)
+      d2 = n.apply(d)
 
       self.assertEqual(d2.nclasses, d.nclasses)
       self.assertEqual(d2.ninstances, d.ninstances)
@@ -61,7 +61,7 @@ class TestPCA(unittest.TestCase):
       if d2.nfeatures > 1:
         one_less = nodes.PCA(ndims=d2.nfeatures - 1)
         one_less.train(d)
-        d3 = one_less.test(d)
+        d3 = one_less.apply(d)
         self.assertEqual(d3.nfeatures, d2.nfeatures - 1)
         retained_ol = np.sum(np.var(d3.xs, axis=0)) / \
           np.sum(np.var(d.xs, axis=0))

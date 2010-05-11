@@ -59,4 +59,4 @@ class TestBagging(unittest.TestCase):
     wcl.train(d)
     bcl = nodes.Bagging(nodes.WeakClassifier(), 20)
     bcl.train(d)
-    self.assert_(loss.accuracy(wcl.test(d)) < loss.accuracy(bcl.test(d)))
+    self.assert_(loss.accuracy(wcl.apply(d)) < loss.accuracy(bcl.apply(d)))

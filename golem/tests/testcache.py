@@ -36,14 +36,14 @@ class PickleMockNode(object):
     self.serialization_count = 0
     self.id = nid
     self.trained = False
-    self.tested = False
+    self.applied = False
 
   def train(self, d):
     self.trained = True
     return d
 
-  def test(self, d):
-    self.tested = True
+  def apply(self, d):
+    self.applied = True
     return d
 
   def __setstate__(self, state):
@@ -96,73 +96,73 @@ class TestCache(unittest.TestCase):
     self.assert_(cn.node.trained)
     self.assertEqual(cn.node.serialization_count, 0)
 
-  def test_testing(self):
-    '''Test testing of a cached node'''
+  def test_applying(self):
+    '''Test applying of a cached node'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
     cn = Cache(n, cache_name) 
-    self.failIf(cn.node.tested)
+    self.failIf(cn.node.applied)
 
     # test first time
-    d = cn.test(self.d)
+    d = cn.apply(self.d)
     self.assertEqual(d, self.d)
-    self.assert_(cn.node.tested)
+    self.assert_(cn.node.applied)
     self.assertEqual(cn.node.serialization_count, 0)
 
     # test second time
     n = PickleMockNode()
     cn = Cache(n, cache_name) 
-    d = cn.test(self.d)
+    d = cn.apply(self.d)
     self.assertEqual(d, self.d)
-    self.assert_(cn.node.tested)
+    self.assert_(cn.node.applied)
     self.assertEqual(cn.node.serialization_count, 1)
 
     # test with different node
     n = PickleMockNode(nid=2)
     cn = Cache(n, cache_name) 
-    d = cn.test(self.d)
+    d = cn.apply(self.d)
     self.assertEqual(d, self.d)
-    self.assert_(cn.node.tested)
+    self.assert_(cn.node.applied)
     self.assertEqual(cn.node.serialization_count, 0)
 
     # test with different dataset
     n = PickleMockNode()
     cn = Cache(n, cache_name) 
-    d2 = cn.test(self.d2)
+    d2 = cn.apply(self.d2)
     self.assertEqual(d2, self.d2)
-    self.assert_(cn.node.tested)
+    self.assert_(cn.node.applied)
     self.assertEqual(cn.node.serialization_count, 0)
 
-  def test_traintest(self):
-    '''Test the combination of training and testing'''
+  def test_trainapply(self):
+    '''Test the combination of training and applying'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
     cn = Cache(n, cache_name) 
     self.failIf(cn.node.trained)
-    self.failIf(cn.node.tested)
+    self.failIf(cn.node.applied)
 
-    # test training, testing not cached
+    # test training, applying not cached
     cn.train(self.d)
     self.assert_(cn.node.trained)
     self.assertEqual(cn.node.serialization_count, 0)
 
     n = PickleMockNode()
     cn = Cache(n, cache_name) 
-    cn.test(self.d)
-    self.assert_(cn.node.tested)
+    cn.apply(self.d)
+    self.assert_(cn.node.applied)
     self.assertEqual(cn.node.serialization_count, 0)
 
-  def test_testtrain(self):
-    '''Test the combination of testing and training'''
+  def test_applytrain(self):
+    '''Test the combination of applying and training'''
     cache_name = tempfile.mkdtemp()
     n = PickleMockNode()
     cn = Cache(n, cache_name) 
     self.failIf(cn.node.trained)
-    self.failIf(cn.node.tested)
+    self.failIf(cn.node.applied)
 
-    # test training, testing not cached
-    cn.test(self.d)
-    self.assert_(cn.node.tested)
+    # test training, applying not cached
+    cn.apply(self.d)
+    self.assert_(cn.node.applied)
     self.assertEqual(cn.node.serialization_count, 0)
 
     n = PickleMockNode()

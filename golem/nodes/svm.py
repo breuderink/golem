@@ -73,7 +73,7 @@ class SVM(BaseNode):
       np.dot(sv_kernel, (model['labels'] * model['alphas'])).T)
     self.model = model
 
-  def test_(self, d):
+  def apply_(self, d):
     xs = d.xs
     model = self.model
     SVs, alphas = model['SVs'], model['alphas']

@@ -27,7 +27,7 @@ class PCA(BaseNode):
 
     self.log.info('Selected %d components.' % self.eigen_cols.shape[1])
   
-  def test_(self, d):
+  def apply_(self, d):
     xs = d.xs - np.mean(d.xs, axis=0)
     xs = np.dot(xs, self.eigen_cols)
     feature_labels = ['PC%d' % i for i in range(xs.shape[1])]

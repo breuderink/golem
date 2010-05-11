@@ -35,7 +35,7 @@ class RDA(BaseNode):
     self.covs = [a * ss * np.eye(d.nfeatures) + b * S + 
       (1 - a - b) * Si for Si in covs]
 
-  def test_(self, d):
+  def apply_(self, d):
     '''Ouput log(p(x | class_i))'''
     xs = []
     for (ci, (m, S, P)) in enumerate(zip(self.means, self.covs, self.priors)):

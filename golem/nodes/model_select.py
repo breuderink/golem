@@ -21,8 +21,8 @@ class ModelSelect(BaseNode):
     self.best_node = best_node
     self.log.info('Best node: %s @ %.2f' % (str(best_node), best_perf))
 
-  def test_(self, d):
-    return self.best_node.test(d)
+  def apply_(self, d):
+    return self.best_node.apply(d)
 
   def __str__(self):
     if hasattr(self, 'best_node'):

@@ -22,7 +22,7 @@ class FeatFilter(BaseNode):
     self.log.info('Keeping %d%% of the features: %s' % 
       (100 * self.keep.size / d.nfeatures, self.keep))
 
-  def test_(self, d):
+  def apply_(self, d):
     keep = self.keep
     return DataSet(xs=d.xs[:, keep], 
       feat_lab=[d.feat_lab[i] for i in keep] if d.feat_lab != None else None,

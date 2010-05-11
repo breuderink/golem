@@ -19,4 +19,4 @@ class TestModelSelection(unittest.TestCase):
     s = nodes.SVM()
     s.train(self.d)
     self.assert_(isinstance(n.best_node, nodes.SVM))
-    self.assertEqual(n.test(self.d), s.test(self.d))
+    self.assertEqual(n.apply(self.d), s.apply(self.d))

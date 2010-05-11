@@ -33,14 +33,14 @@ class Cache(BaseNode):
     key = 'train' + d.hash() + Cache.calc_hash(self.node)
     return self.cached_call(key, self.node.train, d)
 
-  def test_(self, d):
+  def apply_(self, d):
     '''
     Test using the node, but uses cached node and results if possible.
     (node_hash, d_hash) -> dict
     '''
-    key = 'test' + d.hash() + Cache.calc_hash(self.node)
-    func = self.node.test
-    return self.cached_call(key, self.node.test, d)
+    key = 'apply' + d.hash() + Cache.calc_hash(self.node)
+    func = self.node.apply
+    return self.cached_call(key, self.node.apply, d)
 
   def cached_call(self, key, func, d):
     if self.cache.has(key):

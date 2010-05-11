@@ -11,8 +11,7 @@ class TestZScore(unittest.TestCase):
   def test_zscore(self):
     '''Test ZScore properties'''
     z = ZScore()
-    z.train(self.d)
-    zd = z.test(self.d)
+    zd = z.train_apply(self.d, self.d)
 
     # test for mean==0 and std==1
     np.testing.assert_almost_equal(np.mean(zd.xs, axis=0), 
@@ -31,8 +30,7 @@ class TestZScore(unittest.TestCase):
     xs = np.random.random((4, 4))
     d = DataSet(xs=xs, ys=np.ones((4, 1)))
     z = ZScore()
-    z.train(d)
-    zd = z.test(d)
+    zd = z.train_apply(d, d)
 
     # test for mean==0 and std==1
     np.testing.assert_almost_equal(np.mean(zd.xs, axis=0), 

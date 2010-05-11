@@ -54,7 +54,7 @@ class TestCrossValidation(unittest.TestCase):
     '''Test protection against reading labels in cross-validation'''
     class CheatNode:
       def train(self, d): pass
-      def test(self, d): 
+      def apply(self, d): 
         return DataSet(xs=d.ys, default=d)
 
     preds = cv.cross_validate(cv.strat_splits(self.d, 8), CheatNode())
@@ -71,7 +71,7 @@ class TestCrossValidation(unittest.TestCase):
         pairs = zip(d.ids.flat, d.ys.tolist())
         self.mem = dict(self.mem.items() + pairs)
 
-      def test(self, d): 
+      def apply(self, d): 
         xs = np.asarray([self.mem.get(i, [0, 0, 0]) for i in d.ids.flat])
         return DataSet(xs=xs, default=d)
 

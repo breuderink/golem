@@ -75,7 +75,7 @@ def classifier_grid(classifier, x, y):
 
   # Get scores
   dxy = DataSet(xs=xs, ys=np.zeros((xs.shape[0], classifier.nclasses)))
-  Zs = classifier.test(dxy).xs.reshape(X.shape[0], X.shape[1], -1)
+  Zs = classifier.apply(dxy).xs.reshape(X.shape[0], X.shape[1], -1)
   return (X, Y, Zs)
 
 def plot_hyperplane((X, Y, Zs)):

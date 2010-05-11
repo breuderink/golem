@@ -14,13 +14,13 @@ class Chain(BaseNode):
       self.log.debug('d = %s' % d)
       n.train(d)
       if n != self.nodes[-1]:
-        d = n.test(d)
+        d = n.apply(d)
     
-  def test_(self, d):
+  def apply_(self, d):
     for n in self.nodes:
       self.log.info('Testing with %s...' % str(n))
       self.log.debug('d = %s' % d)
-      d = n.test(d)
+      d = n.apply(d)
     return d
 
   def __str__(self):
