@@ -23,7 +23,7 @@ def strat_splits(d, K=10):
         subsets[si] += cid[ind == si] # Grow subset
       else:
         subsets.append(cid[ind == si]) # Create subset
-  return subsets
+  return [s.sorted() for s in subsets] # Remove class-relevant order
 
 def seq_splits(d, K=10):
   '''
