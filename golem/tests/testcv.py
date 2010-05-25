@@ -87,4 +87,4 @@ class TestCrossValidation(unittest.TestCase):
     fold_ids = np.array([td.ids.flatten() for td in tds])
     self.failIf(
       (np.var(fold_ids.reshape(-1, d.ninstances), axis=0) == 0).any(),
-      'No variance in folds for rep_cv!')
+      'The folds are all the same!')

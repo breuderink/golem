@@ -8,8 +8,8 @@ from .. import DataSet
 class TestDataSetConstruction(unittest.TestCase):
   def test_construction(self):
     '''Test basic construction of DataSet'''
-    xs = np.array([[0, 0, 0], [1, 1, 1]])
-    ys = np.array([[0, 1], [1, 0]])
+    xs = [[0, 0, 0], [1, 1, 1]]
+    ys = [[0, 1], [1, 0]]
     d = DataSet(xs=xs, ys=ys)
     np.testing.assert_equal(d.xs, xs)
     np.testing.assert_equal(d.ys, ys)
@@ -45,11 +45,6 @@ class TestDataSetConstruction(unittest.TestCase):
     '''Test types of DataSet during construction'''
     xs = ys = ids = np.arange(12).reshape(-1, 1)
     d = DataSet(xs, ys, ids)
-
-    # raise with wrong types
-    self.assertRaises(ValueError, DataSet, xs.tolist(), ys, ids)
-    self.assertRaises(ValueError, DataSet, xs, ys.tolist(), ids)
-    self.assertRaises(ValueError, DataSet, xs, ys, ids.tolist())
     
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, cl_lab='c0')
     self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_lab='f0')
@@ -188,6 +183,7 @@ class TestDataSetConstruction(unittest.TestCase):
       d = DataSet(xs=xs.copy(), ys=ys) # no error
       xs[5, 1] = v
       self.assertRaises(ValueError, DataSet, xs=xs, ys=ys)
+
     
 
 class TestDataSet(unittest.TestCase):

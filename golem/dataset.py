@@ -11,29 +11,30 @@ class DataSet:
     '''
     Create a new dataset.
     '''
-    # First, take care of xs, ys and ids
+    # first, take care of xs, ys, ids
     if default == None:
       if xs == None: raise ValueError, 'No xs given'
       if ys == None: raise ValueError, 'No ys given'
-      self.xs, self.ys = xs, ys
-      self.ids = ids if ids != None else\
-        np.arange(self.ninstances).reshape(-1, 1)
+      self.xs, self.ys, self.ids = xs, ys, ids
     else:
       assert isinstance(default, DataSet), 'Default is not a DataSet'
       self.xs = xs if xs != None else default.xs
       self.ys = ys if ys != None else default.ys
       self.ids = ids if ids != None else default.ids
 
-    if not isinstance(self.xs, np.ndarray):
-      raise ValueError('Only np.ndarray is supported for xs')
+    # convert to np.ndarray
+    self.xs = np.array(self.xs)
+    self.ys = np.array(self.ys)
+
+    if self.ids == None: 
+      self.ids = np.arange(self.ninstances).reshape(-1, 1)
+    self.ids = np.array(self.ids)
+
+    # test essential properties
     if self.xs.ndim != 2:
       raise ValueError('Only 2d arrays are supported for xs. See feat_shape.')
-    if not isinstance(self.ys, np.ndarray):
-      raise ValueError('Only np.ndarray is supported for ys')
     if self.ys.ndim != 2:
       raise ValueError('Only 2d arrays are supported for ys.')
-    if not isinstance(self.ids, np.ndarray):
-      raise ValueError('Only np.ndarray is supported for ids')
     if self.ids.ndim != 2:
       raise ValueError('Only 2d arrays are supported for ids.')
     if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
