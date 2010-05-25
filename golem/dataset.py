@@ -23,8 +23,8 @@ class DataSet:
       self.ids = ids if ids != None else default.ids
 
     # convert to np.ndarray
-    self.xs = np.array(self.xs)
-    self.ys = np.array(self.ys)
+    self.xs = np.asarray(self.xs)
+    self.ys = np.asarray(self.ys)
 
     if self.ids == None: 
       self.ids = np.arange(self.ninstances).reshape(-1, 1)

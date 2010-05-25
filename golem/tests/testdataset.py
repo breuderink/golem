@@ -184,7 +184,6 @@ class TestDataSetConstruction(unittest.TestCase):
       xs[5, 1] = v
       self.assertRaises(ValueError, DataSet, xs=xs, ys=ys)
 
-    
 
 class TestDataSet(unittest.TestCase):
   def setUp(self):
