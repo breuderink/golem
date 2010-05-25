@@ -52,14 +52,13 @@ class TestCrossValidation(unittest.TestCase):
 
   def test_crossvalidation_label_prot(self):
     '''Test protection against reading labels in cross-validation'''
-    class CheatNode:
+    class CheckNode:
       def train(self, d): pass
       def apply(self, d): 
-        return DataSet(xs=d.ys, default=d)
+        assert(np.all(np.isnan(d.ys)))
+        return d
 
-    preds = cv.cross_validate(cv.strat_splits(self.d, 8), CheatNode())
-    for d in preds:
-      self.assert_(np.all(np.isnan(d.xs)))
+    preds = cv.cross_validate(cv.strat_splits(self.d, 8), CheckNode())
 
   def test_crossvalidation_mem_prot(self):
     '''Test protection against remembering over repetitions'''

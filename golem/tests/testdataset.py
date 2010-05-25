@@ -180,7 +180,15 @@ class TestDataSetConstruction(unittest.TestCase):
 
     # test access of emtpy members
     d2 = DataSet(default=DataSet(xs=d.xs, ys=d.ys))
-  
+
+  def test_finite_feats(self):
+    ys = np.ones((10, 2))
+    for v in [np.inf, -np.inf, np.nan]:
+      xs = np.zeros((10, 2))
+      d = DataSet(xs=xs.copy(), ys=ys) # no error
+      xs[5, 1] = v
+      self.assertRaises(ValueError, DataSet, xs=xs, ys=ys)
+    
 
 class TestDataSet(unittest.TestCase):
   def setUp(self):

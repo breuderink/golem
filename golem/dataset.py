@@ -8,7 +8,9 @@ class DataSet:
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
     feat_shape=None, feat_dim_lab=None, feat_nd_lab=None, extra=None, 
     default=None):
-    '''Create a new dataset.'''
+    '''
+    Create a new dataset.
+    '''
     # First, take care of xs, ys and ids
     if default == None:
       if xs == None: raise ValueError, 'No xs given'
@@ -38,6 +40,11 @@ class DataSet:
       raise ValueError('Number of rows does not match')
     if np.unique(self.ids[:,0]).size != self.ninstances:
       raise ValueError('The ids not unique.')
+
+    if np.any(np.isnan(self.xs)):
+      raise ValueError('NaN not allowed for xs.')
+    if np.any(np.isinf(self.xs)):
+      raise ValueError('Infinite values not allowed for xs.')
     
     # Lock xs, ys, ids:
     for arr in [self.xs, self.ys, self.ids]:
