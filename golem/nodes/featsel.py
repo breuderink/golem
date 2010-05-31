@@ -35,7 +35,7 @@ class FeatFilter(BaseNode):
 
 def auc_dev(xs, ys):
     assert ys.shape[1] == 2, 'Use AUC with two classes.'
-    aucs = helpers.auc(xs, ys[:, 1] - ys[:, 0])
+    aucs = helpers.auc(xs, helpers.hard_max(ys)[:, 1])
     return np.abs(aucs - .5)
 
 class AUCFilter(FeatFilter, BaseNode):

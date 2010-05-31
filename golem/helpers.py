@@ -28,10 +28,13 @@ def hard_max(xs):
   return result + nans
 
 def roc(scores, labels):
-  '''Calc (TPs, FPs) for ROC plotting and AUC-ROC calculation.''' 
+  '''
+  Calc (TPs, FPs) for ROC plotting and AUC-ROC calculation.
+  Labels are encoded as 0 or 1
+  '''
   scores, labels = np.asarray(scores), np.asarray(labels)
   assert scores.ndim == labels.ndim == 1
-  assert len(np.unique(labels)) == 2
+  assert np.all(np.unique(labels) == [0, 1])
   si = np.argsort(scores)[::-1]
   scores, labels = scores[si], labels[si]
   

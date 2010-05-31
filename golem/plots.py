@@ -114,7 +114,7 @@ def plot_roc(d, fname=None):
   '''
   assert d.nclasses == 2
   assert d.nfeatures == 2
-  TPs, FPs = helpers.roc(d.xs[:, 1] - d.xs[:, 0], d.ys[:, 1] - d.ys[:, 0])
+  TPs, FPs = helpers.roc(d.xs[:, 1] - d.xs[:, 0], helpers.hard_max(d.ys)[:, 1])
   plt.plot(FPs, TPs)
   a = plt.gca()
   a.set_aspect('equal')
