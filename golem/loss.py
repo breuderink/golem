@@ -11,12 +11,7 @@ def accuracy(d):
 
 def conf_mat(d):
   '''Make a confusion matrix. Rows contain the label, columns the prediction.'''
-  result = []
-  hmd = DataSet(helpers.hard_max(d.xs), d.ys, None)
-  for ci in range(d.nclasses):
-    cid = hmd.get_class(ci)
-    result.append(np.sum(cid.xs, axis=0))
-  return np.array(result).astype(int)
+  return np.dot(helpers.hard_max(d.ys).T, helpers.hard_max(d.xs))
 
 def format_confmat(conf_mat, d):
   '''
