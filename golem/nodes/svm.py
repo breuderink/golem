@@ -7,7 +7,7 @@ from basenode import BaseNode
 from ..kernel import build_kernel_matrix
 from ..dataset import DataSet
 
-QP_ACCURACY = 1e-5
+ALPHA_RTOL = 1e-5
 
 class SVM(BaseNode):
   def __init__(self, C=2, kernel=None, **params):
@@ -53,12 +53,12 @@ class SVM(BaseNode):
     sol = cvxopt.solvers.qp(Q, q, G, h, A, b)
     if sol['status'] != 'optimal':
       log.warning('QP solution status: ' + sol['status'])
-
+    log.debug('solver.status = ' + sol['status'])
     alphas = np.array(sol['x'])
 
     log.debug('Extracting Support Vectors')
     # a_i gets close to zero, but does not always equal zero
-    sv_ids = np.where(alphas >= QP_ACCURACY)[0]
+    sv_ids = np.where(alphas >= np.max(alphas) * ALPHA_RTOL)[0]
     log.info('Found %d SVs (%.2f%%)'% (len(sv_ids), len(sv_ids) * 100./m))
     log.debug('Found SVs with indices: ' + str(sv_ids))
     
