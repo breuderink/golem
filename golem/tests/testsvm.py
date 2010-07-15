@@ -2,7 +2,7 @@ import unittest, os.path
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .. import DataSet, loss, data, plots, helpers
+from .. import DataSet, perf, data, plots, helpers
 from ..nodes import SVM
 
 class TestSVM(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestSVM(unittest.TestCase):
     svm.train(d)
     
     # Test if the instances are correctly classified
-    self.assertEqual(loss.accuracy(svm.apply(d)), 1)
+    self.assertEqual(perf.accuracy(svm.apply(d)), 1)
     
     # Check if the right Support Vectors are found
     np.testing.assert_equal(svm.svs.xs, xs[2:6])
@@ -52,7 +52,7 @@ class TestSVM(unittest.TestCase):
     svm.train(d)
 
     # Test if the instances are correctly classified
-    self.assertEqual(loss.accuracy(svm.apply(d)), 1)
+    self.assertEqual(perf.accuracy(svm.apply(d)), 1)
     
     # Check if all instances are support vectors
     self.assertEqual(svm.svs, d)

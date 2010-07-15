@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from .. import DataSet, data, nodes, loss
+from .. import DataSet, data, nodes, perf
 
 class TestLSReg(unittest.TestCase):
   def setUp(self):
@@ -11,7 +11,7 @@ class TestLSReg(unittest.TestCase):
     '''Test LSReg'''
     n = nodes.LSReg()
     n.train(self.d)
-    self.assert_(loss.accuracy(n.apply(self.d)) > 0.8)
+    self.assert_(perf.accuracy(n.apply(self.d)) > 0.8)
 
   def test_1feature(self):
     '''Test LSReg with 1 feature'''
@@ -19,4 +19,4 @@ class TestLSReg(unittest.TestCase):
     d = DataSet(d.xs[:, 0].reshape(-1, 1), d.ys, d.ids)
     n = nodes.LSReg()
     n.train(d)
-    self.assert_(loss.accuracy(n.apply(d)) > 0.6)
+    self.assert_(perf.accuracy(n.apply(d)) > 0.6)

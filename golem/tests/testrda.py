@@ -3,7 +3,7 @@ import numpy as np
 import pylab
 from ..data import gaussian_dataset
 from ..nodes import RDA, NMC, LDA, QDA
-from .. import plots, cv, loss
+from .. import plots, cv, perf
 
 class TestRDA(unittest.TestCase):
   def setUp(self):
@@ -11,7 +11,7 @@ class TestRDA(unittest.TestCase):
 
   def test_qdc(self):
     cl = QDA()
-    self.assert_(loss.mean_std(loss.accuracy, cv.rep_cv(self.d, cl))[0] > .90)
+    self.assert_(perf.mean_std(perf.accuracy, cv.rep_cv(self.d, cl))[0] > .90)
 
   def test_visual_rda(self):
     cl = RDA(alpha=0, beta=.5)

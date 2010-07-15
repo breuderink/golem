@@ -1,6 +1,6 @@
 import unittest, operator
 import numpy as np
-from .. import cv, data, loss
+from .. import cv, data, perf
 from ..nodes import PriorClassifier
 from .. import DataSet
 
@@ -74,16 +74,16 @@ class TestCrossValidation(unittest.TestCase):
         xs = np.asarray([self.mem.get(i, [0, 0, 0]) for i in d.ids.flat])
         return DataSet(xs=xs, default=d)
 
-    perf = loss.mean_std(loss.accuracy,
+    a = perf.mean_std(perf.accuracy,
       cv.cross_validate(cv.strat_splits(self.d, 4), MemNode()))
-    self.assertAlmostEqual(perf[0], .5, 1)
+    self.assertAlmostEqual(a[0], .5, 1)
 
   def test_rep_cv(self):
     d = self.d
     c = PriorClassifier()  
     tds = list(cv.rep_cv(d, c))
     self.assertEqual(len(tds), 50)
-    self.assertAlmostEqual(loss.mean_std(loss.accuracy, tds)[0], .5)
+    self.assertAlmostEqual(perf.mean_std(perf.accuracy, tds)[0], .5)
     fold_ids = np.array([td.ids.flatten() for td in tds])
     self.failIf(
       (np.var(fold_ids.reshape(-1, d.ninstances), axis=0) == 0).any(),

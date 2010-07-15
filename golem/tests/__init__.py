@@ -3,7 +3,7 @@ from testbasenode import *
 from testartificialdata import *
 from testkernel import *
 from testsvm import *
-from testloss import *
+from testperf import *
 from testcv import *
 from testzscore import *
 from testmodelselect import *

@@ -3,7 +3,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.testing import assert_equal
-from .. import data, plots, DataSet, loss
+from .. import data, plots, DataSet, perf
 from ..helpers import to_one_of_n, hard_max, roc, auc, auc_confidence, \
   mut_inf, write_csv_table, write_latex_table
 
@@ -90,7 +90,7 @@ class TestROC(unittest.TestCase):
     plt.clf()
     plots.plot_roc(d1)
     plots.plot_roc(d2)
-    plt.title('AUC d_1 = %.4f' % loss.auc(d1))
+    plt.title('AUC d_1 = %.4f' % perf.auc(d1))
     plt.savefig(os.path.join('out', 'roc.eps'))
     plt.close()
 

@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from .. import DataSet, helpers, nodes, cv, loss
+from .. import DataSet, helpers, nodes, cv, perf
 from ..nodes.ensemble import bagging_splitter
 
 class TestOneVsOne(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestOneVsOne(unittest.TestCase):
     
     # Cross-validate and test for perfect classification
     cl = nodes.OneVsOne(nodes.SVM())
-    accs = [loss.accuracy(r) for r in 
+    accs = [perf.accuracy(r) for r in 
       cv.cross_validate(cv.strat_splits(d, 2), cl)]
     self.assertEqual(np.mean(accs), 1)
 
@@ -33,7 +33,7 @@ class TestOneVsRest(unittest.TestCase):
     
     # Cross-validate and test for perfect classification
     cl = nodes.OneVsRest(nodes.SVM())
-    accs = [loss.accuracy(r) for r in 
+    accs = [perf.accuracy(r) for r in 
       cv.cross_validate(cv.strat_splits(d, 2), cl)]
     self.assertEqual(np.mean(accs), 1)
 
@@ -59,4 +59,4 @@ class TestBagging(unittest.TestCase):
     wcl.train(d)
     bcl = nodes.Bagging(nodes.WeakClassifier(), 20)
     bcl.train(d)
-    self.assert_(loss.accuracy(wcl.apply(d)) < loss.accuracy(bcl.apply(d)))
+    self.assert_(perf.accuracy(wcl.apply(d)) < perf.accuracy(bcl.apply(d)))
