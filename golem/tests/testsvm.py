@@ -24,12 +24,12 @@ class TestSVM(unittest.TestCase):
     self.assertEqual(loss.accuracy(svm.apply(d)), 1)
     
     # Check if the right Support Vectors are found
-    np.testing.assert_equal(svm.model['SVs'], xs[2:6])
+    np.testing.assert_equal(svm.svs.xs, xs[2:6])
 
     # Check if the alphas satisfy the constraints
-    # 0 < all alphas < C/m where m is the number of instances
-    self.assert_((0 < svm.model['alphas']).all())
-    self.assert_((svm.model['alphas'] < C/xs.shape[0]).all())
+    # 0 <= all alphas <= C/m where m is the number of instances
+    self.assert_((0 <= svm.alphas).all())
+    self.assert_((svm.alphas <= C/xs.shape[0]).all())
 
     # Test b in f(x) = ax + b
     hyperplane_d = DataSet(xs=np.array([[.5, 0], [.5, 1]]), ys=np.zeros((2, 2)))
@@ -55,12 +55,12 @@ class TestSVM(unittest.TestCase):
     self.assertEqual(loss.accuracy(svm.apply(d)), 1)
     
     # Check if all instances are support vectors
-    self.assertEqual(len(svm.model['SVs']), 4)
+    self.assertEqual(svm.svs, d)
 
     # Check if the alphas satisfy the contraints
     # 0 < all alphas < C/m where m is the number of instances
-    self.assert_((0 < svm.model['alphas']).all())
-    self.assert_((svm.model['alphas'] < C/xs.shape[0]).all())
+    self.assert_((0 < svm.alphas).all())
+    self.assert_((svm.alphas < C/xs.shape[0]).all())
 
 class TestSVMPlot(unittest.TestCase):
   def test_svm_plot(self):
@@ -70,10 +70,10 @@ class TestSVMPlot(unittest.TestCase):
 
     svm = SVM(C=1e2, kernel='rbf', sigma=1.5)
     svm.train(d)
-    self.assertEqual(len(svm.model['SVs']), 40)
+    self.assertEqual(svm.svs.ninstances, 40)
 
     # Plot SVs and scatter
-    SVs = svm.model['SVs']
+    SVs = svm.svs.xs
     plt.clf()
     plt.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
     plots.plot_classifier(svm, d, densities=True)

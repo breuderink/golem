@@ -8,31 +8,33 @@ from basenode import BaseNode
 from ..kernel import build_kernel_matrix
 from ..dataset import DataSet
 
-def cvxopt_svm(K, labels, C):
-  # See "Learning with Kernels", Schölkopf and Smola, p205
-  ALPHA_RTOL = 1e-5
+ALPHA_RTOL = 1e-5
 
+def cvxopt_svm(K, labels, C):
+  # See "Learning with Kernels", Schölkopf and Smola, p.205
   log = logging.getLogger('golm.cvxopt_svm')
-  assert np.all(np.unique(labels) == [-1, 1])
   m = K.shape[0]
+  labels = np.atleast_2d(labels)
+
+  assert np.all(np.unique(labels) == [-1, 1])
+  assert K.shape[0] == K.shape[1]
   
   log.debug('Creating QP-target')
   # (4) min W(a) = -sum(a_i) + (1/2) * a' * Q * a
   # -sum(a_i) = q'a
-  label_matrix = np.dot(labels, labels.T)
+  label_matrix = np.dot(labels.T, labels)
   Q = cvx.matrix(K * label_matrix)
   q = cvx.matrix([-1. for i in range(m)])
 
   log.debug('Creating QP-constraints')
   # (2) 0 < all alphas < C/m, using Ga <= h
   # (3) sum(a_i * y_i) = 0, using Aa = b
-
   # (2) is solved in two parts, first 0 < alphas, then alphas < C / m
   G1 = cvx.spmatrix(-1, range(m), range(m))
   G2 = cvx.spmatrix(1, range(m), range(m))
   G = cvx.sparse([G1, G2])
   h = cvx.matrix([0. for i in range(m)] + [float(C)/m for i in range(m)])
-  A = cvx.matrix(labels.T) # The deep copy is needed to prevent a TypeError
+  A = cvx.matrix(labels)
   b = cvx.matrix(0.)
 
   log.debug('Solving QP')
@@ -43,10 +45,9 @@ def cvxopt_svm(K, labels, C):
   log.debug('solver.status = ' + sol['status'])
   alphas = np.array(sol['x'])
 
-  log.debug('Extracting Support Vectors')
   # a_i gets close to zero, but does not always equal zero:
   alphas[alphas < np.max(alphas) * ALPHA_RTOL] = 0
-  return alphas
+  return alphas.flatten()
 
 class SVM(BaseNode):
   def __init__(self, C=2, kernel=None, **params):
@@ -57,46 +58,33 @@ class SVM(BaseNode):
 
   def train_(self, d):
     assert d.nclasses == 2
-    xs, ys = d.xs, d.ys
-    log = self.log
-
-    log.debug('Calculate kernel matrix')
-    K = build_kernel_matrix(xs, xs, kernel=self.kernel, 
+    self.log.debug('Calculate kernel matrix')
+    K = build_kernel_matrix(d.xs, d.xs, kernel=self.kernel, 
       **self.params)
-    labels = (ys[:,0] - ys[:,1]).reshape(d.ninstances, 1).astype('d')
-    
-    alphas = cvxopt_svm(K, labels, self.C)
-
-    sv_ids = np.where(alphas != 0)[0]
-    log.info('Found %d SVs (%.2f%%)' % (len(sv_ids), 
-      len(sv_ids) * 100./d.ninstances))
-    log.debug('Found SVs with indices: ' + str(sv_ids))
-    
-    model = {}
-    model['alphas'] = alphas[sv_ids]
-    model['SVs'] = xs[sv_ids, :]
-    model['labels'] = np.array(labels)[sv_ids, :]
+    labels = np.atleast_2d((d.ys[:, 0] - d.ys[:, 1])).astype(float)
+    alphas = np.atleast_2d(cvxopt_svm(K, labels, self.C))
     
     # Calculate b in f(x) = wx + b
-    sv_kernel = np.array(K)[sv_ids,:][:, sv_ids]
-    model['b'] = np.mean(model['labels'] - 
-      np.dot(sv_kernel, (model['labels'] * model['alphas'])).T)
-    self.model = model
+    b = np.mean(labels.T - np.dot(labels * alphas, K))
+
+    # Extract support vectors
+    svs = d[alphas.flat != 0]
+    self.log.info('Found %d SVs (%.2f%%)' % (svs.ninstances, 
+      svs.ninstances * 100./d.ninstances))
+
+    # Store model
+    self.alphas = alphas
+    self.svs = svs
+    self.b = b
+    self.w = (labels * alphas)[:, alphas > 0]
 
   def apply_(self, d):
-    xs = d.xs
-    model = self.model
-    SVs, alphas = model['SVs'], model['alphas']
-    labels, b = model['labels'], model['b']
-
-    K = build_kernel_matrix(xs, SVs, self.kernel, **self.params)
     # Eq. 7.25: f(x) = sign(sum_i(y_i a_i k(x, x_i) + b), we do not sign!
-    labels = np.dot(K, (alphas * labels)) + b
+    K = build_kernel_matrix(self.svs.xs, d.xs, self.kernel, **self.params)
+    preds = np.atleast_2d(np.dot(self.w, K) + self.b)
 
     # Transform into two-colum hyperplane distance format
-    labels = labels.reshape(-1, 1)
-    xs = np.hstack([labels, -labels])
-    return DataSet(xs, default=d)
+    return DataSet(np.hstack([preds.T, -preds.T]), default=d)
 
   def __str__(self):
     return 'SVM (C=%g, kernel=%s, params=%s)' % (self.C, self.kernel, 
