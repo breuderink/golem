@@ -11,7 +11,6 @@ from testpca import *
 from testlsreg import *
 from testhelpers import *
 from testfeatsel import *
-from testcache import *
 from testchain import *
 from testensemble import *
 from testsimple import *
