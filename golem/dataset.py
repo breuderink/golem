@@ -188,12 +188,12 @@ class DataSet:
       return False
     for member in a.__dict__.keys():
       am, bm = a.__dict__[member], b.__dict__[member]
-      comp = am == bm
-      if isinstance(comp, np.ndarray):
-        if not comp.all() or am.shape != bm.shape:  
+      if isinstance(am, np.ndarray):
+        if am.shape != bm.shape or not np.all(am == bm):
           return False
-      elif not comp:
-        return False
+      else:
+        if not am == bm:
+          return False
     return True
     
   def __ne__(a, b):
