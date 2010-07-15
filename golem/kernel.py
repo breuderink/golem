@@ -27,4 +27,5 @@ def build_kernel_matrix(xs_row, xs_col, kernel=None, **params):
       for c in xrange(ncols):
         kernel_matrix[r, c] = kernel(xs_row[r, :], xs_col[c, :])
   assert kernel_matrix.dtype in (np.float32, np.float64)
+  assert np.all(np.isfinite(kernel_matrix))
   return kernel_matrix
