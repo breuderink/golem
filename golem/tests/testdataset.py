@@ -195,7 +195,9 @@ class TestDataSet(unittest.TestCase):
       cl_lab=['A', 'B'], feat_shape=(3, 1), feat_dim_lab=['d0', 'd1'], 
       feat_nd_lab=[['f1', 'f2', 'f3'],['n']], extra={'foo':'bar'})
 
-    self.diff_ds = [DataSet(xs=d.xs+1, default=d),
+  def test_equality(self):
+    d = self.d
+    diff_ds = [DataSet(xs=d.xs+1, default=d),
       DataSet(ys=d.ys+1, default=d),
       DataSet(ids=d.ids+1, default=d),
       DataSet(cl_lab=['a', 'b'], default=d),
@@ -203,10 +205,9 @@ class TestDataSet(unittest.TestCase):
       DataSet(feat_shape=(1, 3), feat_nd_lab=[], default=d),
       DataSet(feat_dim_lab=['da', 'db'], default=d),
       DataSet(feat_nd_lab=[['F1', 'F2', 'F3'],['N']], default=d),
-      DataSet(extra={'foo':'baz'}, default=d)]
-      
-  def test_equality(self):
-    d = self.d
+      DataSet(extra={'foo':'baz'}, default=d),
+      d[:0]]
+
     self.assertEqual(d, d)
     self.assertEqual(d, DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
       cl_lab=d.cl_lab, feat_shape=d.feat_shape, 
@@ -214,7 +215,7 @@ class TestDataSet(unittest.TestCase):
       extra=d.extra))
 
     # test all kinds of differences
-    for dd in self.diff_ds:
+    for dd in diff_ds:
       self.failIfEqual(dd, d)
     
     # test special cases
@@ -222,22 +223,7 @@ class TestDataSet(unittest.TestCase):
       default=d))
     self.failIfEqual(d, 3)
     self.failIfEqual(d[:0], d) # triggered special cast in np.array comparison.
-
-  def test_hash(self):
-    d = self.d[::2] # noncontiguous arrays can pose a problem
-    self.assertEqual(d.hash(), d.hash())
-    self.assertEqual(d.hash(), DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
-      cl_lab=d.cl_lab, feat_shape=d.feat_shape, 
-      feat_dim_lab=d.feat_dim_lab, feat_nd_lab=d.feat_nd_lab, 
-      extra=d.extra).hash())
-
-    # test all kinds of differences
-    for dd in self.diff_ds:
-      self.failIfEqual(dd.hash(), d.hash())
-    
-    # test special cases
-    self.assertEqual(d.hash(),
-      DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), default=d).hash())
+    self.failIfEqual(d[:0], d[0]) # similar
 
   def test_add(self):
     '''Test the creation of compound datasets using the add-operator.'''
@@ -295,7 +281,7 @@ class TestDataSet(unittest.TestCase):
 
     # test various indexing types
     indices = np.arange(d.ninstances)
-    self.assertEqual(d[indices==1], d[1])
+    self.assertEqual(d[indices==0], d[0])
     self.assertEqual(d[indices.tolist()], d)
     self.assertEqual(d[[1]], d[1])
 

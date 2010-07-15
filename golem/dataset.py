@@ -188,30 +188,16 @@ class DataSet:
       return False
     for member in a.__dict__.keys():
       am, bm = a.__dict__[member], b.__dict__[member]
-      cmp = am == bm
-      if isinstance(cmp, np.ndarray):
-        if not cmp.all():  
+      comp = am == bm
+      if isinstance(comp, np.ndarray):
+        if not comp.all() or am.shape != bm.shape:  
           return False
-      elif not cmp:
+      elif not comp:
         return False
     return True
     
   def __ne__(a, b):
     return not a == b
-
-  def hash(self):
-    '''
-    Return a sha1 hash for caching. Does not return a integer as required
-    by dictionaries and sets (and is therefore not named __hash__).
-    '''
-    hash = sha1()
-    for member in sorted(self.__dict__.keys()):
-      v = self.__dict__[member]
-      if member in ['xs', 'ys', 'ids']:
-        hash.update(np.ascontiguousarray(v).view(np.uint8))
-      else:
-        hash.update(repr(v))
-    return hash.digest()
     
   @property
   def nclasses(self):
