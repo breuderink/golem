@@ -57,23 +57,23 @@ def cross_validate(subsets, node):
   on the testsets.
   This methods has a few safety measures:
   - for every fold, we start with a fresh copy of node
-  - the test method of the trained node can *never* see the labels
+  - the labels of the test sets are removed to prevent node.test() from cheating
   '''
   for (tr, te) in cross_validation_sets(subsets):
     # fresh copy, no cheating by remembering
-    tnode = copy.deepcopy(node)
+    inode = copy.deepcopy(node)
 
-    tnode.train(tr)
+    inode.train(tr)
 
     # create a test set stripped of labels
     te_stripped = DataSet(ys=np.nan * te.ys, default=te)
 
-    pred = tnode.apply(te_stripped)
+    pred = inode.apply(te_stripped)
 
     # reattach labels
     pred = DataSet(ys=te.ys, default=pred)
 
-    del tnode
+    del inode, tr, te
     yield pred
 
 
