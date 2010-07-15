@@ -57,15 +57,15 @@ class OVONode(BaseNode):
     return DataSet(xs=xs, default=d)
 
 class OneVsOne(BaseNode):
-  def __init__(self, base_node):
+  def __init__(self, binary_node):
     BaseNode.__init__(self)
-    self.base_node = base_node
+    self.binary_node = binary_node
   
   def train_(self, d):
     pairs = []
     for cia in range(d.nclasses):
       for cib in range(cia + 1, d.nclasses):
-        pairs.append(OVONode(cia, cib, copy.deepcopy(self.base_node)))
+        pairs.append(OVONode(cia, cib, copy.deepcopy(self.binary_node)))
 
     self.ensemble = Ensemble(pairs)
     self.ensemble.train(d)
@@ -100,12 +100,12 @@ class OVRNode(BaseNode):
     return DataSet(xs=np.hstack(xs), default=d)
 
 class OneVsRest(BaseNode):
-  def __init__(self, base_node):
+  def __init__(self, binary_node):
     BaseNode.__init__(self)
-    self.base_node = base_node
+    self.binary_node = binary_node
   
   def train_(self, d):
-    nodes = [OVRNode(ci, copy.deepcopy(self.base_node)) for ci in 
+    nodes = [OVRNode(ci, copy.deepcopy(self.binary_node)) for ci in 
       range(d.nclasses)]
     self.ensemble = Ensemble(nodes)
     self.ensemble.train(d)
