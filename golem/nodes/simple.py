@@ -9,8 +9,8 @@ class FeatMap(BaseNode):
 
   def apply_(self, d):
     xs = np.asarray(map(self.mapping, d.nd_xs))
-    return DataSet(xs=xs.reshape(d.ninstances, -1), feat_shape=xs.shape[1:],
-      default=d)
+    return DataSet(xs=xs.reshape(d.ninstances, np.prod(xs.shape[1:])), 
+      feat_shape=xs.shape[1:], default=d)
 
   def __str__(self):
     return '%s (with mapping "%s")' % (self.name, self.mapping.__name__)

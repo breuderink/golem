@@ -27,7 +27,7 @@ class DataSet:
     self.ys = np.asarray(self.ys)
 
     if self.ids == None: 
-      self.ids = np.arange(self.ninstances).reshape(-1, 1)
+      self.ids = np.atleast_2d(np.arange(self.ninstances)).T
     self.ids = np.array(self.ids)
 
     # test essential properties
@@ -143,8 +143,8 @@ class DataSet:
       return DataSet(xs=self.xs[i], ys=self.ys[i], ids=self.ids[i], 
         default=self)
     elif isinstance(i, int):
-      return DataSet(xs=self.xs[i].reshape(1, -1), 
-        ys=self.ys[i].reshape(1, -1), ids=self.ids[i].reshape(1, -1),
+      return DataSet(xs=np.atleast_2d(self.xs[i]),
+        ys=np.atleast_2d(self.ys[i]), ids=np.atleast_2d(self.ids[i]),
         default=self)
     else:
       raise ValueError, 'Unkown indexing type.'
@@ -227,7 +227,6 @@ class DataSet:
     if self.feat_shape != None:
       return self.xs.reshape((self.ninstances,) + self.feat_shape)
     raise Exception, 'Feature shape is unknown'
-    return self.xs.shape[1]
 
   def save(self, file):
     f = open(file, 'wb') if isinstance(file, str) else file
