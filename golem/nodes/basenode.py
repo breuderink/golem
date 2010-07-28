@@ -10,6 +10,8 @@ class BaseNode:
       raise Exception('Do not override methode train(). Use train_() instead.')
     if self.__class__.test != BaseNode.test:
       raise Exception('Do not override methode test(). Use apply_() instead.')
+    if self.__class__.test_ != BaseNode.test_:
+      raise Exception('Do not override methode test_(). Use apply_() instead.')
     if self.__class__.apply != BaseNode.apply:
       raise Exception('Do not override methode apply(). Use apply_() instead.')
 
@@ -20,6 +22,17 @@ class BaseNode:
     '''
     return logging.getLogger('golem.nodes.' + self.name)
 
+  @property
+  def nclasses(self):
+    return self.empty_d.nclasses
+
+
+  def test(self, d):
+    warnings.warn('Method [Node].test() is deprecated, ' + 
+      'use [Node].apply() instead.',
+      DeprecationWarning)
+    return self.apply(d)
+
   def train(self, d):
     self.log.info('training on ' + str(d))
 
@@ -29,32 +42,14 @@ class BaseNode:
     # delegate call
     self.train_(d)
 
-  @property
-  def nclasses(self):
-    return self.empty_d.nclasses
-
-  def train_(self, d):
-    '''
-    Placeholder, meant to be replaced with the derived nodes train method.
-    '''
-
-  def apply_(self, d):
-    '''
-    Placeholder, meant to be replaced with the derived nodes apply method.
-    '''
-    pass
-
-  def test(self, d):
-    warnings.warn('Method [Node].test() is deprecated, ' + 
-      'use [Node].apply() instead.',
-      DeprecationWarning)
-    return self.apply(d)
-
   def apply(self, d):
     self.log.info('testing on ' + str(d))
 
-    # check format of d
-    if self.empty_d != None and self.empty_d != d[:0]:
+    # check validity of d
+    if d.ninstances == 0:
+      raise ValueError('Got empty DataSet.')
+
+    if self.empty_d!= None and self.empty_d != d[:0]:
       raise ValueError('Got %s, expected %s in %s' % 
         (d, self.empty_d, str(self)))
 
@@ -70,3 +65,18 @@ class BaseNode:
 
   def __str__(self):
     return self.name
+
+  def train_(self, d):
+    '''
+    Placeholder, meant to be replaced with the derived nodes train method.
+    '''
+
+  def apply_(self, d):
+    '''
+    Placeholder, meant to be replaced with the derived nodes apply method.
+    '''
+    pass
+
+  def test_(self, d):
+    '''Deprecated '''
+    pass
