@@ -1,7 +1,6 @@
 import operator
 import numpy as np
 from scipy import stats
-
 from .. import DataSet
 from basenode import BaseNode
 
