@@ -15,3 +15,4 @@ from testchain import *
 from testensemble import *
 from testsimple import *
 from testrda import *
+from teststat import *
