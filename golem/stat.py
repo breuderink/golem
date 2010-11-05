@@ -37,7 +37,7 @@ def lw_cov(X, center=True):
 def lw_cov_base(X0, S, prior):
   '''
   Calculate \lambda^{\star}, d^2 and b^2 for Ledoit-Wolf covariance estimator.
-  Used for unit-testing.
+  Separate method for unit-testing.
   '''
   n, t = X0.shape
 
@@ -54,3 +54,22 @@ def lw_cov_base(X0, S, prior):
   lamb = np.clip(b2/d2, 0, 1)
   return b2, d2, lamb
 
+def norm_kl_divergence(Sig_p, mu_p, inv_Sig_q, mu_q):
+  '''
+  Calculate Kullback-Leibler divergence between two multivariate *normal*
+  distributions analytically, specified by covariance Sig_p and mean mu_p and 
+  inverse covariance inv_Sig_q and mean mu_q:
+
+    KL(P || Q) = \int_x p(x) \log(p(x) / q(x)) dx
+
+  Please note that for the Q distribution the *INVERSE COVARIANCE* has to be
+  specified.
+  '''
+  Sig_p, mu_p, inv_Sig_q, mu_q = np.atleast_2d(Sig_p, mu_p, inv_Sig_q, mu_q)
+  assert Sig_p.shape == inv_Sig_q.shape
+  assert mu_p.size == mu_q.size == Sig_p.shape[0]
+
+  A = np.dot(Sig_p, inv_Sig_q)
+  B = np.trace(np.eye(mu_q.size) - A)
+  C = reduce(np.dot, [(mu_p - mu_q), inv_Sig_q, (mu_p - mu_q).T])
+  return -.5 * (np.log(np.linalg.det(A)) + B - C).squeeze()
