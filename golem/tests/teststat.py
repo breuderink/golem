@@ -172,7 +172,7 @@ class TestAUC(unittest.TestCase):
   def test_monte_carlo(self):
     '''Monte Carlo test for AUC confidence intervals'''
     SAMPLES = 100
-    for N in [100, 1000]:
+    for N in [10, 100, 1000]:
       for rho in [0.1, .5, .9]:
         xs = np.random.random(N)
         ys = (np.linspace(0, 1, N) <= rho).round()
@@ -185,10 +185,9 @@ class TestAUC(unittest.TestCase):
           aucs.append(auc(xs, ys))
 
         # test conservativeness
-        for delta in [.95, .05, .001, .0001]:
-          dev = np.abs(np.array(aucs) - 0.5)
+        for delta in [.05, .001, .0001]:
           epsilon = auc_confidence(N, rho, delta)
-          e_epsilon = sorted(dev)[int(SAMPLES * (1-delta))]
+          dev = np.abs(np.array(aucs) - 0.5)
           e_p = np.mean(dev > epsilon)
           self.assert_(e_p <= delta, 
             'empirical p (=%f) > delta (=%f)' % (e_p, delta))

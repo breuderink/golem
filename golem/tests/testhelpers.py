@@ -50,8 +50,6 @@ class TestHardMax(unittest.TestCase):
   def test_empty(self):
     hard_max(np.zeros((0, 3)))
 
-    
-
 class TestTables(unittest.TestCase):
   def setUp(self):
     self.table = [['H1', 'H2', 'H3'],

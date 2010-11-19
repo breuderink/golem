@@ -138,8 +138,8 @@ def auc_confidence(N, rho=.5, delta=.05):
   '''
   Calculate the confidence interval epsilon for the AUC statistic.
   N is the number of instances, rho is the percentage of *positive* instances,
-  and delta is the confidence interval (.05):
-  \epsilon = \sqrt{\frac{log\frac{2}{\delta}}{2\rho(1-\rho)N}}
+  and delta is the false postive rate:
+    \epsilon = \sqrt{\frac{log\frac{2}{\delta}}{2\rho(1-\rho)N}}
 
   [1] Shivani Agarwal, Thore Graepel, Ralf Herbrich, and Dan Roth. A large
   deviation bound for the area under the ROC curve. In Advances in Neural
