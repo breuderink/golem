@@ -73,3 +73,18 @@ def norm_kl_divergence(Sig_p, mu_p, inv_Sig_q, mu_q):
   B = np.trace(np.eye(mu_q.size) - A)
   C = reduce(np.dot, [(mu_p - mu_q), inv_Sig_q, (mu_p - mu_q).T])
   return -.5 * (np.log(np.linalg.det(A)) + B - C).squeeze()
+
+def kl(P, Q):
+  '''
+  Return the Kullack-Leibler divergence between two distributions P and Q
+  using norm_kl_divergence(). Please note that the inversion of the covariance
+  matrix of Q (\Sigma_Q) might cause numerically unstable results although
+  lw_cov() is used to estimate \Sigma_Q.
+
+  The Kullback-Leibler divergence is an asymmetric distance measure between two
+  probability measures P and Q, measuring the extra information needed to repre-
+  sent samples from P when using a code based on Q.
+  '''
+  S_p, m_p = lw_cov(P), np.mean(P, 0)
+  S_q, m_q = lw_cov(Q), np.mean(Q, 0)
+  return norm_kl_divergence(S_p, m_p, np.linalg.pinv(S_q), m_q)

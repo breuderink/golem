@@ -98,3 +98,12 @@ class TestKullbackLeibler(unittest.TestCase):
     kld_num = np.trapz(div, xs)
 
     np.testing.assert_almost_equal(kld_num, kld_an)
+
+  def test_convenience_fun(self):
+    P = np.dot(np.random.randn(4, 4), np.random.rand(4, 100))
+    Q = np.dot(np.random.randn(4, 4), np.random.rand(4, 100))
+
+    self.assertAlmostEqual(
+      kl(P.T, Q.T),
+      norm_kl_divergence(lw_cov(P.T), np.mean(P, 1), 
+        np.linalg.pinv(lw_cov(Q.T)), np.mean(Q, 1)))
