@@ -6,21 +6,21 @@ from ..helpers import to_one_of_n
 class TestLedoitWolfCov(unittest.TestCase):
   def setUp(self):
     np.random.seed(0)
-    N, P = 50, 40
-    self.A = A = np.random.randn(P, P)
-    self.Sigma = np.dot(A.T, A)
-    X = np.random.randn(N,  P)
-    X -= np.mean(X, axis=0)
-    X = np.dot(X, A)
-    self.X0 = X0 = X - np.mean(X, axis=0)
-    self.S = np.dot(X0.T, X0) / N
+    p, n = 40, 50
+    self.A = A = np.random.randn(p, p)
+    self.Sigma = np.dot(A, A.T)
+    X = np.random.randn(p, n)
+    X -= np.atleast_2d(np.mean(X, 1)).T
+    X = np.dot(A, X)
+    self.X0 = X0 = X - np.atleast_2d(np.mean(X, 1)).T
+    self.S = np.dot(X0, X0.T) / n
 
   def test_var_of_cov(self):
     X0, S = self.X0, self.S
-    n, p = X0.shape
+    p, n = X0.shape
 
     V = np.mean(
-      [(np.dot(np.atleast_2d(o).T, np.atleast_2d(o)) - S)**2 for o in X0], 
+      [(np.dot(np.atleast_2d(o).T, np.atleast_2d(o)) - S)**2 for o in X0.T], 
       axis=0)
 
     b2, d2, lamb = lw_cov_base(X0, S, np.eye(p))
@@ -101,13 +101,13 @@ class TestKullbackLeibler(unittest.TestCase):
     np.testing.assert_almost_equal(kld_num, kld_an)
 
   def test_convenience_fun(self):
-    P = np.dot(np.random.randn(4, 4), np.random.rand(4, 100))
+    P = np.dot(np.random.randn(4, 4), np.random.rand(4, 10))
     Q = np.dot(np.random.randn(4, 4), np.random.rand(4, 100))
 
     self.assertAlmostEqual(
-      kl(P.T, Q.T),
-      norm_kl_divergence(lw_cov(P.T), np.mean(P, 1), 
-        np.linalg.pinv(lw_cov(Q.T)), np.mean(Q, 1)))
+      kl(P, Q),
+      norm_kl_divergence(lw_cov(P), np.mean(P, 1), 
+        np.linalg.pinv(lw_cov(Q)), np.mean(Q, 1)))
 
 class TestROC(unittest.TestCase):
   def test_roc(self):

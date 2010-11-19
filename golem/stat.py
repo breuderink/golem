@@ -6,7 +6,7 @@ def lw_cov(X, center=True):
   asymptotically more accurate than the sample covariance matrix) Ledoit-Wolf
   covariance estimator [1].
 
-  For X, a [n x p] matrix, where n is the number of observations, and p is the
+  For X, a [p x n] matrix, where n is the number of observations, and p is the
   number of variables, a robust covariance estimate is returned.  It
   analytically estimates the optimial weight \lambda^{\star} for a weigheted
   combination of the sample mean S and and a prior of equal variance and zero
@@ -22,16 +22,15 @@ def lw_cov(X, center=True):
       large-dimensional covariance matrices. Journal of Multivariate Analysis,
       88(2):365--411, February 2004.
   '''
-  X = np.asarray(X)
-  n, t = X.shape
+  X = np.atleast_2d(X)
+  p, n = X.shape
   if center:
-    X = X - np.mean(X, axis=0)
+    X = X - np.atleast_2d(np.mean(X, 1)).T
 
-  S = np.dot(X.T, X) / n
-  prior = np.mean(np.diag(S)) * np.eye(t) # m * I
+  S = np.dot(X, X.T) / n
+  prior = np.mean(np.diag(S)) * np.eye(p) # m * I
 
   b2, d2, lamb = lw_cov_base(X, S, prior)
-
   return lamb * prior + (1.-lamb) * S
 
 def lw_cov_base(X0, S, prior):
@@ -39,15 +38,15 @@ def lw_cov_base(X0, S, prior):
   Calculate \lambda^{\star}, d^2 and b^2 for Ledoit-Wolf covariance estimator.
   Separate method for unit-testing.
   '''
-  n, t = X0.shape
+  p, n = X0.shape
 
-  # Calculate  \delta^2 using Lemma 3.3
+  # Calculate  \delta^2 using Lemma 3.3:
   d2 = np.linalg.norm(S - prior, 'fro') ** 2
 
   # Calculate \bar{\beta}^2 as in Lemma 3.4, but using
   # var(x) = E(x^2) - [E(x)]^2:
   XoX = X0**2
-  varS = np.dot(XoX.T, XoX) / n - S**2
+  varS = np.dot(XoX, XoX.T) / n - S**2
   b2 = np.sum(varS) / n
 
   # Calculate shrinkage intensity
@@ -81,17 +80,23 @@ def kl(P, Q):
   matrix of Q (\Sigma_Q) might cause numerically unstable results although
   lw_cov() is used to estimate \Sigma_Q.
 
+  P and Q are [p x n] matrices, where p is the number of variables, and n is
+  the number of observations.
+
   The Kullback-Leibler divergence is an asymmetric distance measure between two
   probability measures P and Q, measuring the extra information needed to repre-
   sent samples from P when using a code based on Q.
   '''
-  S_p, m_p = lw_cov(P), np.mean(P, 0)
-  S_q, m_q = lw_cov(Q), np.mean(Q, 0)
+  assert P.shape[0] == Q.shape[0], \
+    'Distributions do not have same number of variables'
+  S_p, m_p = lw_cov(P), np.mean(P, 1)
+  S_q, m_q = lw_cov(Q), np.mean(Q, 1)
   return norm_kl_divergence(S_p, m_p, np.linalg.pinv(S_q), m_q)
 
 def roc(scores, labels):
   '''
-  Calc (TPs, FPs) pairs for ROC plotting and AUC-ROC calculation.
+  Calc (TPs, FPs) pairs for different thresholds. This method is used for ROC 
+  plotting and AUC-ROC calculation. 
   Labels are encoded as 0 or 1. Ties are handled correctly.
   '''
   scores, labels = np.asarray(scores), np.asarray(labels)
