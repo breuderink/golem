@@ -88,3 +88,74 @@ def kl(P, Q):
   S_p, m_p = lw_cov(P), np.mean(P, 0)
   S_q, m_q = lw_cov(Q), np.mean(Q, 0)
   return norm_kl_divergence(S_p, m_p, np.linalg.pinv(S_q), m_q)
+
+def roc(scores, labels):
+  '''
+  Calc (TPs, FPs) pairs for ROC plotting and AUC-ROC calculation.
+  Labels are encoded as 0 or 1. Ties are handled correctly.
+  '''
+  scores, labels = np.asarray(scores), np.asarray(labels)
+  assert scores.ndim == labels.ndim == 1
+  assert np.all(np.unique(labels) == [0, 1])
+  si = np.argsort(scores)[::-1]
+  scores, labels = scores[si], labels[si]
+  
+  # slide threshold from above
+  TPs = np.cumsum(labels == 1) / np.sum(labels == 1).astype(float)
+  FPs = np.cumsum(labels != 1) / np.sum(labels != 1).astype(float)
+  
+  # handle equal scoress
+  ui = np.concatenate([np.diff(scores), np.array([1])]) != 0
+  TPs, FPs = TPs[ui], FPs[ui]
+
+  # add (0, 0) to ROC
+  TPs = np.concatenate([[0], TPs])
+  FPs = np.concatenate([[0], FPs])
+  return (TPs, FPs)
+
+def auc(scores, labels):
+  '''
+  Calculate area under curve (AUC) of the receiver operating characteristic
+  (ROC) using roc(). Ties are handles correctly.
+
+  The AUC of a classifier is equivalent to the probability that the classifier
+  will rank a randomly chosen positive instanance higher than a randomly chosen
+  negative instance [1]. I.e., the AUC is a value between 0 and 1, and AUC of .5
+  indicates random ranking performance.
+
+  [1] Tom Fawcett. An introduction to ROC analysis. Pattern Recognition
+  Letters, 27(8):861-874, 2005.
+  '''
+  TPs, FPs = roc(scores, labels)
+  return np.trapz(TPs, FPs)
+
+def auc_confidence(N, rho=.5, delta=.05):
+  '''
+  Calculate the confidence interval epsilon for the AUC statistic.
+  N is the number of instances, rho is the percentage of *positive* instances,
+  and delta is the confidence interval (.05):
+  \epsilon = \sqrt{\frac{log\frac{2}{\delta}}{2\rho(1-\rho)N}}
+
+  [1] Shivani Agarwal, Thore Graepel, Ralf Herbrich, and Dan Roth. A large
+  deviation bound for the area under the ROC curve. In Advances in Neural
+  Information Processing Systems, volume 17, pages 9-16, 2005.
+  '''
+  return np.sqrt(np.log(2. / delta) / (2 * rho * (1 - rho) * N))
+
+def mut_inf(conf_mat):
+  '''
+  Calculate the discrete mutual information from conf_mat. Returns the mutual
+  information in bits.
+  '''
+  pxy = np.array(conf_mat, float)
+  assert (pxy >= 0).all(), 'Cannot handle marginal probabilites P_{XY} < 0'
+  pxy /= np.sum(pxy)
+  pxs = np.sum(pxy, axis=1)
+  pys = np.sum(pxy, axis=0)
+  bits = 0
+  for x in range(pxy.shape[0]):
+    for y in range(pxy.shape[1]):
+      if pxy[x, y] == 0 or pxs[x] == 0 or pys[y] == 0: 
+        continue
+      bits += pxy[x, y] * np.log2(pxy[x, y]/(pxs[x] * pys[y]))
+  return bits

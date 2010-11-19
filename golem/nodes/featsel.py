@@ -2,6 +2,7 @@ import logging
 import numpy as np
 from ..dataset import DataSet
 from .. import helpers
+from ..stat import auc
 from basenode import BaseNode
 
 class FeatFilter(BaseNode):
@@ -35,7 +36,7 @@ class FeatFilter(BaseNode):
 
 def auc_dev(xs, ys):
     assert ys.shape[1] == 2, 'Use AUC with two classes.'
-    aucs = helpers.auc(xs, helpers.hard_max(ys)[:, 1])
+    aucs = auc(xs, helpers.hard_max(ys)[:, 1])
     return np.abs(aucs - .5)
 
 class AUCFilter(FeatFilter, BaseNode):

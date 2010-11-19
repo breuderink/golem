@@ -1,6 +1,7 @@
 import numpy as np
 from dataset import DataSet
 import helpers
+import stat
 
 def class_loss(d):
   '''
@@ -42,7 +43,7 @@ def auc(d):
   predictions for a two-class problem.
   '''
   assert d.nclasses == 2 and d.nfeatures == 2
-  return helpers.auc(d.xs[:, 1] - d.xs[:, 0], helpers.hard_max(d.ys)[:,1])
+  return stat.auc(d.xs[:, 1] - d.xs[:, 0], helpers.hard_max(d.ys)[:,1])
 
 def mean_std(loss_f, ds):
   '''Calc mean and std for loss function loss_f over a list with DataSets ds'''
@@ -51,4 +52,4 @@ def mean_std(loss_f, ds):
 
 def I(d):
   '''Mutual information'''
-  return helpers.mut_inf(conf_mat(d))
+  return stat.mut_inf(conf_mat(d))
