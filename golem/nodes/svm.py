@@ -12,7 +12,7 @@ ALPHA_RTOL = 1e-5
 
 def cvxopt_svm(K, labels, C):
   # See "Learning with Kernels", Schölkopf and Smola, p.205
-  log = logging.getLogger('golm.cvxopt_svm')
+  log = logging.getLogger('golem.cvxopt_svm')
   m = K.shape[0]
   labels = np.atleast_2d(labels)
 
