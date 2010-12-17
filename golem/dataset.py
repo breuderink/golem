@@ -1,4 +1,4 @@
-import itertools
+import itertools, warnings
 import cPickle
 from hashlib import sha1
 import numpy as np
@@ -7,14 +7,20 @@ import helpers
 class DataSet:
   @property
   def xs(self):
+    warnings.warn('DataSet.xs is deprecated, use DataSet.X.T instead', 
+      DeprecationWarning)
     return self.X.T
 
   @property
   def ys(self):
+    warnings.warn('DataSet.ys is deprecated, use DataSet.Y.T instead', 
+      DeprecationWarning)
     return self.Y.T
 
   @property
   def ids(self):
+    warnings.warn('DataSet.ids is deprecated, use DataSet.I.T instead', 
+      DeprecationWarning)
     return self.I.T
 
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
