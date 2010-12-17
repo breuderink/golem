@@ -5,6 +5,18 @@ import numpy as np
 import helpers
 
 class DataSet:
+  @property
+  def xs(self):
+    return self.X.T
+
+  @property
+  def ys(self):
+    return self.Y.T
+
+  @property
+  def ids(self):
+    return self.I.T
+
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
     feat_shape=None, feat_dim_lab=None, feat_nd_lab=None, extra=None, 
     default=None):
@@ -12,46 +24,44 @@ class DataSet:
     Create a new dataset.
     '''
     # first, take care of xs, ys, ids
-    if default == None:
-      if xs == None: raise ValueError, 'No xs given'
-      if ys == None: raise ValueError, 'No ys given'
-      self.xs, self.ys, self.ids = xs, ys, ids
-    else:
+    if default != None:
       assert isinstance(default, DataSet), 'Default is not a DataSet'
-      self.xs = xs if xs != None else default.xs
-      self.ys = ys if ys != None else default.ys
-      self.ids = ids if ids != None else default.ids
+      xs = xs if xs != None else default.xs
+      ys = ys if ys != None else default.ys
+      ids = ids if ids != None else default.ids
+
+    if xs == None: raise ValueError, 'No xs given'
+    if ys == None: raise ValueError, 'No ys given'
 
     # convert to np.ndarray
-    self.xs = np.asarray(self.xs)
-    self.ys = np.asarray(self.ys)
+    self.X = np.asarray(xs).T
+    self.Y = np.asarray(ys).T
 
-    if self.ids == None: 
-      self.ids = np.atleast_2d(np.arange(self.ninstances)).T
-    self.ids = np.array(self.ids)
+    if ids == None: 
+      ids = np.atleast_2d(np.arange(self.ninstances)).T
+    self.I = np.asarray(ids).T
 
     # test essential properties
+    # TODO: to be simplified with column instances
     if self.xs.ndim != 2:
       raise ValueError('Only 2d arrays are supported for xs. See feat_shape.')
     if self.ys.ndim != 2:
       raise ValueError('Only 2d arrays are supported for ys.')
     if self.ids.ndim != 2:
       raise ValueError('Only 2d arrays are supported for ids.')
-    if not (self.xs.shape[0] == self.ys.shape[0] == self.ids.shape[0]):
-      raise ValueError('Number of rows does not match')
-    if np.unique(self.ids[:,0]).size != self.ninstances:
+    if not (self.X.shape[1] == self.Y.shape[1] == self.I.shape[1]):
+      raise ValueError('Number of instances (cols) does not match')
+    if np.unique(self.I[0]).size != self.ninstances:
       raise ValueError('The ids not unique.')
 
-    if np.any(np.isnan(self.xs)):
-      raise ValueError('NaN not allowed for xs.')
-    if np.any(np.isinf(self.xs)):
-      raise ValueError('Infinite values not allowed for xs.')
+    if not np.all(np.isfinite(self.X)):
+      raise ValueError('Only finite values are allowed for X')
     
-    # Lock xs, ys, ids:
-    for arr in [self.xs, self.ys, self.ids]:
+    # Lock X, Y, I:
+    for arr in [self.X, self.Y, self.I]:
       arr.flags.writeable = False
 
-    # Ok, xs, ys, and ids are ok. Now wel add required structural info
+    # Ok, X, Y and I are ok. Now wel add required structural info:
     if default != None:  
       # fill in from default arg
       if cl_lab == None: cl_lab = default.cl_lab
@@ -66,7 +76,7 @@ class DataSet:
 
     self.cl_lab = cl_lab if cl_lab \
       else ['class%d' % i for i in range(self.nclasses)]
-    self.feat_lab = feat_lab if feat_lab else None
+    self.feat_lab = feat_lab
     self.feat_shape = feat_shape if feat_shape != None else (self.nfeatures,)
 
     # Now we are basically done, but let's add optional info
@@ -176,7 +186,7 @@ class DataSet:
     if (a.nfeatures != b.nfeatures) or (a.nclasses != b.nclasses):
       raise ValueError, 'The #features or #classes do not match'
     for member in a.__dict__.keys():
-      if member not in ['xs', 'ys', 'ids']:
+      if member not in ['X', 'Y', 'I', 'xs', 'ys', 'ids']:
         if a.__dict__[member] != b.__dict__[member]:
           raise ValueError('Cannot add DataSets: %s is different' % member)
 
@@ -207,9 +217,9 @@ class DataSet:
         
   @property
   def ninstances(self):
-    if self.xs.ndim == 0:
+    if self.X.ndim == 0:
       return 0
-    return self.xs.shape[0]
+    return self.X.shape[1]
     
   @property
   def ninstances_per_class(self):
@@ -227,6 +237,7 @@ class DataSet:
     if self.feat_shape != None:
       return self.xs.reshape((self.ninstances,) + self.feat_shape)
     raise Exception, 'Feature shape is unknown'
+
 
   def save(self, file):
     f = open(file, 'wb') if isinstance(file, str) else file
