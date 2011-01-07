@@ -171,7 +171,7 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d2.feat_lab, ['altf0'])
     d2 = DataSet(feat_lab=None, default=d)
     self.assertEqual(d2.feat_lab, d.feat_lab)
-    d2 = DataSet(xs=np.random.rand(12, 6), feat_shape=(2, 3), default=d)
+    d2 = DataSet(X=np.random.rand(6, 12), feat_shape=(2, 3), default=d)
     self.assertEqual(d2.feat_lab, None)
     
     # test feat_shape
@@ -191,7 +191,7 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d2.feat_nd_lab, [['a'], ['b']])
     d2 = DataSet(feat_nd_lab=None, default=d)
     self.assertEqual(d2.feat_nd_lab, d.feat_nd_lab)
-    d2 = DataSet(xs=np.random.rand(12, 6), feat_shape=(2, 3), default=d)
+    d2 = DataSet(X=np.random.rand(6, 12), feat_shape=(2, 3), default=d)
     self.assertEqual(d2.feat_nd_lab, None)
 
     # test extra
@@ -200,16 +200,13 @@ class TestDataSetConstruction(unittest.TestCase):
     d2 = DataSet(extra=None, default=d)
     self.assertEqual(d2.extra, d.extra)
 
-    # test access of emtpy members
-    d2 = DataSet(default=DataSet(xs=d.xs, ys=d.ys))
-
   def test_finite_feats(self):
-    ys = np.ones((10, 2))
+    Y = np.ones((2, 10))
     for v in [np.inf, -np.inf, np.nan]:
-      xs = np.zeros((10, 2))
-      d = DataSet(xs=xs.copy(), ys=ys) # no error
-      xs[5, 1] = v
-      self.assertRaises(ValueError, DataSet, xs=xs, ys=ys)
+      X = np.zeros((2, 10))
+      d = DataSet(X=X.copy(), Y=Y) # no error
+      X[1, 5] = v
+      self.assertRaises(ValueError, DataSet, X=X, Y=Y)
 
 
 class TestDataSet(unittest.TestCase):
