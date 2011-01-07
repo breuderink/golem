@@ -25,35 +25,41 @@ class DataSet:
 
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
     feat_shape=None, feat_dim_lab=None, feat_nd_lab=None, extra=None, 
-    default=None):
+    default=None, X=None, Y=None, I=None):
     '''
     Create a new dataset.
     '''
-    # first, take care of xs, ys, ids
+    # backwards compatibility
+    if xs != None:
+      X = np.asarray(xs).T
+    if ys != None:
+      Y = np.asarray(ys).T
+    if ids != None:
+      I = np.asarray(ids).T
+
+    # first, take care of X, Y, I
     if default != None:
       assert isinstance(default, DataSet), 'Default is not a DataSet'
-      xs = xs if xs != None else default.xs
-      ys = ys if ys != None else default.ys
-      ids = ids if ids != None else default.ids
+      X = X if X != None else default.X
+      Y = Y if Y != None else default.Y
+      I = I if I != None else default.I
 
-    if xs == None: raise ValueError, 'No xs given'
-    if ys == None: raise ValueError, 'No ys given'
+    if X == None: raise ValueError, 'No X given'
+    if Y == None: raise ValueError, 'No Y given'
 
     # convert to np.ndarray
-    self.X = np.asarray(xs).T
-    self.Y = np.asarray(ys).T
+    self.X, self.Y = X, Y = np.atleast_2d(X, Y)
 
-    if ids == None: 
-      ids = np.atleast_2d(np.arange(self.ninstances)).T
-    self.I = np.asarray(ids).T
+    if I == None: 
+      I = np.arange(self.ninstances)
+    self.I = I = np.atleast_2d(I)
 
     # test essential properties
-    # TODO: to be simplified with column instances
-    if self.xs.ndim != 2:
+    if self.X.ndim != 2:
       raise ValueError('Only 2d arrays are supported for xs. See feat_shape.')
-    if self.ys.ndim != 2:
+    if self.Y.ndim != 2:
       raise ValueError('Only 2d arrays are supported for ys.')
-    if self.ids.ndim != 2:
+    if self.Y.ndim != 2:
       raise ValueError('Only 2d arrays are supported for ids.')
     if not (self.X.shape[1] == self.Y.shape[1] == self.I.shape[1]):
       raise ValueError('Number of instances (cols) does not match')
