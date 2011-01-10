@@ -317,18 +317,21 @@ class TestDataSet(unittest.TestCase):
     self.assertEqual(dA, d[1])
     self.assertEqual(dB, d[0])
 
-  def test_nd_xs(self):
-    '''Test multidimensional xs'''
-    xs = np.arange(100).reshape(10, 10)
-    ys = np.ones((10, 1))
-    d = DataSet(xs, ys, None, feat_shape=(2, 1, 5))
-    np.testing.assert_equal(d.xs, xs)
+  def test_ndX(self):
+    '''Test multi-dimensional X'''
+    X = np.arange(100).reshape(10, 10).T
+    Y = np.ones(10)
+    d = DataSet(X=X, Y=Y, feat_shape=(2, 1, 5))
+    np.testing.assert_equal(d.X, X)
     self.assertEqual(d.ninstances, 10)
     self.assertEqual(d.nfeatures, 10)
+    print d.ndX.shape
     np.testing.assert_equal(
-      d.nd_xs[0,:,:], np.arange(10).reshape(2, 1, 5))
+      d.ndX[:,:,:,0], np.arange(10).reshape(2, 1, 5))
     np.testing.assert_equal(
-      d.nd_xs[2,:,:], np.arange(20, 30).reshape(2, 1, 5))
+      d.ndX[:,:,:,2], np.arange(20, 30).reshape(2, 1, 5))
+
+    np.testing.assert_equal(np.rollaxis(d.nd_xs, 0, 4), d.ndX)
   
   def test_shuffle(self):
     '''Test shuffling the DataSet'''
