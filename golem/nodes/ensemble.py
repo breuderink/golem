@@ -9,10 +9,10 @@ def copy_splitter(d):
     yield d
 
 def average_combiner(ds):
-  xs = np.zeros(ds[0].xs.shape)
+  X = np.zeros(ds[0].X.shape)
   for d in ds:
-    xs += d.xs
-  return DataSet(xs=xs/float(len(ds)), default=ds[0])
+    X += d.X
+  return DataSet(X=X/float(len(ds)), default=ds[0])
 
 class Ensemble(BaseNode):
   def __init__(self, nodes, tr_splitter=copy_splitter, 
@@ -29,7 +29,6 @@ class Ensemble(BaseNode):
       n.train(nd)
 
   def apply_(self, d):
-    xs = np.zeros(d.xs.shape)
     results = [n.apply(nd) for (n, nd) in itertools.izip(self.nodes, 
       self.te_splitter(d))]
     return self.combiner(results)
@@ -52,9 +51,9 @@ class OVONode(BaseNode):
     cia, cib = self.cia, self.cib
     td = self.node.apply(DataSet(ys=d.ys[:,[cia, cib]], cl_lab=[d.cl_lab[cia], 
       d.cl_lab[cib]], default=d))
-    xs = np.zeros((d.ninstances, d.nclasses))
-    xs[:, [self.cia, self.cib]] = td.xs
-    return DataSet(xs=xs, default=d)
+    X = np.zeros((d.nclasses, d.ninstances))
+    X[[self.cia, self.cib]] = td.X
+    return DataSet(X=X, default=d)
 
 class OneVsOne(BaseNode):
   def __init__(self, binary_node):
@@ -81,23 +80,23 @@ class OVRNode(BaseNode):
 
   def ovr_d(self, d):
     class_i = self.class_i
-    ys = np.zeros((d.ninstances, 2))
-    ys[:, 0] = d.ys[:, class_i]
-    ys[:, 1] = 1 - d.ys[:, class_i]
-    return DataSet(ys=ys, cl_lab=[d.cl_lab[class_i], 'rest'], default=d)
+    Y = np.zeros((2, d.ninstances))
+    Y[0] = d.Y[class_i]
+    Y[1] = 1 - d.Y[class_i]
+    return DataSet(Y=Y, cl_lab=[d.cl_lab[class_i], 'rest'], default=d)
 
   def train_(self, d):
     self.node.train(self.ovr_d(d))
 
   def apply_(self, d):
     td = self.node.apply(self.ovr_d(d))
-    xs = []
+    Xs = []
     for i in range(d.nclasses):
       if i == self.class_i:
-        xs.append(td.xs[:, 0].reshape(-1, 1))
+        Xs.append(td.X[0])
       else:
-        xs.append(td.xs[:, 1].reshape(-1, 1))
-    return DataSet(xs=np.hstack(xs), default=d)
+        Xs.append(td.X[1])
+    return DataSet(X=np.vstack(Xs), default=d)
 
 class OneVsRest(BaseNode):
   def __init__(self, binary_node):
@@ -116,7 +115,7 @@ class OneVsRest(BaseNode):
 def bagging_splitter(d):
   while True:
     i = np.random.random_integers(0, d.ninstances-1, d.ninstances)
-    yield DataSet(xs=d.xs[i, :], ys=d.ys[i,:], ids=None, default=d)
+    yield DataSet(X=d.X[:,i], Y=d.Y[:,i], I=None, default=d)
 
 class Bagging(Ensemble):
   def __init__(self, base_node, n):
