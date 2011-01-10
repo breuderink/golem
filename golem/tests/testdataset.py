@@ -325,7 +325,6 @@ class TestDataSet(unittest.TestCase):
     np.testing.assert_equal(d.X, X)
     self.assertEqual(d.ninstances, 10)
     self.assertEqual(d.nfeatures, 10)
-    print d.ndX.shape
     np.testing.assert_equal(
       d.ndX[:,:,:,0], np.arange(10).reshape(2, 1, 5))
     np.testing.assert_equal(
@@ -335,8 +334,8 @@ class TestDataSet(unittest.TestCase):
   
   def test_shuffle(self):
     '''Test shuffling the DataSet'''
-    xs, ys = np.random.random((6, 2)), np.ones((6, 1)) 
-    d = DataSet(xs, ys)
+    X, Y = np.random.random((2, 6)), np.ones(6) 
+    d = DataSet(X=X, Y=Y)
 
     # shuffle and sort
     ds = d.shuffled()
@@ -345,10 +344,10 @@ class TestDataSet(unittest.TestCase):
 
   def test_sorted(self):
     '''Test sorting the DataSet'''
-    ids = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]]).T
-    xs, ys = np.random.random((6, 2)), np.ones((6, 1)) 
-    d1d = DataSet(xs, ys, ids[:, 0].reshape(-1, 1))
-    d2d = DataSet(xs, ys, ids)
+    I = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]])
+    X, Y = np.random.random((2, 6)), np.ones(6) 
+    d1d = DataSet(X=X, Y=Y, I=I[0])
+    d2d = DataSet(X=X, Y=Y, I=I)
 
     # shuffle and sort
     d1ds = d1d.shuffled()
@@ -374,23 +373,23 @@ class TestDataSet(unittest.TestCase):
   def test_save_load(self):
     '''Test loading and saving datasets'''
     # test round-trip using file objects
-    _, tfname = tempfile.mkstemp('.goldat')
+    _, tfname = tempfile.mkstemp('.dat')
     self.d.save(open(tfname, 'wb'))
     self.assertEqual(self.d, DataSet.load(open(tfname, 'rb')))
 
     # test round-trip using filenames
-    _, tfname = tempfile.mkstemp('.goldat')
+    _, tfname = tempfile.mkstemp('.dat')
     self.d.save(tfname)
     self.assertEqual(self.d, DataSet.load(tfname))
 
   def test_write_protected(self):
     d = self.d
-    for att in [d.xs, d.ys, d.ids]:
+    for att in [d.X, d.Y, d.Y]:
       self.assertRaises(RuntimeError, att.__setitem__, (0, 0), -1)
 
 class TestEmpty(unittest.TestCase):
   def setUp(self):
-    self.d0 = DataSet(xs=np.zeros((0, 10)), ys=np.zeros((0, 3)))
+    self.d0 = DataSet(X=np.zeros((10, 0)), Y=np.zeros((3, 0)))
 
   def test_props(self):
     d0 = self.d0
