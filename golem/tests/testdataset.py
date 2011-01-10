@@ -212,18 +212,18 @@ class TestDataSetConstruction(unittest.TestCase):
 class TestDataSet(unittest.TestCase):
   def setUp(self):
     '''Setup a default DataSet.'''
-    xs = np.array([[0, 0, 0], [1, 1, 1]])
-    ys = np.array([[0, 1], [1, 0]])
-    ids = np.array([[3], [4]])
-    self.d = d = DataSet(xs, ys, ids, feat_lab=['f1', 'f2', 'f3'], 
+    X = np.array([[0, 1], [0, 1], [0, 1]])
+    Y = np.array([[0, 1], [1, 0]])
+    I = np.array([3, 4])
+    self.d = d = DataSet(X=X, Y=Y, I=I, feat_lab=['f1', 'f2', 'f3'], 
       cl_lab=['A', 'B'], feat_shape=(3, 1), feat_dim_lab=['d0', 'd1'], 
       feat_nd_lab=[['f1', 'f2', 'f3'],['n']], extra={'foo':'bar'})
 
   def test_equality(self):
     d = self.d
-    diff_ds = [DataSet(xs=d.xs+1, default=d),
-      DataSet(ys=d.ys+1, default=d),
-      DataSet(ids=d.ids+1, default=d),
+    diff_ds = [DataSet(X=d.X+1, default=d),
+      DataSet(Y=d.Y+1, default=d),
+      DataSet(I=d.I+1, default=d),
       DataSet(cl_lab=['a', 'b'], default=d),
       DataSet(feat_lab=['F1', 'F2', 'F3'], default=d),
       DataSet(feat_shape=(1, 3), feat_nd_lab=[], default=d),
@@ -233,17 +233,16 @@ class TestDataSet(unittest.TestCase):
       d[:0]]
 
     self.assertEqual(d, d)
-    self.assertEqual(d, DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
-      cl_lab=d.cl_lab, feat_shape=d.feat_shape, 
-      feat_dim_lab=d.feat_dim_lab, feat_nd_lab=d.feat_nd_lab, 
-      extra=d.extra))
+    self.assertEqual(d, DataSet(X=d.X, Y=d.Y, I=d.I, feat_lab=d.feat_lab, 
+      cl_lab=d.cl_lab, feat_shape=d.feat_shape, feat_dim_lab=d.feat_dim_lab, 
+      feat_nd_lab=d.feat_nd_lab, extra=d.extra))
 
     # test all kinds of differences
     for dd in diff_ds:
       self.failIfEqual(dd, d)
     
     # test special cases
-    self.assertEqual(d, DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
+    self.assertEqual(d, DataSet(X=d.X.copy(), Y=d.Y.copy(), I=d.I.copy(), 
       default=d))
     self.failIfEqual(d, 3)
     self.failIfEqual(d[:0], d) # triggered special cast in np.array comparison.
@@ -251,20 +250,20 @@ class TestDataSet(unittest.TestCase):
 
   def test_add(self):
     '''Test the creation of compound datasets using the add-operator.'''
-    ids = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]]).T
-    xs, ys = np.random.random((6, 3)), np.ones((6, 3)) 
-    d = DataSet(xs, ys, ids, feat_lab=['feat%d' for d in range(3)])
+    I = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]])
+    X, Y = np.random.random((3, 6)), np.ones((3, 6)) 
+    d = DataSet(X=X, Y=Y, I=I, feat_lab=['feat%d' for d in range(3)])
 
     da, db = d[:3], d[3:]
     self.assertEqual(da + db, d)
 
     # different nfeatures
     self.assertRaises(ValueError, da.__add__,
-      DataSet(xs=db.xs[:,:-1], feat_lab=d.feat_lab[:-1], default=db))
+      DataSet(X=db.X[:-1], feat_lab=d.feat_lab[:-1], default=db))
     
     # different nclasses
     self.assertRaises(ValueError, da.__add__,
-      DataSet(ys=db.ys[:,:-1], cl_lab=d.cl_lab[:-1], default=db))
+      DataSet(Y=db.Y[:-1], cl_lab=d.cl_lab[:-1], default=db))
 
     # different feat_lab
     self.assertRaises(ValueError, da.__add__,
@@ -294,8 +293,9 @@ class TestDataSet(unittest.TestCase):
     '''Test the indexing of DataSet.'''
     d = self.d
     # check if all members are correctly extracted
-    d0 = DataSet(xs=d.xs[0,:].reshape(1, -1), ys=d.ys[0,:].reshape(1, -1), 
-      ids=d.ids[0,:].reshape(1, -1), default=d)
+    d0 = DataSet(X=d.X[:,0].reshape(-1, 1), 
+      Y=d.Y[:,0].reshape(-1, 1), 
+      I=d.I[:,0].reshape(-1, 1), default=d)
     self.assertEqual(d[0], d0)
 
     # test high-level properties

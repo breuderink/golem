@@ -7,13 +7,13 @@ import helpers
 class DataSet:
   @property
   def xs(self):
-    warnings.warn('DataSet.xs is deprecated, use DataSet.X.T instead', 
+    warnings.warn('DataSet.xs is deprecated, use DataSet.X.T instead.', 
       DeprecationWarning)
     return self.X.T
 
   @property
   def ys(self):
-    warnings.warn('DataSet.ys is deprecated, use DataSet.Y.T instead', 
+    warnings.warn('DataSet.ys is deprecated, use DataSet.Y.T instead.', 
       DeprecationWarning)
     return self.Y.T
 
@@ -22,6 +22,12 @@ class DataSet:
     warnings.warn('DataSet.ids is deprecated, use DataSet.I.T instead', 
       DeprecationWarning)
     return self.I.T
+
+  @property
+  def nd_xs(self):
+    warnings.warn('DataSet.nd_xs is deprecated. ' + 
+      'Use np.rollaxis(d.ndX, -1) instead.', DeprecationWarning)
+    return np.rollaxis(self.ndX, -1)
 
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
     feat_shape=None, feat_dim_lab=None, feat_nd_lab=None, extra=None, 
@@ -242,13 +248,11 @@ class DataSet:
     if self.xs.ndim == 0:
       return 0
     return self.xs.shape[1]
-  
+
   @property
-  def nd_xs(self):
-    '''Return N-dimensional view of xs'''
-    if self.feat_shape != None:
-      return self.xs.reshape((self.ninstances,) + self.feat_shape)
-    raise Exception, 'Feature shape is unknown'
+  def ndX(self):
+    '''Return multi-dimensional view of X'''
+    return self.X.reshape(self.feat_shape + (self.ninstances,))
 
 
   def save(self, file):
