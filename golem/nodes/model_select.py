@@ -1,6 +1,5 @@
 import copy
 import logging
-
 from basenode import BaseNode
 
 class ModelSelect(BaseNode):
@@ -15,11 +14,10 @@ class ModelSelect(BaseNode):
       self.log.debug('Evaluating: %s' % str(node))
       perf = self.critic(d, copy.deepcopy(node))
       if best_node == None or perf > best_perf:
-        best_perf = perf
-        best_node = node
+        best_perf, best_node = perf, node
     best_node.train(d) 
     self.best_node = best_node
-    self.log.info('Best node: %s @ %.2f' % (str(best_node), best_perf))
+    self.log.info('Best node: %s @ %.4f' % (str(best_node), best_perf))
 
   def apply_(self, d):
     return self.best_node.apply(d)
