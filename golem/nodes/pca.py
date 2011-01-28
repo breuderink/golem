@@ -4,6 +4,9 @@ from basenode import BaseNode
 from ..dataset import DataSet
 
 class PCA(BaseNode):
+  ''' 
+  PCA node
+  '''
   def __init__(self, retain=.95, ndims=None):
     BaseNode.__init__(self)
     self.retain = retain
