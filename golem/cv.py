@@ -30,6 +30,9 @@ def seq_splits(d, K=10):
   Splits a dataset in K non-overlapping subsets. The first subset is created
   from the first Kth part of d, the second subset from thet second Kth part of
   d etc.
+  
+  For data that is time dependent, the crossvalidation results on these data
+  sets will be more representative than with strat_splits.
   '''
   assert(K <= d.ninstances)
   indices = np.floor(np.linspace(0, K, d.ninstances, endpoint=False))
