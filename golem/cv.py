@@ -6,10 +6,10 @@ import helpers
 
 log = logging.getLogger('golem.cv')
 def strat_splits(d, K=10):
-  '''
+  """
   Splits a dataset in K non-overlapping subsets. The classes are distributed
   evenly over the subsets.
-  '''
+  """
   subsets = []
   assert(K <= max(d.ninstances_per_class))
   d = d.shuffled()
@@ -26,14 +26,14 @@ def strat_splits(d, K=10):
   return [s.sorted() for s in subsets] # Remove class-relevant order
 
 def seq_splits(d, K=10):
-  '''
+  """
   Splits a dataset in K non-overlapping subsets. The first subset is created
   from the first Kth part of d, the second subset from thet second Kth part of
   d etc.
   
   For data that is time dependent, the crossvalidation results on these data
   sets will be more representative than with strat_splits.
-  '''
+  """
   assert(K <= d.ninstances)
   indices = np.floor(np.linspace(0, K, d.ninstances, endpoint=False))
   result = []
@@ -42,10 +42,16 @@ def seq_splits(d, K=10):
   return result
 
 def cross_validation_sets(subsets):
-  '''
-  Generete training and testsets from a list with DataSets. The trainingset
+  """
+  Generate training and testsets from a list with DataSets. The trainingset
   is created from the subsets after isolating a testset.
-  '''
+  
+  Returns a list of training sets and a list of test sets. The first test
+  set is the first subset. The first training set are all the subsets except
+  for the first subset. The second test set is the second subset, etc.
+  
+  To apply cross validation, it is recommended to use cross_validate().
+  """
   K = len(subsets)
   for ki in range(K):
     training_set = (reduce(lambda a, b: a + b, 
@@ -55,13 +61,20 @@ def cross_validation_sets(subsets):
     yield training_set, test_set
 
 def cross_validate(subsets, node):
-  '''
+  """
   Crossvalidate on subsets using node. Returns a list with the output of node
   on the testsets.
   This methods has a few safety measures:
   - for every fold, we start with a fresh copy of node
   - the labels of the test sets are removed to prevent node.test() from cheating
-  '''
+  
+  Example of use::
+    
+    cross_validate(seq_splits(d, 5), n)
+    
+  This applies node n to the train and test sets based on the 
+  sequential split of dataset d into 5 subsets, and returns the output for each.    
+  """
   for (tr, te) in cross_validation_sets(subsets):
     # fresh copy, no cheating by remembering
     inode = copy.deepcopy(node)
@@ -81,10 +94,10 @@ def cross_validate(subsets, node):
 
 
 def rep_cv(d, node, reps=5, K=10):
-  '''
+  """
   Repeated cross-validation shuffled stratified subsets of d. 
   Returns a list with the output of node on the testsets.
-  '''
+  """
   for ri in range(reps):
     for td in cross_validate(strat_splits(d, K), node):
       yield td
