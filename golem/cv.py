@@ -73,7 +73,12 @@ def cross_validate(subsets, node):
     cross_validate(seq_splits(d, 5), n)
     
   This applies node n to the train and test sets based on the 
-  sequential split of dataset d into 5 subsets, and returns the output for each.    
+  sequential split of dataset d into 5 subsets, and returns the output for each.  
+  
+  Cross validation is used to see how a certain analysis generalizes from one
+  subset of the data to another, without needing an explicit validation dataset. 
+  It can give an estimate of how well the analysis will work in practice [1].
+  [1] http://en.wikipedia.org/wiki/Cross-validation_(statistics)
   """
   for (tr, te) in cross_validation_sets(subsets):
     # fresh copy, no cheating by remembering
