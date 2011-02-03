@@ -27,7 +27,11 @@ class LSReg(BaseNode):
     """
     Fits a straight line through the dataset (xs, ys), resulting
     in the least-squares solution, minimizing the Euclidean
-    distance from the data points to the estimated line.
+    distance from the data points to the estimated line.    
+    A separate line is estimated for each column in ys.
+    
+    Note: the line offset is included in W because of the additional 
+    column of ones.
     
     Raises: LinAlgError if the least squares regression 
     does not converge.    
@@ -43,9 +47,7 @@ class LSReg(BaseNode):
   def apply_(self, d):
     """
     Returns a dataset with the (through least squares regression) estimated 
-    label values given the sample values.
-    
-    @@TODO should it not by xs.W + residual ? Or is line through 0 assumed?
+    label values given the sample values.   
     """
     xs = np.hstack([d.xs, np.ones((d.ninstances, 1))])
     xs = np.dot(xs, self.W)
