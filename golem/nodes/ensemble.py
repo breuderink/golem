@@ -4,16 +4,19 @@ from ..dataset import DataSet
 from .. import helpers
 from basenode import BaseNode
 
+# returns ref to the dataset
 def copy_splitter(d):
   while True:
     yield d
 
+# returns new dataset with average of the xs in ds
 def average_combiner(ds):
   xs = np.zeros(ds[0].xs.shape)
   for d in ds:
     xs += d.xs
   return DataSet(xs=xs/float(len(ds)), default=ds[0])
 
+# separate splitter for training and test data
 class Ensemble(BaseNode):
   def __init__(self, nodes, tr_splitter=copy_splitter, 
     te_splitter=copy_splitter, combiner=average_combiner):
@@ -29,7 +32,7 @@ class Ensemble(BaseNode):
       n.train(nd)
 
   def apply_(self, d):
-    xs = np.zeros(d.xs.shape)
+    # xs = np.zeros(d.xs.shape)
     results = [n.apply(nd) for (n, nd) in itertools.izip(self.nodes, 
       self.te_splitter(d))]
     return self.combiner(results)
@@ -56,11 +59,13 @@ class OVONode(BaseNode):
     xs[:, [self.cia, self.cib]] = td.xs
     return DataSet(xs=xs, default=d)
 
+# binary node can distinguish between 2 classes
 class OneVsOne(BaseNode):
   def __init__(self, binary_node):
     BaseNode.__init__(self)
     self.binary_node = binary_node
   
+  # for each pair, train classifier
   def train_(self, d):
     pairs = []
     for cia in range(d.nclasses):
@@ -113,6 +118,7 @@ class OneVsRest(BaseNode):
   def apply_(self, d):
     return self.ensemble.apply(d)
 
+# return random subsets of your dataset
 def bagging_splitter(d):
   while True:
     i = np.random.random_integers(0, d.ninstances-1, d.ninstances)
