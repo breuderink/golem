@@ -5,6 +5,52 @@ import numpy as np
 import helpers
 
 class DataSet:
+  """
+  A data set consists of samples with features and labels, and some additional descriptors.
+  
+  xs*  Samples with features. Features can be multi-dimensional. For example, in the case 
+       of EEG, samples can be epochs, consisting of time samples for each channel.
+       If xs is multi-dimensional, then the multi-dimensional version can be obtained
+       through the property: nd_xs.
+  ys*  The true class labels (or values) for the samples. The ground truth. 
+       For each sample, for each class, an indication is given as to the truth or chance 
+       or value for this class. For example, if for a certain sample the labels are 
+       [0 1 0] this means this sample belongs to the second class. The names of the classes 
+       are stored in cl_lab.
+  ids  A unique identifier per sample.
+       If not provided, it will generate a unique integer id from 0 to the number of 
+       samples.
+       In the case of EEG, this can contain the time stamps of the samples       
+  cl_lab A list of string descriptors for each class.
+  feat_lab A list of string descriptors for each feature. 
+  feat_shape If the features of xs are multi-dimensional, feat_shape contains the shape of
+       these features. 
+  feat_dim_lab For each feature dimension, a string descriptor.
+       In the case of EEG, this could be ['channels', 'time'].
+  feat_nd_lab For each feature dimension, a list of string feature descriptors.
+       In the case of EEG, this could be [['C3','C4'],['0.01','0.02','0.03','0.04']]
+  extra A dictionary that can be used to store any additional information you may want to
+       include.
+  default A default dataset from which all the information will be obtained that is not
+       defined in the initialization of a new dataset.
+  Fields with an asterisk have to be provided when creating a new dataset.
+  
+  For security, it is not possible to write to an already created dataset (xs, ys, and ids
+  are locked). This way, you can be certain that a dataset will not be modified from 
+  analysis chain to another.
+  
+  Handy class functions:
+  nd_xs          Return a multi-dimensional view of xs, depends on feat_shape.
+  save(filename) Store the dataset to disk.
+  load(filename) Load a dataset from disk.
+  d3 = d1 + d2   Adding datasets together.
+  if d1 == d2    Comparing datasets.
+  len(d)         Return the number of samples in the dataset.
+  d[5]           Return the sample with index 5.
+  str(d)         Return a string representation of the dataset.
+  d.shuffled()   Return a dataset copy with the samples shuffled.
+  d.sorted()     Return a dataset copy with the samples sorted according to ids.
+  """
   def __init__(self, xs=None, ys=None, ids=None, cl_lab=None, feat_lab=None, 
     feat_shape=None, feat_dim_lab=None, feat_nd_lab=None, extra=None, 
     default=None):
