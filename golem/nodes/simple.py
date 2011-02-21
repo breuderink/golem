@@ -8,11 +8,8 @@ class FeatMap(BaseNode):
     self.mapping = mapping
 
   def apply_(self, d):
-    instances = np.rollaxis(d.ndX, -1)
-    instances = np.asarray(map(self.mapping, 
-      instances))
+    instances = np.asarray(map(self.mapping, np.rollaxis(d.ndX, -1)))
     ndX = np.rollaxis(instances, 0, len(instances.shape))
-    
     return DataSet(X=ndX.reshape(-1, d.ninstances), 
       feat_shape=ndX.shape[:-1], default=d)
 
