@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from .. import DataSet, data
-from ..nodes import ApplyOverInstances, ZScore
+from ..nodes import ApplyOverInstances, ApplyOverFeats, ZScore
 
 class TestApplyOverInstances(unittest.TestCase):
   def setUp(self):
@@ -22,6 +22,16 @@ class TestApplyOverInstances(unittest.TestCase):
     d = self.d
     d2 = ApplyOverInstances(lambda x: x[:3, :]).apply(d)
     np.testing.assert_equal(d2.ndX, d.ndX[:3])
+
+class TestApplyOverFeats(unittest.TestCase):
+  def setUp(self):
+    self.d = DataSet(X=np.arange(100).reshape(-1, 10), Y=np.ones(10),
+      feat_shape=(5, 2))
+
+  def test_map(self):
+    d = self.d
+    d2 = ApplyOverFeats(lambda x: np.sort(x)).apply(d)
+    self.assertEqual(d2, DataSet(X=np.sort(d.X, axis=1), default=d))
 
 class TestZScore(unittest.TestCase):
   def setUp(self):
