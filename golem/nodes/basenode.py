@@ -18,14 +18,13 @@ class BaseNode:
   @property
   def log(self):
     '''
-    Logs are not deepcopy-able, so we need a property...
+    Logs are not deepcopy-able, therefore we need a property...
     '''
     return logging.getLogger('golem.nodes.' + self.name)
 
   @property
   def nclasses(self):
     return self.empty_d.nclasses
-
 
   def test(self, d):
     warnings.warn('Method [Node].test() is deprecated, ' + 

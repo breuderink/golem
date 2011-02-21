@@ -56,9 +56,9 @@ class PriorClassifier(BaseNode):
     class that had the highest number of instances in the training
     data.
     """
-    xs = np.zeros(d.ys.shape)
-    xs[:, self.mfc] = 1
-    return DataSet(xs, d.ys, d.ids, cl_lab=d.cl_lab)
+    X = np.zeros(d.Y.shape)
+    X[self.mfc] = 1
+    return DataSet(X=X, default=d)
 
   def __str__(self): 
     if hasattr(self, 'mfc'):
@@ -74,7 +74,7 @@ class RandomClassifier(BaseNode):
   on ys, xs, and on how to use such a classifier node.
   """
   def apply_(self, d):
-    return DataSet(xs=np.random.random(d.ys.shape), default=d)
+    return DataSet(X=np.random.random(d.Y.shape), default=d)
 
 class WeakClassifier(BaseNode):
   """
@@ -86,4 +86,4 @@ class WeakClassifier(BaseNode):
   on ys, xs, and on how to use such a classifier node.
   """
   def apply_(self, d):
-    return DataSet(xs=np.random.random(d.ys.shape) + .10 * d.ys, default=d)
+    return DataSet(X=np.random.random(d.Y.shape) + .10 * d.Y, default=d)

@@ -6,7 +6,7 @@ import numpy as np
 from .. import DataSet
 
 class TestDataSetConstruction(unittest.TestCase):
-  def test_construction(self):
+  def test_construction_old(self):
     '''Test basic construction of DataSet'''
     xs = [[0, 0, 0], [1, 1, 1]]
     ys = [[0, 1], [1, 0]]
@@ -26,112 +26,139 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d.feat_shape, (3,))
     self.assertEqual(d.extra, {})
 
+  def test_construction(self):
+    '''Test basic construction of DataSet'''
+    X = [[0, 1], [0, 1], [0, 1]]
+    Y = [[0, 1], [1, 0]]
+    d = DataSet(X=X, Y=Y)
+    np.testing.assert_equal(d.X, X)
+    np.testing.assert_equal(d.xs.T, X)
+    np.testing.assert_equal(d.Y, Y)
+    np.testing.assert_equal(d.ys.T, Y)
+    self.assertEqual(d.ninstances, 2)
+    self.assertEqual(d.ninstances_per_class, [1, 1])
+    self.assertEqual(d.nfeatures, 3)
+    self.assertEqual(d.nclasses, 2)
+    np.testing.assert_equal(d.nd_xs, d.xs)
+    np.testing.assert_equal(d.I, np.atleast_2d(np.arange(d.ninstances)))
+    np.testing.assert_equal(d.ids.T, d.I)
+    self.assertEqual(d.feat_dim_lab, ['feat_dim0'])
+    self.assertEqual(d.feat_nd_lab, None)
+    self.assertEqual(d.cl_lab, ['class0', 'class1'])
+    self.assertEqual(d.feat_lab, None)
+    self.assertEqual(d.feat_shape, (3,))
+    self.assertEqual(d.extra, {})
+
   def test_construction_empty(self):
     '''Test empty construction of DataSet'''
-    xs = np.zeros((0, 0))
-    ys = np.zeros((0, 1))
-    d = DataSet(xs, ys)
+    X = np.zeros((0, 0))
+    Y = np.zeros((1, 0))
+    d = DataSet(X=X, Y=Y)
     self.assertEqual(d.ninstances, 0)
     self.assertEqual(d.ninstances_per_class, [0])
     self.assertEqual(d.nfeatures, 0)
     self.assertEqual(d.nclasses, 1)
     self.assertEqual(d.extra, {})
 
-    self.assertRaises(ValueError, DataSet) # no xs, no ys
-    self.assertRaises(ValueError, DataSet, xs=xs) # no ys
-    self.assertRaises(ValueError, DataSet, ys=ys) # no xs
+    self.assertRaises(ValueError, DataSet) # no X, no Y
+    self.assertRaises(ValueError, DataSet, X=X) # no Y
+    self.assertRaises(ValueError, DataSet, Y=Y) # no X
     
   def test_construction_types(self):
     '''Test types of DataSet during construction'''
-    xs = ys = ids = np.arange(12).reshape(-1, 1)
-    d = DataSet(xs, ys, ids)
+    X = Y = I = np.arange(12)
+    # types for X, Y and I are not tested, as mainly there shape is of
+    # importance
     
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, cl_lab='c0')
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_lab='f0')
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_shape=[1, 1])
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, extra='baz')
+    self.assertRaises(AssertionError, DataSet, X=X, Y=Y, I=I, cl_lab='c0')
+    self.assertRaises(AssertionError, DataSet, X=X, Y=Y, I=I, feat_lab='f0')
+    self.assertRaises(AssertionError, DataSet, X=X, Y=Y, I=I, feat_shape=[1, 1])
+    self.assertRaises(AssertionError, DataSet, X=X, Y=Y, I=I, extra='baz')
 
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, 
+    self.assertRaises(AssertionError, DataSet, X=X, Y=Y, I=I, 
       feat_dim_lab='baz')
-    self.assertRaises(AssertionError, DataSet, xs, ys, ids, feat_nd_lab=['a'])
+    self.assertRaises(AssertionError, DataSet, X=X, Y=Y, I=I, feat_nd_lab=['a'])
     
   def test_construction_dims(self):
-    '''Test the handling of dimension during DataSet construction'''
-    xs = ys = ids = np.arange(12).reshape(-1, 1)
+    '''Test the handling of dimensions during DataSet construction'''
+    X = Y = I = np.arange(12)
 
     # raise if #rows does not match
-    self.assertRaises(ValueError, DataSet, xs[:-1,:], ys, ids);
-    self.assertRaises(ValueError, DataSet, xs, ys[:-1, :], ids);
-    self.assertRaises(ValueError, DataSet, xs, ys, ids[:-1, :]);
+    self.assertRaises(ValueError, DataSet, X=X[:-1], Y=Y, I=I)
+    self.assertRaises(ValueError, DataSet, X=X, Y=Y[:-1], I=I)
+    self.assertRaises(ValueError, DataSet, X=X, Y=Y, I=I[:-1])
     
-    # raise if .ndim != 2
-    self.assertRaises(ValueError, DataSet, xs.flatten(), ys, ids);
-    self.assertRaises(ValueError, DataSet, xs, ys.flatten(), ids);
-    self.assertRaises(ValueError, DataSet, xs, ys, ids.flatten());
+    # raise if .ndim >= 2
+    self.assertRaises(ValueError, DataSet, X=X.reshape(2, 2, 3), Y=Y[:3], 
+      I=I[:3])
+    self.assertRaises(ValueError, DataSet, X=X[:3], Y=Y.reshape(2, 2, 3), 
+      I=I[:3])
+    self.assertRaises(ValueError, DataSet, X=X[:3], Y=Y[:3], 
+      I=I.reshape(2, 2, 3))
 
     # raise if #lab != #feat
-    self.assertRaises(ValueError, DataSet, xs, ys, feat_lab=['f0', 'f1'])
-    self.assertRaises(ValueError, DataSet, xs, ys, cl_lab=['c0', 'c1'])
+    self.assertRaises(ValueError, DataSet, X=X, Y=Y, feat_lab=['f0', 'f1'])
+    self.assertRaises(ValueError, DataSet, X=X, Y=Y, cl_lab=['c0', 'c1'])
 
   def test_construction_ids(self):
-    '''Test the uniqueness of ids'''
-    xs = ys = ids = np.arange(12).reshape(-1, 1)
-    ids[0] = ids[1]
-    self.assertRaises(ValueError, DataSet, xs, ys, ids)
+    '''Test the uniqueness of I check'''
+    X = Y = I = np.arange(12)
+    I[0] = I[1]
+    self.assertRaises(ValueError, DataSet, X=X, Y=Y, I=I)
 
   def test_construction_feat_shape(self):
     '''Test feat_shape in construction of DataSet'''
-    xs = np.arange(12 * 3).reshape(3, -1)
-    ys = np.arange(3).reshape(-1, 1)
+    X = np.arange(12 * 3).reshape(12, 3)
+    Y = np.arange(3)
 
-    DataSet(xs, ys, feat_shape=(12,))
-    DataSet(xs, ys, feat_shape=(1, 12))
-    self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=(1, 1))
+    DataSet(X=X, Y=Y, feat_shape=(12,))
+    DataSet(X=X, Y=Y, feat_shape=(1, 12))
+    self.assertRaises(ValueError, DataSet, X=X, Y=Y, feat_shape=(1, 11))
 
   def test_construction_feat_dim_lab(self):
     '''Test feat_dim_lab in construction of DataSet'''
-    xs = np.arange(12 * 3).reshape(3, -1)
-    ys = np.arange(3).reshape(-1, 1)
+    X = np.arange(12 * 3).reshape(12, 3)
+    Y = np.arange(3)
 
-    DataSet(xs, ys, feat_dim_lab=['sec'])
-    DataSet(xs, ys, feat_shape=(1, 12), feat_dim_lab=['sec', 'm'])
-    self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=(1, 12), 
+    DataSet(X=X, Y=Y, feat_dim_lab=['sec'])
+    DataSet(X=X, Y=Y, feat_shape=(1, 12), feat_dim_lab=['sec', 'm'])
+    self.assertRaises(ValueError, DataSet, X=X, Y=Y, feat_shape=(1, 12), 
       feat_dim_lab=['sec'])
 
   def test_construction_feat_nd_labs(self):
     '''Test feat_nd_lab in construction of DataSet'''
-    xs = np.arange(6 * 3).reshape(3, -1)
-    ys = np.arange(3).reshape(-1, 1)
+    X = np.arange(6 * 3).reshape(6, 3)
+    Y = np.arange(3)
 
-    DataSet(xs, ys, feat_nd_lab=[['a', 'b', 'c', 'd', 'e', 'f']])
-    DataSet(xs, ys, feat_shape=(2, 3), 
+    DataSet(X=X, Y=Y, feat_nd_lab=[['a', 'b', 'c', 'd', 'e', 'f']])
+    DataSet(X=X, Y=Y, feat_shape=(2, 3), 
       feat_nd_lab=[['a', 'b'], ['x', 'y', 'z']])
-    self.assertRaises(ValueError, DataSet, xs, ys, feat_shape=(3, 2), 
+    self.assertRaises(ValueError, DataSet, X=X, Y=Y, feat_shape=(3, 2), 
       feat_nd_lab=[['a', 'b'], ['x', 'y', 'z']])
     
   def test_from_default(self):
-    xs = ys = ids = np.arange(12).reshape(-1, 1)
-    d = DataSet(xs, ys, ids, cl_lab= ['c1'], feat_lab=['f1'], 
+    X = Y = I = np.atleast_2d(np.arange(12))
+    d = DataSet(X=X, Y=Y, I=I, cl_lab= ['c1'], feat_lab=['f1'], 
       feat_shape=(1, 1), feat_dim_lab=['sec', 'm'], 
       feat_nd_lab=[['y'], ['x']], extra={'foo':'bar'})
 
-    # test xs
-    d2 = DataSet(xs=np.zeros(xs.shape), default=d)
-    np.testing.assert_equal(d2.xs, np.zeros(xs.shape))
-    d2 = DataSet(xs=None, default=d)
-    np.testing.assert_equal(d2.xs, d.xs)
+    # test X
+    d2 = DataSet(X=X+1, default=d)
+    np.testing.assert_equal(d2.X, X+1)
+    d2 = DataSet(X=None, default=d)
+    np.testing.assert_equal(d2.X, d.X)
     
-    # test ys
-    d2 = DataSet(ys=np.zeros(ys.shape), default=d)
-    np.testing.assert_equal(d2.ys, np.zeros(ys.shape))
-    d2 = DataSet(ys=None, default=d)
-    np.testing.assert_equal(d2.ys, d.ys)
+    # test Y
+    d2 = DataSet(Y=Y+1, default=d)
+    np.testing.assert_equal(d2.Y, Y+1)
+    d2 = DataSet(Y=None, default=d)
+    np.testing.assert_equal(d2.Y, d.Y)
     
-    # test ids
-    d2 = DataSet(ids=ids+1, default=d)
-    np.testing.assert_equal(d2.ids, ids+1)
-    d2 = DataSet(ids=None, default=d)
-    np.testing.assert_equal(d2.ids, d.ids)
+    # test I
+    d2 = DataSet(I=I+1, default=d)
+    np.testing.assert_equal(d2.I, I+1)
+    d2 = DataSet(I=None, default=d)
+    np.testing.assert_equal(d2.I, d.I)
 
     # test cl_lab
     d2 = DataSet(cl_lab=['altc0'], default=d)
@@ -144,7 +171,7 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d2.feat_lab, ['altf0'])
     d2 = DataSet(feat_lab=None, default=d)
     self.assertEqual(d2.feat_lab, d.feat_lab)
-    d2 = DataSet(xs=np.random.rand(12, 6), feat_shape=(2, 3), default=d)
+    d2 = DataSet(X=np.random.rand(6, 12), feat_shape=(2, 3), default=d)
     self.assertEqual(d2.feat_lab, None)
     
     # test feat_shape
@@ -164,7 +191,7 @@ class TestDataSetConstruction(unittest.TestCase):
     self.assertEqual(d2.feat_nd_lab, [['a'], ['b']])
     d2 = DataSet(feat_nd_lab=None, default=d)
     self.assertEqual(d2.feat_nd_lab, d.feat_nd_lab)
-    d2 = DataSet(xs=np.random.rand(12, 6), feat_shape=(2, 3), default=d)
+    d2 = DataSet(X=np.random.rand(6, 12), feat_shape=(2, 3), default=d)
     self.assertEqual(d2.feat_nd_lab, None)
 
     # test extra
@@ -173,33 +200,30 @@ class TestDataSetConstruction(unittest.TestCase):
     d2 = DataSet(extra=None, default=d)
     self.assertEqual(d2.extra, d.extra)
 
-    # test access of emtpy members
-    d2 = DataSet(default=DataSet(xs=d.xs, ys=d.ys))
-
   def test_finite_feats(self):
-    ys = np.ones((10, 2))
+    Y = np.ones((2, 10))
     for v in [np.inf, -np.inf, np.nan]:
-      xs = np.zeros((10, 2))
-      d = DataSet(xs=xs.copy(), ys=ys) # no error
-      xs[5, 1] = v
-      self.assertRaises(ValueError, DataSet, xs=xs, ys=ys)
+      X = np.zeros((2, 10))
+      d = DataSet(X=X.copy(), Y=Y) # no error
+      X[1, 5] = v
+      self.assertRaises(ValueError, DataSet, X=X, Y=Y)
 
 
 class TestDataSet(unittest.TestCase):
   def setUp(self):
     '''Setup a default DataSet.'''
-    xs = np.array([[0, 0, 0], [1, 1, 1]])
-    ys = np.array([[0, 1], [1, 0]])
-    ids = np.array([[3], [4]])
-    self.d = d = DataSet(xs, ys, ids, feat_lab=['f1', 'f2', 'f3'], 
+    X = np.array([[0, 1], [0, 1], [0, 1]])
+    Y = np.array([[0, 1], [1, 0]])
+    I = np.array([3, 4])
+    self.d = d = DataSet(X=X, Y=Y, I=I, feat_lab=['f1', 'f2', 'f3'], 
       cl_lab=['A', 'B'], feat_shape=(3, 1), feat_dim_lab=['d0', 'd1'], 
       feat_nd_lab=[['f1', 'f2', 'f3'],['n']], extra={'foo':'bar'})
 
   def test_equality(self):
     d = self.d
-    diff_ds = [DataSet(xs=d.xs+1, default=d),
-      DataSet(ys=d.ys+1, default=d),
-      DataSet(ids=d.ids+1, default=d),
+    diff_ds = [DataSet(X=d.X+1, default=d),
+      DataSet(Y=d.Y+1, default=d),
+      DataSet(I=d.I+1, default=d),
       DataSet(cl_lab=['a', 'b'], default=d),
       DataSet(feat_lab=['F1', 'F2', 'F3'], default=d),
       DataSet(feat_shape=(1, 3), feat_nd_lab=[], default=d),
@@ -209,17 +233,16 @@ class TestDataSet(unittest.TestCase):
       d[:0]]
 
     self.assertEqual(d, d)
-    self.assertEqual(d, DataSet(d.xs, d.ys, d.ids, feat_lab=d.feat_lab, 
-      cl_lab=d.cl_lab, feat_shape=d.feat_shape, 
-      feat_dim_lab=d.feat_dim_lab, feat_nd_lab=d.feat_nd_lab, 
-      extra=d.extra))
+    self.assertEqual(d, DataSet(X=d.X, Y=d.Y, I=d.I, feat_lab=d.feat_lab, 
+      cl_lab=d.cl_lab, feat_shape=d.feat_shape, feat_dim_lab=d.feat_dim_lab, 
+      feat_nd_lab=d.feat_nd_lab, extra=d.extra))
 
     # test all kinds of differences
     for dd in diff_ds:
       self.failIfEqual(dd, d)
     
     # test special cases
-    self.assertEqual(d, DataSet(d.xs.copy(), d.ys.copy(), d.ids.copy(), 
+    self.assertEqual(d, DataSet(X=d.X.copy(), Y=d.Y.copy(), I=d.I.copy(), 
       default=d))
     self.failIfEqual(d, 3)
     self.failIfEqual(d[:0], d) # triggered special cast in np.array comparison.
@@ -227,20 +250,20 @@ class TestDataSet(unittest.TestCase):
 
   def test_add(self):
     '''Test the creation of compound datasets using the add-operator.'''
-    ids = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]]).T
-    xs, ys = np.random.random((6, 3)), np.ones((6, 3)) 
-    d = DataSet(xs, ys, ids, feat_lab=['feat%d' for d in range(3)])
+    I = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]])
+    X, Y = np.random.random((3, 6)), np.ones((3, 6)) 
+    d = DataSet(X=X, Y=Y, I=I, feat_lab=['feat%d' for d in range(3)])
 
     da, db = d[:3], d[3:]
     self.assertEqual(da + db, d)
 
     # different nfeatures
     self.assertRaises(ValueError, da.__add__,
-      DataSet(xs=db.xs[:,:-1], feat_lab=d.feat_lab[:-1], default=db))
+      DataSet(X=db.X[:-1], feat_lab=d.feat_lab[:-1], default=db))
     
     # different nclasses
     self.assertRaises(ValueError, da.__add__,
-      DataSet(ys=db.ys[:,:-1], cl_lab=d.cl_lab[:-1], default=db))
+      DataSet(Y=db.Y[:-1], cl_lab=d.cl_lab[:-1], default=db))
 
     # different feat_lab
     self.assertRaises(ValueError, da.__add__,
@@ -270,8 +293,9 @@ class TestDataSet(unittest.TestCase):
     '''Test the indexing of DataSet.'''
     d = self.d
     # check if all members are correctly extracted
-    d0 = DataSet(xs=d.xs[0,:].reshape(1, -1), ys=d.ys[0,:].reshape(1, -1), 
-      ids=d.ids[0,:].reshape(1, -1), default=d)
+    d0 = DataSet(X=d.X[:,0].reshape(-1, 1), 
+      Y=d.Y[:,0].reshape(-1, 1), 
+      I=d.I[:,0].reshape(-1, 1), default=d)
     self.assertEqual(d[0], d0)
 
     # test high-level properties
@@ -293,23 +317,25 @@ class TestDataSet(unittest.TestCase):
     self.assertEqual(dA, d[1])
     self.assertEqual(dB, d[0])
 
-  def test_nd_xs(self):
-    '''Test multidimensional xs'''
-    xs = np.arange(100).reshape(10, 10)
-    ys = np.ones((10, 1))
-    d = DataSet(xs, ys, None, feat_shape=(2, 1, 5))
-    np.testing.assert_equal(d.xs, xs)
+  def test_ndX(self):
+    '''Test multi-dimensional X'''
+    X = np.arange(100).reshape(10, 10).T
+    Y = np.ones(10)
+    d = DataSet(X=X, Y=Y, feat_shape=(2, 1, 5))
+    np.testing.assert_equal(d.X, X)
     self.assertEqual(d.ninstances, 10)
     self.assertEqual(d.nfeatures, 10)
     np.testing.assert_equal(
-      d.nd_xs[0,:,:], np.arange(10).reshape(2, 1, 5))
+      d.ndX[:,:,:,0], np.arange(10).reshape(2, 1, 5))
     np.testing.assert_equal(
-      d.nd_xs[2,:,:], np.arange(20, 30).reshape(2, 1, 5))
+      d.ndX[:,:,:,2], np.arange(20, 30).reshape(2, 1, 5))
+
+    np.testing.assert_equal(np.rollaxis(d.nd_xs, 0, 4), d.ndX)
   
   def test_shuffle(self):
     '''Test shuffling the DataSet'''
-    xs, ys = np.random.random((6, 2)), np.ones((6, 1)) 
-    d = DataSet(xs, ys)
+    X, Y = np.random.random((2, 6)), np.ones(6) 
+    d = DataSet(X=X, Y=Y)
 
     # shuffle and sort
     ds = d.shuffled()
@@ -318,10 +344,10 @@ class TestDataSet(unittest.TestCase):
 
   def test_sorted(self):
     '''Test sorting the DataSet'''
-    ids = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]]).T
-    xs, ys = np.random.random((6, 2)), np.ones((6, 1)) 
-    d1d = DataSet(xs, ys, ids[:, 0].reshape(-1, 1))
-    d2d = DataSet(xs, ys, ids)
+    I = np.array([[0, 1, 2, 3, 4, 5], [1, 1, 1, 0, 0, 0]])
+    X, Y = np.random.random((2, 6)), np.ones(6) 
+    d1d = DataSet(X=X, Y=Y, I=I[0])
+    d2d = DataSet(X=X, Y=Y, I=I)
 
     # shuffle and sort
     d1ds = d1d.shuffled()
@@ -347,23 +373,23 @@ class TestDataSet(unittest.TestCase):
   def test_save_load(self):
     '''Test loading and saving datasets'''
     # test round-trip using file objects
-    _, tfname = tempfile.mkstemp('.goldat')
+    _, tfname = tempfile.mkstemp('.dat')
     self.d.save(open(tfname, 'wb'))
     self.assertEqual(self.d, DataSet.load(open(tfname, 'rb')))
 
     # test round-trip using filenames
-    _, tfname = tempfile.mkstemp('.goldat')
+    _, tfname = tempfile.mkstemp('.dat')
     self.d.save(tfname)
     self.assertEqual(self.d, DataSet.load(tfname))
 
   def test_write_protected(self):
     d = self.d
-    for att in [d.xs, d.ys, d.ids]:
+    for att in [d.X, d.Y, d.Y]:
       self.assertRaises(RuntimeError, att.__setitem__, (0, 0), -1)
 
 class TestEmpty(unittest.TestCase):
   def setUp(self):
-    self.d0 = DataSet(xs=np.zeros((0, 10)), ys=np.zeros((0, 3)))
+    self.d0 = DataSet(X=np.zeros((10, 0)), Y=np.zeros((3, 0)))
 
   def test_props(self):
     d0 = self.d0
