@@ -291,6 +291,10 @@ class DataSet:
     return np.sum(helpers.hard_max(self.ys), axis=0).astype(int).tolist()
 
   @property
+  def prior(self):
+    return np.asarray(self.ninstances_per_class) / float(self.ninstances)
+
+  @property
   def nfeatures(self):
     if self.xs.ndim == 0:
       return 0
