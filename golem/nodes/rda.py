@@ -29,7 +29,7 @@ class RDA(BaseNode):
     # mix global, class and diagonal covariances as specified by a and b:
     a, b = self.alpha, self.beta
     Sg = reduce(operator.add, ([p * c for (p, c) in zip(d.prior, covs)]))
-    S0 = np.eye(d.nfeatures) * np.diag(Sg)
+    S0 = np.eye(d.nfeatures) * np.mean(np.diag(Sg))
     covs = [a * S0 + b * Sg + (1. - a - b) * S_i for S_i in covs]
 
     # calculate and store variables needed for classification
@@ -53,13 +53,13 @@ class RDA(BaseNode):
     return 'RDA(alpha=%.3f, beta=%.3f)' % (self.alpha, self.beta)
 
 class NMC(RDA):
-  def __init__(self): RDA.__init__(self, alpha=1, beta=0)
+  def __init__(self, **kwargs): RDA.__init__(self, alpha=1, beta=0, **kwargs)
   def __str__(self): return 'NMC'
 
 class LDA(RDA):
-  def __init__(self): RDA.__init__(self, alpha=0, beta=1)
+  def __init__(self, **kwargs): RDA.__init__(self, alpha=0, beta=1, **kwargs)
   def __str__(self): return 'LDA'
 
 class QDA(RDA):
-  def __init__(self): RDA.__init__(self, alpha=0, beta=0)
+  def __init__(self, **kwargs): RDA.__init__(self, alpha=0, beta=0, **kwargs)
   def __str__(self): return 'QDA'
