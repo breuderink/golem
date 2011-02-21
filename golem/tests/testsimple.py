@@ -1,26 +1,26 @@
 import unittest
 import numpy as np
 from .. import DataSet, data
-from ..nodes import FeatMap, ZScore
+from ..nodes import ApplyOverInstances, ZScore
 
-class TestFeatMap(unittest.TestCase):
+class TestApplyOverInstances(unittest.TestCase):
   def setUp(self):
     self.d = DataSet(X=np.arange(100).reshape(-1, 10), Y=np.ones(10),
       feat_shape=(5, 2))
 
   def test_map(self):
     d = self.d
-    d2 = FeatMap(lambda x: x * 2).apply(d)
+    d2 = ApplyOverInstances(lambda x: x * 2).apply(d)
     self.assertEqual(d, DataSet(X=d2.X/2, default=d))
 
   def test_less_features(self):
     d = self.d
-    d2 = FeatMap(lambda x: np.mean(x.flat)).apply(d)
+    d2 = ApplyOverInstances(lambda x: np.mean(x.flat)).apply(d)
     np.testing.assert_equal(d2.X, np.atleast_2d(np.mean(d.X, axis=0)))
 
   def test_nd_feat(self):
     d = self.d
-    d2 = FeatMap(lambda x: x[:3, :]).apply(d)
+    d2 = ApplyOverInstances(lambda x: x[:3, :]).apply(d)
     np.testing.assert_equal(d2.ndX, d.ndX[:3])
 
 class TestZScore(unittest.TestCase):

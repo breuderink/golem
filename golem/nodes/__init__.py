@@ -5,7 +5,7 @@ from pca import PCA
 from featsel import AUCFilter, FeatFilter
 
 # meta nodes
-from simple import FeatMap, ZScore
+from simple import FeatMap, ZScore, ApplyOverFeats, ApplyOverInstances
 from chain import Chain
 from ensemble import Ensemble, OneVsOne, OneVsRest, Bagging
 from model_select import ModelSelect

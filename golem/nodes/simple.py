@@ -2,7 +2,7 @@ import numpy as np
 from basenode import BaseNode
 from .. import DataSet
 
-class FeatMap(BaseNode):
+class ApplyOverInstances(BaseNode):
   def __init__(self, mapping):
     BaseNode.__init__(self)
     self.mapping = mapping
@@ -15,6 +15,21 @@ class FeatMap(BaseNode):
 
   def __str__(self):
     return '%s (with mapping "%s")' % (self.name, self.mapping.__name__)
+
+class FeatMap(ApplyOverInstances): pass
+
+class ApplyOverFeats(BaseNode):
+  def __init__(self, mapping):
+    BaseNode.__init__(self)
+    self.mapping = mapping
+
+  def apply_(self, d):
+    X = np.apply_along_axis(self.mapping, 0, d.X)
+    return DataSet(X=X, default=d)
+
+  def __str__(self):
+    return '%s (with mapping "%s")' % (self.name, self.mapping.__name__)
+
 
 class ZScore(BaseNode):
   def train_(self, d):
