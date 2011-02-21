@@ -53,6 +53,8 @@ def rep_cv(d, node, reps=5, K=10):
   for ri in range(reps):
     for td in cross_validate(strat_splits(d, K), node):
       yield td
+      
+
 def strat_splits(d, K=10):
   """
   Splits a dataset in K non-overlapping subsets. The classes are distributed
@@ -107,4 +109,3 @@ def cross_validation_sets(subsets):
     test_set = subsets[ki]
     log.info('Building training and testset %d of %d' % (ki + 1, K))
     yield training_set, test_set
-
