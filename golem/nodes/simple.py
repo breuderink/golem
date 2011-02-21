@@ -8,17 +8,21 @@ class FeatMap(BaseNode):
     self.mapping = mapping
 
   def apply_(self, d):
-    xs = np.asarray(map(self.mapping, d.nd_xs))
-    return DataSet(xs=xs.reshape(d.ninstances, np.prod(xs.shape[1:])), 
-      feat_shape=xs.shape[1:], default=d)
+    instances = np.rollaxis(d.ndX, -1)
+    instances = np.asarray(map(self.mapping, 
+      instances))
+    ndX = np.rollaxis(instances, 0, len(instances.shape))
+    
+    return DataSet(X=ndX.reshape(-1, d.ninstances), 
+      feat_shape=ndX.shape[:-1], default=d)
 
   def __str__(self):
     return '%s (with mapping "%s")' % (self.name, self.mapping.__name__)
 
 class ZScore(BaseNode):
   def train_(self, d):
-    self.mean = np.mean(d.xs, axis=0)
-    self.std = np.std(d.xs, axis=0)
+    self.mean = np.atleast_2d(np.mean(d.X, axis=1)).T
+    self.std = np.atleast_2d(np.std(d.X, axis=1)).T
 
   def apply_(self, d):
-    return DataSet(xs=(d.xs - self.mean) / self.std, default=d)
+    return DataSet(X=(d.X - self.mean) / self.std, default=d)

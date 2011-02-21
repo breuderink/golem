@@ -5,7 +5,6 @@ from testkernel import *
 from testsvm import *
 from testperf import *
 from testcv import *
-from testzscore import *
 from testmodelselect import *
 from testpca import *
 from testlsreg import *
