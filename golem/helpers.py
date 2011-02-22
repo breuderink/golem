@@ -1,20 +1,20 @@
 import csv, itertools
 import numpy as np
 
-def to_one_of_n(labels, class_cols=None):
+def to_one_of_n(labels, class_rows=None):
   '''
-  Convert a list with ints to one-of-N coding for to use in a DataSet.
-  Note that the columns correspond to the classes in *sorted* order.
+  Convert a list with integers to one-of-N coding for to use in a DataSet.
+  Note that the rows correspond to the classes in *sorted* order.
   '''
   a = np.asarray(labels, int)
   if a.ndim != 1:
     raise ValueError('Labels should be 1D')
-  if not class_cols:
-    class_cols = np.unique(a) # is automatically sorted
-  ys = np.zeros((a.size, len(class_cols)))
-  for i, n in enumerate(class_cols):
-    ys[a == n, i] = 1
-  return ys
+  if not class_rows:
+    class_rows = np.unique(a) # is automatically sorted
+  Y = np.zeros((len(class_rows), a.size))
+  for i, n in enumerate(class_rows):
+    Y[i, a==n] = 1
+  return Y
 
 def hard_max(xs):
   '''

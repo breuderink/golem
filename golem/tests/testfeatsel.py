@@ -7,7 +7,7 @@ class TestAUCFilter(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
     # generate dataset with features based on labels with increasing noise
-    ys = helpers.to_one_of_n(np.linspace(0, 1, 1000).round())
+    ys = helpers.to_one_of_n(np.linspace(0, 1, 1000).round()).T
     xs = ys[:, 1].reshape(-1, 1) + (np.linspace(.5, 10, 10) * 
       np.random.randn(1000, 10))
     self.d = DataSet(xs=xs, ys=ys, feat_shape=(2, 5))

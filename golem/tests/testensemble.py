@@ -6,7 +6,7 @@ from ..nodes.ensemble import bagging_splitter
 class TestOneVsOne(unittest.TestCase):
   def setUp(self):
     # Construct a *very* predictable DataSet with 4 classes
-    ys = helpers.to_one_of_n(np.arange(60) % 4)
+    ys = helpers.to_one_of_n(np.arange(60) % 4).T
     self.d = DataSet(xs=ys[:, :-1], ys=ys)
     
   def testOVO(self):
@@ -23,7 +23,7 @@ class TestOneVsOne(unittest.TestCase):
 class TestOneVsRest(unittest.TestCase):
   def setUp(self):
     # Construct a *very* predictable DataSet with 4 classes
-    ys = helpers.to_one_of_n(np.arange(60) % 4)
+    ys = helpers.to_one_of_n(np.arange(60) % 4).T
     self.d = DataSet(xs=ys[:, :-1], ys=ys)
 
   def testOVR(self):
@@ -40,7 +40,7 @@ class TestOneVsRest(unittest.TestCase):
 class TestBagging(unittest.TestCase):
   def setUp(self):
     # Construct a *very* predictable DataSet with 4 classes
-    ys = helpers.to_one_of_n(np.arange(60) % 4)
+    ys = helpers.to_one_of_n(np.arange(60) % 4).T
     self.d = DataSet(xs=ys[:, :-1], ys=ys)
 
   def test_baggging_split(self):

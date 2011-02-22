@@ -6,8 +6,8 @@ class TestPerf(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
     self.d = DataSet(
-      xs=helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]),
-      ys=helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]))
+      xs=helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]).T,
+      ys=helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]).T)
 
   def test_class_loss(self):
     targets = np.array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]).reshape(-1, 1)
@@ -33,24 +33,24 @@ class TestPerf(unittest.TestCase):
     self.assertEqual(c, target)
   
   def test_AUC(self):
-    d1 = DataSet(helpers.to_one_of_n([0, 0, 1, 1, 1, 1]),
-      helpers.to_one_of_n([0, 0, 1, 1, 1, 1]))
-    d0 = DataSet(helpers.to_one_of_n([1, 1, 0, 0, 0, 0]),
-      helpers.to_one_of_n([0, 0, 1, 1, 1, 1]))
-    dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]),
-      helpers.to_one_of_n([1, 1, 1, 1, 0, 0]))
+    d1 = DataSet(helpers.to_one_of_n([0, 0, 1, 1, 1, 1]).T,
+      helpers.to_one_of_n([0, 0, 1, 1, 1, 1]).T)
+    d0 = DataSet(helpers.to_one_of_n([1, 1, 0, 0, 0, 0]).T,
+      helpers.to_one_of_n([0, 0, 1, 1, 1, 1]).T)
+    dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]).T,
+      helpers.to_one_of_n([1, 1, 1, 1, 0, 0]).T)
 
     self.assertEqual(perf.auc(d0), 0)
     self.assertEqual(perf.auc(d1), 1)
     self.assertEqual(perf.auc(dr), .5)
 
   def test_I(self):
-    d1 = DataSet(helpers.to_one_of_n([0, 0, 0, 1, 1, 1]),
-      helpers.to_one_of_n([0, 0, 0, 1, 1, 1]))
-    d0 = DataSet(helpers.to_one_of_n([1, 1, 1, 0, 0, 0]),
-      helpers.to_one_of_n([0, 0, 0, 1, 1, 1]))
-    dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]),
-      helpers.to_one_of_n([1, 1, 1, 1, 0, 0]))
+    d1 = DataSet(helpers.to_one_of_n([0, 0, 0, 1, 1, 1]).T,
+      helpers.to_one_of_n([0, 0, 0, 1, 1, 1]).T)
+    d0 = DataSet(helpers.to_one_of_n([1, 1, 1, 0, 0, 0]).T,
+      helpers.to_one_of_n([0, 0, 0, 1, 1, 1]).T)
+    dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]).T,
+      helpers.to_one_of_n([1, 1, 1, 1, 0, 0]).T)
 
     self.assertAlmostEqual(perf.I(d1), 1)
     self.assertAlmostEqual(perf.I(d0), 1)
@@ -58,7 +58,7 @@ class TestPerf(unittest.TestCase):
 
   def test_mean_std(self):
     ds = [DataSet(xs=np.random.rand(30, 2), ys=helpers.to_one_of_n(
-      np.arange(30) % 2)) for i in range(20)]
+      np.arange(30) % 2).T) for i in range(20)]
     m, s = perf.mean_std(perf.auc, ds)
     self.assertAlmostEqual(m, 0.5, 1)
     self.assertAlmostEqual(s, 0.1, 1)

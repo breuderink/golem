@@ -1,7 +1,6 @@
 import unittest
 import numpy as np
 from ..stat import *
-from ..helpers import to_one_of_n
 
 class TestLedoitWolfCov(unittest.TestCase):
   def setUp(self):
