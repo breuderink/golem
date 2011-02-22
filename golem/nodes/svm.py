@@ -1,4 +1,4 @@
-# coding: utf8
+#coding: utf8
 import logging
 import numpy as np
 import cvxopt.base as cvx
@@ -43,7 +43,7 @@ def cvxopt_svm(K, labels, C):
   if sol['status'] != 'optimal':
     log.warning('QP solution status: ' + sol['status'])
   log.debug('solver.status = ' + sol['status'])
-  alphas = np.array(sol['x'])
+  alphas = np.asarray(sol['x'])
 
   # a_i gets close to zero, but does not always equal zero:
   alphas[alphas < np.max(alphas) * ALPHA_RTOL] = 0
@@ -61,14 +61,14 @@ class SVM(BaseNode):
     self.log.debug('Calculate kernel matrix')
     K = build_kernel_matrix(d.X, d.X, kernel=self.kernel, 
       **self.params)
-    labels = np.atleast_2d((d.ys[:, 0] - d.ys[:, 1])).astype(float)
-    alphas = np.atleast_2d(cvxopt_svm(K, labels, self.C))
+    labels = (d.Y[0] - d.Y[1]).astype(float)
+    alphas = cvxopt_svm(K, labels, self.C)
     
     # Calculate b in f(x) = wx + b
-    b = np.mean(labels.T - np.dot(labels * alphas, K))
+    b = np.mean(labels - np.dot(labels * alphas, K))
 
     # Extract support vectors
-    svs = d[alphas.flat != 0]
+    svs = d[alphas != 0]
     self.log.info('Found %d SVs (%.2f%%)' % (svs.ninstances, 
       svs.ninstances * 100./d.ninstances))
 
@@ -84,7 +84,7 @@ class SVM(BaseNode):
     preds = np.atleast_2d(np.dot(self.w, K) + self.b)
 
     # Transform into two-column hyperplane distance format
-    return DataSet(np.hstack([preds.T, -preds.T]), default=d)
+    return DataSet(X=np.vstack([preds, -preds]), default=d)
 
   def __str__(self):
     return 'SVM (C=%g, kernel=%s, params=%s)' % (self.C, self.kernel, 
