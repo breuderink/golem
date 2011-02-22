@@ -34,12 +34,11 @@ def cross_validate(subsets, node):
     inode.train(tr)
 
     # create a test set stripped of labels
-    te_stripped = DataSet(ys=np.nan * te.ys, default=te)
-
+    te_stripped = DataSet(Y=np.nan * te.Y, default=te)
     pred = inode.apply(te_stripped)
 
     # reattach labels
-    pred = DataSet(ys=te.ys, default=pred)
+    pred = DataSet(Y=te.Y, default=pred)
 
     del inode, tr, te
     yield pred
@@ -75,19 +74,19 @@ def strat_splits(d, K=10):
         subsets.append(cid[ind == si]) # Create subset
   return [s.sorted() for s in subsets] # Remove class-relevant order
 
-def seq_splits(d, K=10):
+def seq_splits(d, k=10):
   """
-  Splits a dataset in K non-overlapping subsets. The first subset is created
-  from the first Kth part of d, the second subset from the second Kth part of
+  Splits a dataset in k non-overlapping subsets. The first subset is created
+  from the first kth part of d, the second subset from the second kth part of
   d etc.
   
   For data that is time-dependent, the cross-validation results on these data
   sets will be more representative than with strat_splits().
   """
-  assert(K <= d.ninstances)
-  indices = np.floor(np.linspace(0, K, d.ninstances, endpoint=False))
+  assert(k <= d.ninstances)
+  indices = np.floor(np.linspace(0, k, d.ninstances, endpoint=False))
   result = []
-  for i in range(K):
+  for i in range(k):
     result.append(d[indices==i])
   return result
 
@@ -102,10 +101,10 @@ def cross_validation_sets(subsets):
   
   To apply cross-validation, it is recommended to use cross_validate().
   """
-  K = len(subsets)
-  for ki in range(K):
+  k = len(subsets)
+  for ki in range(k):
     training_set = (reduce(lambda a, b: a + b, 
       [subsets[i] for i in range(len(subsets)) if i <> ki]))
     test_set = subsets[ki]
-    log.info('Building training and testset %d of %d' % (ki + 1, K))
+    log.info('Building training and test set %d of %d' % (ki + 1, k))
     yield training_set, test_set
