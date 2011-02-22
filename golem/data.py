@@ -2,7 +2,7 @@ import numpy as np
 import numpy.linalg as la
 from dataset import DataSet
 
-def gaussian_dataset(ninstances = [50, 50]):
+def gaussian_dataset(ninstances=[50, 50]):
   mus = [\
     [0, 0], 
     [2, 1],
@@ -12,16 +12,13 @@ def gaussian_dataset(ninstances = [50, 50]):
     [[1, 2], [2, 5]],
     [[1, -1], [-1, 2]]]
 
-  result = []
+  assert len(ninstances) <= 3
+
   nclasses = len(ninstances)
-  last_id = 0
-  for y in range(nclasses):
-    cl_instances = ninstances[y]
-    xs = np.random.multivariate_normal(mus[y], sigmas[y], cl_instances)
-    ys = np.zeros((cl_instances, nclasses))
-    ys[:, y] = 1.
-    cids = np.arange(last_id, last_id + cl_instances).reshape(-1, 1)
-    result.append(DataSet(xs=xs, ys=ys, ids=cids))
-    last_id += cl_instances 
-  result = reduce(lambda a, b: a + b, result)
-  return result
+  Xs, Ys = [], []
+
+  for (ci, n) in enumerate(ninstances):
+    Xs.append(np.random.multivariate_normal(mus[ci], sigmas[ci], n).T)
+    Ys.append(np.tile((np.arange(nclasses) == ci).astype(int), (n, 1)).T)
+
+  return DataSet(X=np.hstack(Xs), Y=np.hstack(Ys))
