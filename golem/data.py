@@ -4,6 +4,10 @@ from dataset import DataSet
 from helpers import to_one_of_n
 
 def gaussian_dataset(ninstances=[50, 50]):
+  '''
+  Simple Gaussian dataset with a variable number of instances for up to 3
+  classes.
+  '''
   mus = [\
     [0, 0], 
     [2, 1],
@@ -23,3 +27,15 @@ def gaussian_dataset(ninstances=[50, 50]):
     Ys.extend(np.ones(n) * ci)
 
   return DataSet(X=np.hstack(Xs), Y=to_one_of_n(Ys))
+
+def wieland_spirals():
+  '''
+  Famous non-linear binary 2D problem with intertwined spirals.
+  '''
+  i = np.arange(97)
+  theta = np.pi * i / 16.
+  r = 6.5 * (104 - i) / 104.
+  X = np.array([r * np.cos(theta), r * np.sin(theta)])
+  X = np.hstack([X, -X])
+  Y = to_one_of_n(np.hstack([np.zeros(i.size), np.ones(i.size)]))
+  return DataSet(X=X, Y=Y)

@@ -33,3 +33,12 @@ class TestGaussianData(unittest.TestCase):
       np.testing.assert_almost_equal(np.mean(xs, axis=0), mus[ci], decimal=0)
       np.testing.assert_almost_equal(
         np.cov(xs, rowvar=0), sigmas[ci], decimal=0)
+
+class TestSpirals(unittest.TestCase):
+  def setUp(self):
+    self.d = data.wieland_spirals()
+
+  def test_scatterplot(self):
+    pylab.clf()
+    plots.scatter_plot(self.d)
+    pylab.savefig(os.path.join('out', 'test_spirals.eps'))

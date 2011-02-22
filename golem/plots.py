@@ -99,9 +99,8 @@ def plot_densities((X, Y, Zs)):
   '''
   Plots the iso-lines for the densities, given the results of classifier_grid.
   '''
-  heights = np.linspace(0, np.max(Zs), 7) # p < 0 is nonsense. Using 0 
-                                          # prevents to dense graphs for for
-                                          # example the SVM
+  # p < 0 is nonsense. Using 0 prevents to dense graphs for for example the SVM
+  heights = np.linspace(0, np.max(Zs), 7) 
   for ci in range(Zs.shape[-1]):
     Z = Zs[:, :, ci]
     cs = plt.contour(X, Y, Z, heights, linewidths=.3, colors='k')
