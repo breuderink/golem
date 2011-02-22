@@ -59,7 +59,7 @@ class SVM(BaseNode):
   def train_(self, d):
     assert d.nclasses == 2
     self.log.debug('Calculate kernel matrix')
-    K = build_kernel_matrix(d.xs, d.xs, kernel=self.kernel, 
+    K = build_kernel_matrix(d.X, d.X, kernel=self.kernel, 
       **self.params)
     labels = np.atleast_2d((d.ys[:, 0] - d.ys[:, 1])).astype(float)
     alphas = np.atleast_2d(cvxopt_svm(K, labels, self.C))
@@ -80,10 +80,10 @@ class SVM(BaseNode):
 
   def apply_(self, d):
     # Eq. 7.25: f(x) = sign(sum_i(y_i a_i k(x, x_i) + b), we do not sign!
-    K = build_kernel_matrix(self.svs.xs, d.xs, self.kernel, **self.params)
+    K = build_kernel_matrix(self.svs.X, d.X, self.kernel, **self.params)
     preds = np.atleast_2d(np.dot(self.w, K) + self.b)
 
-    # Transform into two-colum hyperplane distance format
+    # Transform into two-column hyperplane distance format
     return DataSet(np.hstack([preds.T, -preds.T]), default=d)
 
   def __str__(self):
