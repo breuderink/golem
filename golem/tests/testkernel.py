@@ -13,6 +13,8 @@ def test_kernel_props(kernel_matrix):
   if np.any(np.linalg.eigvals(kernel_matrix) + 1e8 < 0):
     raise AssertionError('Kernel is not postive semidefinite')
 
+test_kernel_props.__test__ = False # prevent nose from thinking this is a test
+
 class TestKernel(unittest.TestCase):
   def setUp(self):
     self.X1 = np.hstack(
