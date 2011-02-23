@@ -109,11 +109,11 @@ class DataSet:
 
     # test essential properties
     if self.X.ndim != 2:
-      raise ValueError('Only 2d arrays are supported for xs. See feat_shape.')
+      raise ValueError('Only 2D arrays are supported for X. See feat_shape.')
     if self.Y.ndim != 2:
-      raise ValueError('Only 2d arrays are supported for ys.')
-    if self.Y.ndim != 2:
-      raise ValueError('Only 2d arrays are supported for ids.')
+      raise ValueError('Only 2D arrays are supported for Y.')
+    if self.I.ndim != 2:
+      raise ValueError('Only 2D arrays are supported for I.')
     if not (self.X.shape[1] == self.Y.shape[1] == self.I.shape[1]):
       raise ValueError('Number of instances (cols) does not match')
     if np.unique(self.I[0]).size != self.ninstances:
@@ -195,11 +195,11 @@ class DataSet:
             (i, dlab, self.feat_shape))
 
   def get_class(self, i):
-    return self[self.ys[:, i] == 1]
+    return self[self.Y[i] == 1]
 
   def sorted(self):
-    '''Return a by ids sorted DataSet'''
-    return self[np.argsort(self.ids[:,0])] # sort on first col of .ids
+    '''Return a DataSet sorted on the first row of .I'''
+    return self[np.argsort(self.I[0])]
 
   def shuffled(self):
     '''Return a shuffled DataSet'''
@@ -215,14 +215,13 @@ class DataSet:
           # using slice to index in a empty dataset.
           # see http://projects.scipy.org/numpy/ticket/1171
           i = slice(0) 
-      return DataSet(xs=self.xs[i], ys=self.ys[i], ids=self.ids[i], 
-        default=self)
+      return DataSet(X=self.X[:,i], Y=self.Y[:,i], I=self.I[:,i], default=self)
     elif isinstance(i, int):
-      return DataSet(xs=np.atleast_2d(self.xs[i]),
-        ys=np.atleast_2d(self.ys[i]), ids=np.atleast_2d(self.ids[i]),
+      return DataSet(X=np.atleast_2d(self.X[:,i]).T,
+        Y=np.atleast_2d(self.Y[:,i]).T, I=np.atleast_2d(self.I[:,i]).T,
         default=self)
     else:
-      raise ValueError, 'Unkown indexing type.'
+      raise ValueError, 'Unknown indexing type.'
 
   def __len__(self):
     return self.ninstances
@@ -242,21 +241,21 @@ class DataSet:
     assert(isinstance(b, DataSet))
 
     # Handle empty datasets
-    if a.xs.ndim == 0:
+    if a.X.ndim == 0:
       return b
-    if b.xs.ndim == 0:
+    if b.X.ndim == 0:
       return a
 
     # Check for compatibility
     if (a.nfeatures != b.nfeatures) or (a.nclasses != b.nclasses):
       raise ValueError, 'The #features or #classes do not match'
     for member in a.__dict__.keys():
-      if member not in ['X', 'Y', 'I', 'xs', 'ys', 'ids']:
+      if member not in ['X', 'Y', 'I']:
         if a.__dict__[member] != b.__dict__[member]:
           raise ValueError('Cannot add DataSets: %s is different' % member)
 
-    return DataSet(np.vstack([a.xs, b.xs]), np.vstack([a.ys, b.ys]),
-      ids=np.vstack([a.ids, b.ids]), default=a)
+    return DataSet(X=np.hstack([a.X, b.X]), Y=np.hstack([a.Y, b.Y]),
+      I=np.hstack([a.I, b.I]), default=a)
 
   def __eq__(a, b):
     if not isinstance(b, DataSet):
@@ -276,9 +275,9 @@ class DataSet:
     
   @property
   def nclasses(self):
-    if self.ys.ndim == 0:
+    if self.Y.ndim == 0:
       return 0
-    return self.ys.shape[1]
+    return self.Y.shape[0]
         
   @property
   def ninstances(self):
@@ -288,7 +287,7 @@ class DataSet:
     
   @property
   def ninstances_per_class(self):
-    return np.sum(helpers.hard_max(self.ys), axis=0).astype(int).tolist()
+    return np.sum(helpers.hard_max(self.Y.T), axis=0).astype(int).tolist()
 
   @property
   def prior(self):
@@ -296,9 +295,9 @@ class DataSet:
 
   @property
   def nfeatures(self):
-    if self.xs.ndim == 0:
+    if self.X.ndim == 0:
       return 0
-    return self.xs.shape[1]
+    return self.X.shape[0]
 
   @property
   def ndX(self):
