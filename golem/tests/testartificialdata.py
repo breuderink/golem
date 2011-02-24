@@ -29,10 +29,9 @@ class TestGaussianData(unittest.TestCase):
 
     d = self.d
     for ci in range(d.nclasses):
-      xs = d.get_class(ci).xs
-      np.testing.assert_almost_equal(np.mean(xs, axis=0), mus[ci], decimal=0)
-      np.testing.assert_almost_equal(
-        np.cov(xs, rowvar=0), sigmas[ci], decimal=0)
+      X = d.get_class(ci).X
+      np.testing.assert_almost_equal(np.mean(X, axis=1), mus[ci], decimal=0)
+      np.testing.assert_almost_equal(np.cov(X), sigmas[ci], decimal=0)
 
 class TestSpirals(unittest.TestCase):
   def setUp(self):

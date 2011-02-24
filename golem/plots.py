@@ -16,7 +16,7 @@ def plot_classifier(classifier, d, densities=True, log_p=False):
   RESOLUTION = 80
   # Manually calculate limits
   center = np.mean(d.xs, axis=0)
-  max_dev = np.std(np.abs(d.xs-center), axis=0) * 5
+  max_dev = np.std(np.abs(d.X.T-center), axis=0) * 5
   lims = np.array([center - max_dev, center + max_dev])
   xlim, ylim = lims[:, 0], lims[:, 1]
 
@@ -32,30 +32,28 @@ def plot_classifier(classifier, d, densities=True, log_p=False):
   plt.xlim(xlim)
   plt.ylim(ylim)
 
-def scatter_plot(dataset):
+def scatter_plot(d):
   '''
-  Display the dataset with a scatterplot using Matplotlib/Pylab. The user is
+  Display the d with a scatterplot using Matplotlib/Pylab. The user is
   responsible for calling plt.show() to display the plot.
   '''
   MARKERS = ['o', 'o', 's', 'd', 'v']
   COLORS = ['w', 'k', 'r', 'y', 'b']
-  assert dataset.nfeatures == 2, 'Can only scatter a DataSet with 2 features.'
+  assert d.nfeatures == 2, 'Can only scatter a DataSet with 2 features.'
   scatters = []
   # loop over classes
-  for ci in range(dataset.nclasses):
+  for ci in range(d.nclasses):
     color, marker = COLORS[ci], MARKERS[ci]
-    xs = dataset.get_class(ci).xs
+    X = d.get_class(ci).X
 
     # plot features
-    f0 = [x[0] for x in xs]
-    f1 = [x[1] for x in xs]
-    scatters.append(plt.scatter(f0, f1, s=15, c=color, marker=marker))
+    scatters.append(plt.scatter(X[0], X[1], s=15, c=color, marker=marker))
 
-  assert dataset.cl_lab != []
-  plt.legend(scatters, dataset.cl_lab)
+  assert d.cl_lab != []
+  plt.legend(scatters, d.cl_lab)
 
-  if dataset.feat_lab != None:
-    xlab, ylab = dataset.feat_lab
+  if d.feat_lab != None:
+    xlab, ylab = d.feat_lab
   else:
     xlab, ylab = 'feat0', 'feat1'
   plt.xlabel(xlab)
@@ -67,32 +65,26 @@ def classifier_grid(classifier, x, y):
   Used for hyperplane and density plots.
 
   Returns (X, Y, Zs), where X contains all x-coords, Y contains all y-coords,
-  and Zs is [NY x NX x nclasses] matrix.
+  and Zs is [nx x ny x nclasses] array.
   '''
-  # Build grid
-  X, Y = np.meshgrid(x, y)
-  xs = np.array([X.flatten(), Y.flatten()]).T
+  # build grid
+  A, B = np.meshgrid(x, y)
+  X = np.array([A.flatten(), B.flatten()])
+  d = DataSet(X=X, Y=np.zeros((classifier.nclasses, X.shape[1])))
 
-  # Get scores
-  dxy = DataSet(xs=xs, ys=np.zeros((xs.shape[0], classifier.nclasses)))
-  Zs = classifier.apply(dxy).xs.reshape(X.shape[0], X.shape[1], -1)
-  return (X, Y, Zs)
+  # get scores
+  preds = classifier.apply(d)
+  Zs = preds.X.reshape(d.nclasses, A.shape[0], A.shape[1])
+  Zs = np.rollaxis(Zs, 0, 3)
+  return (A, B, Zs)
 
 def plot_hyperplane((X, Y, Zs)):
   '''
   Plots the hyperplane(s) of a classifier, given the results of classifier_grid.
   '''
-  # Rescale probabilities to classifier magnitudes; > 0 for most probable class
-  zs = Zs.reshape(-1, Zs.shape[-1])
-  zs_sorted = np.sort(zs, axis=1)
-  zs = np.where(helpers.hard_max(zs),
-    zs - zs_sorted[:, -2].reshape(-1, 1),
-    zs - zs_sorted[:, -1].reshape(-1, 1))
-  Zs0 = zs.reshape(Zs.shape)
-
-  # Draw
-  for ci in range(Zs0.shape[-1]):
-    Z = Zs0[:, :, ci]
+  for ci in range(Zs.shape[-1]):
+    # subtract competing class to get nice sharp boundaries
+    Z = Zs[:,:,ci] - np.max(Zs[:,:,np.arange(Zs.shape[2]) != ci], axis=2)
     plt.contour(X, Y, Z, [0], linewidths=2, colors='k')
 
 def plot_densities((X, Y, Zs)):
@@ -108,12 +100,12 @@ def plot_densities((X, Y, Zs)):
 
 def plot_roc(d, fname=None):
   '''
-  Plot the ROC curve for a DataSet d. The diff of d.xs and the diff of d.ys
+  Plot the ROC curve for a DataSet d. The diff of d.X and hard_max(d.Y[1])
   is used to calculate the ranking
   '''
   assert d.nclasses == 2
   assert d.nfeatures == 2
-  TPs, FPs = helpers.roc(d.xs[:, 1] - d.xs[:, 0], helpers.hard_max(d.ys)[:, 1])
+  TPs, FPs = helpers.roc(np.diff(d.X, axis=0)[0], helpers.hard_max(d.Y)[1])
   plt.plot(FPs, TPs)
   a = plt.gca()
   a.set_aspect('equal')

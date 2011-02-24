@@ -42,7 +42,7 @@ def auc(d):
   predictions for a two-class problem.
   '''
   assert d.nclasses == 2 and d.nfeatures == 2
-  return stat.auc(d.X[1,:] - d.X[0,:], helpers.hard_max(d.Y)[1, :])
+  return stat.auc(np.diff(d.X, axis=0)[0], helpers.hard_max(d.Y)[1])
 
 def mean_std(loss_f, ds):
   '''Calc mean and std for loss function loss_f over a list with DataSets ds'''
