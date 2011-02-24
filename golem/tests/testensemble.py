@@ -5,9 +5,9 @@ from ..nodes.ensemble import bagging_splitter
 
 class TestOneVsOne(unittest.TestCase):
   def setUp(self):
-    # Construct a *very* predictable DataSet with 4 classes
-    ys = helpers.to_one_of_n(np.arange(60) % 4).T
-    self.d = DataSet(xs=ys[:, :-1], ys=ys)
+    # Construct a *very* predictable dataset with 4 classes
+    Y = helpers.to_one_of_n(np.arange(60) % 4)
+    self.d = DataSet(X=Y[:-1], Y=Y)
     
   def testOVO(self):
     '''Test OneVsOne with a 4 class SVM'''
@@ -22,9 +22,9 @@ class TestOneVsOne(unittest.TestCase):
 
 class TestOneVsRest(unittest.TestCase):
   def setUp(self):
-    # Construct a *very* predictable DataSet with 4 classes
-    ys = helpers.to_one_of_n(np.arange(60) % 4).T
-    self.d = DataSet(xs=ys[:, :-1], ys=ys)
+    # Construct a *very* predictable dataset with 4 classes
+    Y = helpers.to_one_of_n(np.arange(60) % 4)
+    self.d = DataSet(X=Y[:-1], Y=Y)
 
   def testOVR(self):
     '''Test OneVsRest with a 4 class SVM'''
@@ -40,8 +40,8 @@ class TestOneVsRest(unittest.TestCase):
 class TestBagging(unittest.TestCase):
   def setUp(self):
     # Construct a *very* predictable DataSet with 4 classes
-    ys = helpers.to_one_of_n(np.arange(60) % 4).T
-    self.d = DataSet(xs=ys[:, :-1], ys=ys)
+    Y = helpers.to_one_of_n(np.arange(60) % 4)
+    self.d = DataSet(X=Y[:-1], Y=Y)
 
   def test_baggging_split(self):
     d = self.d

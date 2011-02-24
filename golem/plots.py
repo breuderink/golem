@@ -15,7 +15,7 @@ def plot_classifier(classifier, d, densities=True, log_p=False):
   '''
   RESOLUTION = 80
   # Manually calculate limits
-  center = np.mean(d.xs, axis=0)
+  center = np.mean(d.X, axis=1)
   max_dev = np.std(np.abs(d.X.T-center), axis=0) * 5
   lims = np.array([center - max_dev, center + max_dev])
   xlim, ylim = lims[:, 0], lims[:, 1]

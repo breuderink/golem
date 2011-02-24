@@ -7,10 +7,10 @@ class TestAUCFilter(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
     # generate dataset with features based on labels with increasing noise
-    ys = helpers.to_one_of_n(np.linspace(0, 1, 1000).round()).T
-    xs = ys[:, 1].reshape(-1, 1) + (np.linspace(.5, 10, 10) * 
-      np.random.randn(1000, 10))
-    self.d = DataSet(xs=xs, ys=ys, feat_shape=(2, 5))
+    Y = helpers.to_one_of_n(np.linspace(0, 1, 1000).round())
+    X = Y[1] + np.linspace(.5, 10, 10).reshape(-1,1) * \
+      np.random.randn(10, 1000)
+    self.d = DataSet(X=X, Y=Y, feat_shape=(2, 5))
 
   def test_AUCFilter(self):
     d = self.d
@@ -19,10 +19,10 @@ class TestAUCFilter(unittest.TestCase):
 
     n.train(d)
     d2 = n.apply(d)
-    self.assertEqual(d2.nfeatures, 2)
-    np.testing.assert_equal(d2.xs, d.xs[:, :2])
-    np.testing.assert_equal(n.keep, [0, 1])
-    self.assertEqual(str(n), 'AUCFilter (2 features using statistic "auc_dev")')
+    self.assertEqual(d2.nfeatures, 3)
+    np.testing.assert_equal(d2.X, d.X[:3])
+    np.testing.assert_equal(n.keep, [0, 1, 2])
+    self.assertEqual(str(n), 'AUCFilter (3 features using statistic "auc_dev")')
   
   def test_AUCFilter_strong(self):
     d = self.d
@@ -44,7 +44,7 @@ class TestAUCFilter(unittest.TestCase):
     d = self.d
     n = featsel.AUCFilter(min_auc=.6, min_nfeatures=1)
     d2 = n.train_apply(d, d)
-    self.assertEqual(d2.nfeatures, 2)
+    self.assertEqual(d2.nfeatures, 3)
 
     # test with more strict min_nfeatures
     n = featsel.AUCFilter(min_auc=.6, min_nfeatures=6)
@@ -60,7 +60,7 @@ class TestAUCFilter(unittest.TestCase):
 
   def test_AUCFilter_is_symmetric(self):
     d = self.d
-    dn = DataSet(xs=-d.xs, default=d)
+    dn = DataSet(X=-d.X, default=d)
     for min_auc in [.5, .6, .9, 1]:
       for nf in range(10):
         n = featsel.AUCFilter(min_auc=min_auc, min_nfeatures=nf)

@@ -8,17 +8,17 @@ from .. import DataSet
 class TestDataSetConstruction(unittest.TestCase):
   def test_construction_old(self):
     '''Test basic construction of DataSet'''
-    xs = [[0, 0, 0], [1, 1, 1]]
-    ys = [[0, 1], [1, 0]]
-    d = DataSet(xs=xs, ys=ys)
-    np.testing.assert_equal(d.xs, xs)
-    np.testing.assert_equal(d.ys, ys)
+    X = [[0, 1], [0, 1], [0, 1]]
+    Y = [[0, 1], [1, 0]]
+    d = DataSet(X=X, Y=Y)
+    np.testing.assert_equal(d.X, X)
+    np.testing.assert_equal(d.Y, Y)
     self.assertEqual(d.ninstances, 2)
     self.assertEqual(d.ninstances_per_class, [1, 1])
     self.assertEqual(d.nfeatures, 3)
     self.assertEqual(d.nclasses, 2)
-    np.testing.assert_equal(d.nd_xs, d.xs)
-    np.testing.assert_equal(d.ids, np.arange(d.ninstances).reshape(-1, 1))
+    np.testing.assert_equal(d.ndX, d.X)
+    np.testing.assert_equal(d.I, np.atleast_2d(np.arange(d.ninstances)))
     self.assertEqual(d.feat_dim_lab, ['feat_dim0'])
     self.assertEqual(d.feat_nd_lab, None)
     self.assertEqual(d.cl_lab, ['class0', 'class1'])
@@ -32,16 +32,13 @@ class TestDataSetConstruction(unittest.TestCase):
     Y = [[0, 1], [1, 0]]
     d = DataSet(X=X, Y=Y)
     np.testing.assert_equal(d.X, X)
-    np.testing.assert_equal(d.xs.T, X)
     np.testing.assert_equal(d.Y, Y)
-    np.testing.assert_equal(d.ys.T, Y)
     self.assertEqual(d.ninstances, 2)
     self.assertEqual(d.ninstances_per_class, [1, 1])
     self.assertEqual(d.nfeatures, 3)
     self.assertEqual(d.nclasses, 2)
-    np.testing.assert_equal(d.nd_xs, d.xs)
+    np.testing.assert_equal(d.ndX, d.X)
     np.testing.assert_equal(d.I, np.atleast_2d(np.arange(d.ninstances)))
-    np.testing.assert_equal(d.ids.T, d.I)
     self.assertEqual(d.feat_dim_lab, ['feat_dim0'])
     self.assertEqual(d.feat_nd_lab, None)
     self.assertEqual(d.cl_lab, ['class0', 'class1'])
@@ -329,8 +326,6 @@ class TestDataSet(unittest.TestCase):
       d.ndX[:,:,:,0], np.arange(10).reshape(2, 1, 5))
     np.testing.assert_equal(
       d.ndX[:,:,:,2], np.arange(20, 30).reshape(2, 1, 5))
-
-    np.testing.assert_equal(np.rollaxis(d.nd_xs, 0, 4), d.ndX)
   
   def test_shuffle(self):
     '''Test shuffling the DataSet'''
@@ -340,7 +335,7 @@ class TestDataSet(unittest.TestCase):
     # shuffle and sort
     ds = d.shuffled()
     self.failIfEqual(ds, d)
-    self.assertEqual(ds[np.argsort(ds.ids.flat)], d)
+    self.assertEqual(ds[np.argsort(ds.I.flat)], d)
 
   def test_sorted(self):
     '''Test sorting the DataSet'''

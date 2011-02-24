@@ -9,11 +9,9 @@ class TestSVM(unittest.TestCase):
   def test_linear(self): 
     '''Test simple linear SVM'''
     # Make data
-    xs = np.array([[-1, 0], [-1, 1], [0, 0], [0, 1], 
-      [1, 0], [1, 1], [2, 0], [2, 1]]).astype(np.float64)
-    ys = np.array([[1, 0], [1, 0], [1, 0], [1, 0], 
-      [0, 1], [0, 1], [0, 1], [0, 1]])
-    d = DataSet(xs, ys, None)
+    X = np.array([[-1., -1, 0, 0, 1, 1, 2, 2], [0, 1, 0, 1, 0, 1, 0, 1]])
+    Y = helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1])
+    d = DataSet(X=X, Y=Y)
 
     # Train SVM
     C = 100
@@ -24,27 +22,27 @@ class TestSVM(unittest.TestCase):
     self.assertEqual(perf.accuracy(svm.apply(d)), 1)
     
     # Check if the right Support Vectors are found
-    np.testing.assert_equal(svm.svs.xs, xs[2:6])
+    np.testing.assert_equal(svm.svs.X, d.X[:,2:6])
 
     # Check if the alphas satisfy the constraints
     # 0 <= all alphas <= C/m where m is the number of instances
     self.assert_((0 <= svm.alphas).all())
-    self.assert_((svm.alphas <= C/xs.shape[0]).all())
+    self.assert_((svm.alphas <= C/d.ninstances).all())
 
-    # Test b in f(x) = ax + b
-    hyperplane_d = DataSet(xs=np.array([[.5, 0], [.5, 1]]), ys=np.zeros((2, 2)))
-    np.testing.assert_almost_equal(svm.apply(hyperplane_d).xs, hyperplane_d.ys)
+    # Test b in f(x) = ax + b by classifying points on hyperplane
+    hyperplane_d = DataSet(X=np.array([[.5, .5], [0, 1]]), Y=np.zeros((2, 2)))
+    np.testing.assert_almost_equal(svm.apply(hyperplane_d).X, hyperplane_d.Y)
 
     # Test SVs
     sv_d = d[2:6]
-    np.testing.assert_almost_equal(svm.apply(sv_d).xs, sv_d.ys * 2. - 1)
+    np.testing.assert_almost_equal(svm.apply(sv_d).X, sv_d.Y * 2. - 1)
   
   def test_nonlinear(self): 
     '''Test simple RBF SVM on a XOR problem'''
     # Make data
-    xs = np.array([[0, 0], [1, 0], [0, 1], [1, 1.]])
-    ys = np.array([[1, 0], [0, 1], [0, 1], [1, 0]])
-    d = DataSet(xs=xs, ys=ys)
+    X = np.array([[0., 1, 0, 1], [0, 0, 1, 1]])
+    Y = helpers.to_one_of_n([0, 1, 0, 1])
+    d = DataSet(X=X, Y=Y)
 
     # Train SVM
     C = 100
@@ -57,10 +55,10 @@ class TestSVM(unittest.TestCase):
     # Check if all instances are support vectors
     self.assertEqual(svm.svs, d)
 
-    # Check if the alphas satisfy the contraints
+    # Check if the alphas satisfy the constraints
     # 0 < all alphas < C/m where m is the number of instances
     self.assert_((0 < svm.alphas).all())
-    self.assert_((svm.alphas < C/xs.shape[0]).all())
+    self.assert_((svm.alphas < C/d.ninstances).all())
 
 class TestSVMPlot(unittest.TestCase):
   def test_svm_plot(self):
@@ -73,8 +71,8 @@ class TestSVMPlot(unittest.TestCase):
     self.assertEqual(svm.svs.ninstances, 40)
 
     # Plot SVs and scatter
-    SVs = svm.svs.xs
+    SVs = svm.svs.X
     plt.clf()
-    plt.scatter(SVs[:,0], SVs[:,1], s=70, c='r', label='SVs')
+    plt.scatter(SVs[0], SVs[1], s=70, c='r', label='SVs')
     plots.plot_classifier(svm, d, densities=True)
     plt.savefig(os.path.join('out', 'test_nonlinear_svm.eps'))

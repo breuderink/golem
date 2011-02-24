@@ -11,7 +11,7 @@ class TestCrossValidation(unittest.TestCase):
   def check_disjoint(self, subsets):
     '''Test that subsets are disjoint datasets'''
     for (tr, te) in cv.cross_validation_sets(subsets):
-      intersection = set(tr.ids.flatten()).intersection(te.ids.flatten()) 
+      intersection = set(tr.I.flatten()).intersection(te.I.flatten()) 
       self.assertEqual(len(intersection), 0)
 
   def test_stratified_split(self):
@@ -34,9 +34,9 @@ class TestCrossValidation(unittest.TestCase):
     for K in [3, 9, 10]:
       subsets = cv.seq_splits(d, K)
       self.assertEqual(len(subsets), K)
+      set_size = d.ninstances/float(K)
       for s in subsets:
-        self.assert_(s.ninstances >= np.floor(d.ninstances/float(K)))
-        self.assert_(s.ninstances <= np.ceil(d.ninstances/float(K)))
+        self.assert_(np.floor(set_size) <= s.ninstances <= np.ceil(set_size))
       
       self.check_disjoint(subsets)
       d2 = reduce(operator.add, subsets)
@@ -67,12 +67,12 @@ class TestCrossValidation(unittest.TestCase):
         self.mem = {}
 
       def train(self, d):
-        pairs = zip(d.ids.flat, d.ys.tolist())
+        pairs = zip(d.I.flat, d.I.T.tolist())
         self.mem = dict(self.mem.items() + pairs)
 
       def apply(self, d): 
-        xs = np.asarray([self.mem.get(i, [0, 0, 0]) for i in d.ids.flat])
-        return DataSet(xs=xs, default=d)
+        X = np.asarray([self.mem.get(i, [0, 0, 0]) for i in d.I.flat]).T
+        return DataSet(X=X, default=d)
 
     a = perf.mean_std(perf.accuracy,
       cv.cross_validate(cv.strat_splits(self.d, 4), MemNode()))
@@ -84,7 +84,7 @@ class TestCrossValidation(unittest.TestCase):
     tds = list(cv.rep_cv(d, c))
     self.assertEqual(len(tds), 50)
     self.assertAlmostEqual(perf.mean_std(perf.accuracy, tds)[0], .5)
-    fold_ids = np.array([td.ids.flatten() for td in tds])
+    fold_ids = np.array([td.I.flatten() for td in tds])
     self.failIf(
       (np.var(fold_ids.reshape(-1, d.ninstances), axis=0) == 0).any(),
       'The folds are all the same!')

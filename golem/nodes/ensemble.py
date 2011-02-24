@@ -46,13 +46,13 @@ class OVONode(BaseNode):
   def train_(self, d):
     cia, cib = self.cia, self.cib
     pair_d = d.get_class(self.cia) + d.get_class(self.cib)
-    ys = pair_d.ys[:, [cia, cib]]
+    Y = pair_d.Y[[cia, cib]]
     cl_lab = [d.cl_lab[cia], d.cl_lab[cib]]
-    self.node.train(DataSet(ys=ys, cl_lab=cl_lab, default=pair_d))
+    self.node.train(DataSet(Y=Y, cl_lab=cl_lab, default=pair_d))
 
   def apply_(self, d):
     cia, cib = self.cia, self.cib
-    td = self.node.apply(DataSet(ys=d.ys[:,[cia, cib]], cl_lab=[d.cl_lab[cia], 
+    td = self.node.apply(DataSet(Y=d.Y[[cia, cib]], cl_lab=[d.cl_lab[cia], 
       d.cl_lab[cib]], default=d))
     X = np.zeros((d.nclasses, d.ninstances))
     X[[self.cia, self.cib]] = td.X
