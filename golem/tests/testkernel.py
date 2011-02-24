@@ -4,16 +4,14 @@ import numpy.linalg as la
 
 from ..kernel import build_kernel_matrix
 
-def test_kernel_props(kernel_matrix):
+def check_kernel_props(kernel_matrix):
   '''Test positive trace and symmetry of kernel matrix'''
   if not np.allclose(kernel_matrix, kernel_matrix.T):
     raise AssertionError('Kernel is not symmetric')
   if np.trace(kernel_matrix) < 0: 
     raise AssertionError('Kernel has a negative trace')
   if np.any(np.linalg.eigvals(kernel_matrix) + 1e8 < 0):
-    raise AssertionError('Kernel is not postive semidefinite')
-
-test_kernel_props.__test__ = False # prevent nose from thinking this is a test
+    raise AssertionError('Kernel is not positive semidefinite')
 
 class TestKernel(unittest.TestCase):
   def setUp(self):
@@ -38,7 +36,7 @@ class TestKernel(unittest.TestCase):
   def test_linear(self):
     '''Test linear kernel'''
     X1, X2 = self.X1, self.X2
-    test_kernel_props(build_kernel_matrix(X1, X1))
+    check_kernel_props(build_kernel_matrix(X1, X1))
     np.testing.assert_equal(
       build_kernel_matrix(X1, X2), np.dot(X1.T, X2))
 
@@ -50,7 +48,7 @@ class TestKernel(unittest.TestCase):
 
     # test different kernel sizes
     for s in [.1, 5, 20]:
-      test_kernel_props(build_kernel_matrix(X1, X1, 'rbf', sigma=s))
+      check_kernel_props(build_kernel_matrix(X1, X1, 'rbf', sigma=s))
       np.testing.assert_almost_equal(
         build_kernel_matrix(X1, X2, 'rbf', sigma=s),
         build_kernel_matrix(X1, X2, lambda a, b: rbf_kernel(a, b, s)))
@@ -66,7 +64,7 @@ class TestKernel(unittest.TestCase):
 
     # Test different kernel sizes
     for d in [1, 2, 3, 6]:
-      test_kernel_props(build_kernel_matrix(X1, X1, 'poly', degree=d))
+      check_kernel_props(build_kernel_matrix(X1, X1, 'poly', degree=d))
       np.testing.assert_almost_equal(
         build_kernel_matrix(X1, X2, 'poly', degree=d), 
         build_kernel_matrix(X1, X2, lambda a, b: poly_kernel(a, b, d)))
