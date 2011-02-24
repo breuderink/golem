@@ -18,7 +18,7 @@ def cross_validate(subsets, node):
   
   Example of use:
     
-  >>>  cross_validate(seq_splits(d, 5), n)
+  >>> cross_validate(seq_splits(d, 5), n) # doctest: +SKIP
     
   This applies node n to the train and test sets based on the 
   sequential split of dataset d into 5 subsets, and returns the output for each.  

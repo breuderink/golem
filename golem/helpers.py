@@ -5,6 +5,12 @@ def to_one_of_n(labels, class_rows=None):
   '''
   Convert a list with integers to one-of-N coding for to use in a DataSet.
   Note that the rows correspond to the classes in *sorted* order.
+
+  >>> to_one_of_n([0, 0, 0, 2, 0, 1])
+  array([[ 1.,  1.,  1.,  0.,  1.,  0.],
+         [ 0.,  0.,  0.,  0.,  0.,  1.],
+         [ 0.,  0.,  0.,  1.,  0.,  0.]])
+
   '''
   a = np.asarray(labels, int)
   if a.ndim != 1:

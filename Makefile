@@ -5,4 +5,4 @@ TESTRUNNER=nosetests --with-coverage --with-doctest --cover-package=golem
 all: test 
 
 test:
-	$(TESTRUNNER) golem/tests
+	$(TESTRUNNER) golem
