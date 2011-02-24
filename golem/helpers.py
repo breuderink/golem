@@ -16,16 +16,20 @@ def to_one_of_n(labels, class_rows=None):
     Y[i, a==n] = 1
   return Y
 
-def hard_max(xs):
+def hard_max(X):
   '''
-  Find the maximum of each row and return an array containing 1 on the
-  location of each maximum.
+  Find the maximum of each column and return an array containing 1 on the
+  location of each maximum. If a column contains a NaN, the output column
+  consists of NaNs.
   '''
-  result = np.zeros(xs.shape)
-  result[range(xs.shape[0]), np.argmax(xs, axis=1)] = 1
-  nans = np.where(np.any(np.isnan(xs), axis=1).reshape(-1, 1),
-    np.ones(xs.shape) * np.nan, np.zeros(xs.shape))
-  return result + nans
+  X = np.atleast_2d(X)
+  assert X.shape[0] != 0
+  if X.shape[1] == 0: 
+    return X.copy()
+  result = np.zeros(X.shape)
+  result[np.argmax(X, axis=0),range(X.shape[1])] = 1
+  result[:, np.any(np.isnan(X), axis=0)] *= np.nan
+  return result
 
 
 def write_csv_table(rows, fname):

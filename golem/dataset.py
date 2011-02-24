@@ -287,7 +287,7 @@ class DataSet:
     
   @property
   def ninstances_per_class(self):
-    return np.sum(helpers.hard_max(self.Y.T), axis=0).astype(int).tolist()
+    return np.sum(helpers.hard_max(self.Y), axis=1).astype(int).tolist()
 
   @property
   def prior(self):

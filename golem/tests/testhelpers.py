@@ -36,19 +36,19 @@ class TestOneOfN(unittest.TestCase):
 
 class TestHardMax(unittest.TestCase):
   def test_hardmax(self):
-    soft_votes = np.array([[-.3, -.1], [9, 4], [.1, .101]])
-    np.testing.assert_equal(hard_max(soft_votes), to_one_of_n([1, 0, 1]).T)
+    soft_votes = np.array([[-.3, 9, .1], [-.1, 4, .101]])
+    np.testing.assert_equal(hard_max(soft_votes), to_one_of_n([1, 0, 1]))
 
-    tie_votes = np.array([[-1, -1], [0, 0], [1, 1]])
-    np.testing.assert_equal(hard_max(tie_votes), to_one_of_n([0, 0, 0], [0, 1]).T)
+    tie_votes = np.array([[-1, 0, 1], [-1, 0, 1]])
+    np.testing.assert_equal(hard_max(tie_votes), to_one_of_n([0, 0, 0], [0, 1]))
 
   def test_nan(self):
-    soft_votes = np.array([[0, 1], [1, 0], [np.nan, 0]])
+    soft_votes = np.array([[0, 1, np.nan], [1, 0, 1]])
     np.testing.assert_equal(hard_max(soft_votes), 
-      np.asarray([[0, 1], [1, 0], [np.nan, np.nan]]))
+      np.asarray([[0, 1, np.nan], [1, 0, np.nan]]))
 
   def test_empty(self):
-    hard_max(np.zeros((0, 3)))
+    hard_max(np.zeros((3, 0)))
 
 class TestTables(unittest.TestCase):
   def setUp(self):

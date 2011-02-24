@@ -1,4 +1,3 @@
-import math
 import numpy as np
 
 def build_kernel_matrix(X_row, X_col, kernel=None, **params):

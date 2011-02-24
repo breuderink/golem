@@ -6,13 +6,13 @@ class TestPerf(unittest.TestCase):
   def setUp(self):
     np.random.seed(1)
     self.d = DataSet(
-      xs=helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]).T,
-      ys=helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]).T)
+      X=helpers.to_one_of_n([0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0]),
+      Y=helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]))
 
   def test_class_loss(self):
-    targets = np.array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]).reshape(-1, 1)
     d = self.d
-    d2 = DataSet(xs=d.xs + (0.1 * np.random.rand(*d.xs.shape)), default=d)
+    targets = np.array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]).astype(bool)
+    d2 = DataSet(X=d.X + (0.1 * np.random.rand(*d.X.shape)), default=d)
     np.testing.assert_equal(perf.class_loss(d), targets)
     np.testing.assert_equal(perf.class_loss(d2), targets)
   
