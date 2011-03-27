@@ -4,5 +4,8 @@ TESTRUNNER=nosetests --with-coverage --with-doctest --cover-package=golem
 
 all: test 
 
+dist:
+	./setup.py sdist
+
 test:
 	$(TESTRUNNER) golem
