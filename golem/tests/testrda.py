@@ -56,7 +56,7 @@ class TestRDA(unittest.TestCase):
 
     pylab.clf()
     plots.plot_classifier(cl, self.d, densities=True, log_p=True)
-    pylab.savefig(os.path.join('out', 'rda.eps'))
+    pylab.savefig(os.path.join('out', 'rda.png'))
 
   def test_visual_qda(self):
     cl = QDA()
@@ -64,7 +64,7 @@ class TestRDA(unittest.TestCase):
 
     pylab.clf()
     plots.plot_classifier(cl, self.d, densities=True, log_p=True)
-    pylab.savefig(os.path.join('out', 'qda.eps'))
+    pylab.savefig(os.path.join('out', 'qda.png'))
 
   def test_visual_lda(self):
     cl = LDA()
@@ -72,7 +72,7 @@ class TestRDA(unittest.TestCase):
 
     pylab.clf()
     plots.plot_classifier(cl, self.d, densities=True, log_p=True)
-    pylab.savefig(os.path.join('out', 'lda.eps'))
+    pylab.savefig(os.path.join('out', 'lda.png'))
 
   def test_visual_nm(self):
     cl = NMC()
@@ -81,4 +81,4 @@ class TestRDA(unittest.TestCase):
     pylab.clf()
     pylab.axis('equal')
     plots.plot_classifier(cl, self.d, densities=True, log_p=True)
-    pylab.savefig(os.path.join('out', 'nm.eps'))
+    pylab.savefig(os.path.join('out', 'nm.png'))

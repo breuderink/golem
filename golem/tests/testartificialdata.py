@@ -10,9 +10,9 @@ class TestGaussianData(unittest.TestCase):
     self.d = data.gaussian_dataset([200, 200, 100])
 
   def test_scatterplot(self):
-    '''Test Gaussian distribution by writing a scatterplot to a file'''
+    '''Test Gaussian distribution by writing a scatter plot to a file'''
     pylab.clf()
-    plots.scatter_plot(self.d)
+    plots.feat_scatter(self.d)
     pylab.savefig(os.path.join('out', 'test_gaussian_3_classes.eps'))
   
   def test_ninstances(self):
@@ -20,7 +20,7 @@ class TestGaussianData(unittest.TestCase):
     self.assert_(d.ninstances_per_class == [200, 200, 100])
   
   def test_means_cov(self):
-    '''Test if the means and covariance of gaussian_data are correct.'''
+    '''Test if the means and covariance of Gaussian_data are correct.'''
     mus = [[0, 0], [2, 1], [5, 6]]
     sigmas = [\
       [[1, 2], [2, 5]],
@@ -39,5 +39,5 @@ class TestSpirals(unittest.TestCase):
 
   def test_scatterplot(self):
     pylab.clf()
-    plots.scatter_plot(self.d)
-    pylab.savefig(os.path.join('out', 'test_spirals.eps'))
+    plots.feat_scatter(self.d)
+    pylab.savefig(os.path.join('out', 'test_spirals.png'))

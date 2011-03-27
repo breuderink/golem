@@ -6,11 +6,11 @@ import helpers
 def plot_classifier(classifier, d, densities=True, log_p=False):
   '''
   High level function to plot a 2D classifier. This function 
-  1) makes a scatterplot of d
+  1) makes a scatter plot of d
   2) draws the hyperplane(s) of the classifier
   3) optionally, draws the postior probability mass.
   
-  When log_p is true, the desities are assumed to be log-transformed,
+  When log_p is true, the densities are assumed to be log-transformed,
   as is usually the case with the LDA etc.
   '''
   RESOLUTION = 80
@@ -27,14 +27,14 @@ def plot_classifier(classifier, d, densities=True, log_p=False):
   plot_hyperplane((X, Y, Zs))
   if densities:
     plot_densities((X, Y, np.exp(Zs) if log_p else Zs))
-  scatter_plot(d) 
+  feat_scatter(d) 
   plt.title(str(classifier))
   plt.xlim(xlim)
   plt.ylim(ylim)
 
-def scatter_plot(d):
+def feat_scatter(d):
   '''
-  Display the d with a scatterplot using Matplotlib/Pylab. The user is
+  Display the d with a scatterplot using Matplotlib.Pylab. The user is
   responsible for calling plt.show() to display the plot.
   '''
   MARKERS = ['o', 'o', 's', 'd', 'v']
@@ -98,18 +98,22 @@ def plot_densities((X, Y, Zs)):
     cs = plt.contour(X, Y, Z, heights, linewidths=.3, colors='k')
     plt.clabel(cs, fontsize=6)
 
-def plot_roc(d, fname=None):
+def plot_roc(tps, fps):
   '''
-  Plot the ROC curve for a DataSet d. The diff of d.X and hard_max(d.Y[1])
-  is used to calculate the ranking
+  Plot the ROC curve for a series of true positives tps and false positives fps
+  (see helpers.roc).
   '''
-  assert d.nclasses == 2
-  assert d.nfeatures == 2
-  TPs, FPs = helpers.roc(np.diff(d.X, axis=0)[0], helpers.hard_max(d.Y)[1])
-  plt.plot(FPs, TPs)
-  a = plt.gca()
-  a.set_aspect('equal')
+  plt.plot(fps, tps)
+  plt.axis('scaled'); plt.grid(True)
   plt.axis([0, 1, 0, 1])
-  plt.grid(True)
-  plt.xlabel('False positives')
-  plt.ylabel('True positives')
+  plt.xlabel('False positive rate')
+  plt.ylabel('True positive rate')
+
+def perf_scatter(perfs_x, perfs_y, lims=[0, 1]):
+  '''
+  Scatter plot two sets of predictions to visually compare two classifiers.
+  '''
+  plt.plot(lims, lims, 'k--') # plot diagonal of equal performance
+  plt.scatter(perfs_x, perfs_y, c='k', s=40, lw=0, marker=(5,1))
+  plt.axis('scaled'); plt.grid(True) 
+  plt.xlim(lims); plt.ylim(lims); 
