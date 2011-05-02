@@ -6,8 +6,12 @@ def build_kernel_matrix(X_row, X_col, kernel=None, **params):
     kernel_matrix = np.dot(X_row.T, X_col)
   elif kernel=='poly':
     d = params['degree']
+    offset = params.get('offset', 1.)
+    scale = params.get('scale', 1.)
     assert isinstance(d, int) and d > 0
-    kernel_matrix = np.dot(X_row.T, X_col) ** d
+    assert isinstance(offset, float) and offset >= 0
+    assert isinstance(scale, float) and scale > 0
+    kernel_matrix = (scale * np.dot(X_row.T, X_col) + offset) ** d
   elif kernel=='rbf':
     sigma = float(params['sigma'])
     assert sigma > 0
@@ -19,13 +23,14 @@ def build_kernel_matrix(X_row, X_col, kernel=None, **params):
     kernel_matrix = -2 * rcdot + rrdot + ccdot
     return np.exp(-kernel_matrix/(2 * sigma ** 2))
   else:
-    # Manually fill kernel matrix with kernel function
+    # manually fill kernel matrix with kernel function
     nrows, ncols = X_row.shape[1], X_col.shape[1]
     kernel_matrix = np.zeros((nrows, ncols)) * np.nan
     for r in xrange(nrows):
       for c in xrange(ncols):
         kernel_matrix[r, c] = kernel(X_row[:,r], X_col[:,c])
 
+  # sanity check computed kernel matrix
   assert kernel_matrix.dtype in (np.float32, np.float64)
   assert np.all(np.isfinite(kernel_matrix))
   return kernel_matrix

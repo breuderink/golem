@@ -10,14 +10,16 @@ def check_kernel_props(kernel_matrix):
     raise AssertionError('Kernel is not symmetric')
   if np.trace(kernel_matrix) < 0: 
     raise AssertionError('Kernel has a negative trace')
-  if np.any(np.linalg.eigvals(kernel_matrix) + 1e8 < 0):
-    raise AssertionError('Kernel is not positive semidefinite')
+  if not np.all(np.linalg.eigvalsh(kernel_matrix) + 1e-15 >= 0):
+    raise AssertionError('Kernel is not positive semidefinite: min eigv.=%g'
+      % np.min(np.linalg.eigvalsh(kernel_matrix)))
 
 class TestKernel(unittest.TestCase):
   def setUp(self):
-    self.X1 = np.hstack(
-      [[[0, 1, -4, 1e-5], [0, 0, -4, 1e5]], np.random.rand(2, 10)])
-    self.X2 = np.hstack([[[-1.5, 1e-5], [-5, 1e5]], np.random.rand(2, 5)])
+    np.random.seed(0)
+    self.X1 = np.random.randn(100, 10)
+    self.X2 = np.random.randn(100, 5)
+    np.seterr(over='raise', under='raise')
 
   def test_complex_features(self): 
     '''
@@ -31,7 +33,7 @@ class TestKernel(unittest.TestCase):
     f = lambda a, b: 2 * np.dot(a.T, b)
     X1, X2 = self.X1, self.X2
     k12 = build_kernel_matrix(X1, X2, f)
-    np.testing.assert_equal(k12, 2 * build_kernel_matrix(X1, X2))
+    np.testing.assert_almost_equal(k12, 2 * build_kernel_matrix(X1, X2))
 
   def test_linear(self):
     '''Test linear kernel'''
@@ -58,18 +60,21 @@ class TestKernel(unittest.TestCase):
 
   def test_poly(self):
     '''Test polynomial kernel'''
-    def poly_kernel(a, b, degree):
-      return np.dot(a, b) ** float(degree)
+    def poly_kernel(a, b, degree, offset=1., scale=1.):
+      return (scale * np.dot(a, b) + offset) ** float(degree)
     X1, X2 = self.X1, self.X2
 
-    # Test different kernel sizes
-    for d in [1, 2, 3, 6]:
-      check_kernel_props(build_kernel_matrix(X1, X1, 'poly', degree=d))
-      np.testing.assert_almost_equal(
-        build_kernel_matrix(X1, X2, 'poly', degree=d), 
-        build_kernel_matrix(X1, X2, lambda a, b: poly_kernel(a, b, d)))
+    for o in [0., 1.]: # test homogeneous and inhomogeneous polynomial kernels
+      for s in [.5, 1.]: # test different scales
+        for d in [1, 2, 3, 6]: # test different kernel sizes
+          check_kernel_props(
+            build_kernel_matrix(X1, X1, 'poly', degree=d, scale=s, offset=o))
+          np.testing.assert_almost_equal(
+            build_kernel_matrix(X1, X2, 'poly', degree=d, scale=s, offset=o), 
+            build_kernel_matrix(X1, X2, 
+              lambda a, b: poly_kernel(a, b, d, scale=s, offset=o)))
 
     # Test that this kernel fails for invalid degrees
     self.assertRaises(Exception, build_kernel_matrix, X1, X1, 'poly', degree=0)
-    self.assertRaises(Exception, build_kernel_matrix, X1, X1, 'poly', 
-      degree=1.5)
+    self.assertRaises(Exception, build_kernel_matrix, X1, X1, 'poly', degree=-1)
+    self.assertRaises(Exception, build_kernel_matrix, X1, X1, 'poly', degree=.7)
