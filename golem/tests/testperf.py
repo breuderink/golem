@@ -44,7 +44,7 @@ class TestPerf(unittest.TestCase):
     self.assertEqual(perf.auc(d1), 1)
     self.assertEqual(perf.auc(dr), .5)
 
-  def test_I(self):
+  def test_mutinf(self):
     d1 = DataSet(helpers.to_one_of_n([0, 0, 0, 1, 1, 1]).T,
       helpers.to_one_of_n([0, 0, 0, 1, 1, 1]).T)
     d0 = DataSet(helpers.to_one_of_n([1, 1, 1, 0, 0, 0]).T,
@@ -52,9 +52,9 @@ class TestPerf(unittest.TestCase):
     dr = DataSet(helpers.to_one_of_n([1, 0, 1, 0, 1, 0]).T,
       helpers.to_one_of_n([1, 1, 1, 1, 0, 0]).T)
 
-    self.assertAlmostEqual(perf.I(d1), 1)
-    self.assertAlmostEqual(perf.I(d0), 1)
-    self.assertAlmostEqual(perf.I(dr), 0)
+    self.assertAlmostEqual(perf.mutinf(d1), 1)
+    self.assertAlmostEqual(perf.mutinf(d0), 1)
+    self.assertAlmostEqual(perf.mutinf(dr), 0)
 
   def test_mean_std(self):
     ds = [DataSet(xs=np.random.rand(30, 2), ys=helpers.to_one_of_n(

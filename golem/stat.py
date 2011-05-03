@@ -153,7 +153,7 @@ def mut_inf(conf_mat):
   information in bits.
   '''
   pxy = np.array(conf_mat, float)
-  assert (pxy >= 0).all(), 'Cannot handle marginal probabilites P_{XY} < 0'
+  assert (pxy >= 0).all(), 'Cannot handle marginal probabilities P_{XY} < 0'
   pxy /= np.sum(pxy)
   pxs = np.sum(pxy, axis=1)
   pys = np.sum(pxy, axis=0)

@@ -1,14 +1,23 @@
+import warnings
 import numpy as np
 from dataset import DataSet
 import helpers
 import stat
 
 def class_loss(d):
-  '''
+  r'''
   Calculate discrete class loss for every instance in d.
-  The resulting array contains True for instance correctly classified,
-  False otherwise.'''
-  return np.any(helpers.hard_max(d.X) != helpers.hard_max(d.Y), axis=0)
+  The resulting array contains 1 for instance incorrectly classified,
+  0 otherwise:
+
+  >>> d = DataSet(X=helpers.to_one_of_n([0, 0, 0, 1, 1, 2]), 
+  ...             Y=helpers.to_one_of_n([0, 0, 1, 0, 1, 2]))
+  >>> class_loss(d)
+  array([ 0.,  0.,  1.,  1.,  0.,  0.])
+  '''
+  assert d.nfeatures == d.nclasses
+  return np.any(
+    helpers.hard_max(d.X) != helpers.hard_max(d.Y), axis=0).astype(float)
 
 def accuracy(d):
   '''
@@ -23,17 +32,17 @@ def conf_mat(d):
   '''
   return np.dot(helpers.hard_max(d.Y), helpers.hard_max(d.X).T)
 
-def format_confmat(conf_mat, d):
+def format_confmat(confmat, d):
   '''
-  Formats a confusion matrix conf_mat using class_labels found in DataSet d.
+  Formats a confusion matrix confmat using class_labels found in DataSet d.
   '''
-  conf_mat = np.asarray(conf_mat)
-  assert conf_mat.shape == (d.nclasses, d.nclasses)
+  confmat = np.asarray(confmat)
+  assert confmat.shape == (d.nclasses, d.nclasses)
 
   labels = [label[:6] for label in d.cl_lab]
   result = [['Label\Pred.'] + labels]
   for ri in range(d.nclasses):
-    result.append([labels[ri]] + conf_mat[ri].tolist())
+    result.append([labels[ri]] + confmat[ri].tolist())
   return result
 
 def auc(d):
@@ -45,10 +54,18 @@ def auc(d):
   return stat.auc(np.diff(d.X, axis=0)[0], helpers.hard_max(d.Y)[1])
 
 def mean_std(loss_f, ds):
-  '''Calc mean and std for loss function loss_f over a list with DataSets ds'''
+  '''
+  Calculate mean and std for loss function loss_f over a list ds with DataSets
+  '''
   losses = map(loss_f, ds)
   return (np.mean(losses, axis=0), np.std(losses, axis=0))
 
 def I(d):
   '''Mutual information'''
+  warnings.warn('perf.I is deprecated, use perf.mutinf instead.', 
+      DeprecationWarning)
+  return mutinf(d)
+
+def mutinf(d):
+  '''Calculate mutual information based on the confusion matrix.'''
   return stat.mut_inf(conf_mat(d))
