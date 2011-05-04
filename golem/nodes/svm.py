@@ -5,14 +5,16 @@ import cvxopt.base as cvx
 import cvxopt.solvers
 
 from basenode import BaseNode
-from ..kernel import build_kernel_matrix
+from ..kernel import build_kernel_matrix, kernel_cv_fold
+from ..helpers import hard_max
 from ..dataset import DataSet
 
 ALPHA_RTOL = 1e-5
 
-def cvxopt_svm(K, labels, C):
+def cvxopt_svm(K, labels, c):
   # See "Learning with Kernels", Schölkopf and Smola, p.205
-  log = logging.getLogger('golem.cvxopt_svm')
+  log = logging.getLogger('golem.nodes.svm.cvxopt_svm')
+  c = float(c)
   m = K.shape[0]
   labels = np.atleast_2d(labels)
 
@@ -20,8 +22,7 @@ def cvxopt_svm(K, labels, C):
   assert K.shape[0] == K.shape[1]
   
   log.debug('Creating QP-target')
-  # (4) min W(a) = -sum(a_i) + (1/2) * a' * Q * a
-  # -sum(a_i) = q'a
+  # (4) min W(a) = (1/2) * a^T * Q * a - \vec{1}^T a
   label_matrix = np.dot(labels.T, labels)
   Q = cvx.matrix(K * label_matrix)
   q = cvx.matrix([-1. for i in range(m)])
@@ -29,11 +30,11 @@ def cvxopt_svm(K, labels, C):
   log.debug('Creating QP-constraints')
   # (2) 0 < all alphas < C/m, using Ga <= h
   # (3) sum(a_i * y_i) = 0, using Aa = b
-  # (2) is solved in two parts, first 0 < alphas, then alphas < C / m
+  # (2) is solved in two parts, first 0 < alphas, then alphas < c / m
   G1 = cvx.spmatrix(-1, range(m), range(m))
   G2 = cvx.spmatrix(1, range(m), range(m))
   G = cvx.sparse([G1, G2])
-  h = cvx.matrix([0. for i in range(m)] + [float(C)/m for i in range(m)])
+  h = cvx.matrix([0. for i in range(m)] + [c/m for i in range(m)])
   A = cvx.matrix(labels)
   b = cvx.matrix(0.)
 
@@ -43,29 +44,54 @@ def cvxopt_svm(K, labels, C):
   if sol['status'] != 'optimal':
     log.warning('QP solution status: ' + sol['status'])
   log.debug('solver.status = ' + sol['status'])
-  alphas = np.asarray(sol['x'])
-
+  alphas = np.asarray(sol['x']) # column vector!
+  
+  bias = np.mean(labels.flatten() - np.dot(labels.flatten() * alphas.T, K))
   # a_i gets close to zero, but does not always equal zero:
   alphas[alphas < np.max(alphas) * ALPHA_RTOL] = 0
-  return alphas.flatten()
+  return alphas.flatten(), bias
 
 class SVM(BaseNode):
-  def __init__(self, C=2, kernel=None, **params):
+  def __init__(self, C=[2.], kernel=None, **params):
     BaseNode.__init__(self)
-    self.C = C
+    self.C = np.atleast_1d(C)
+    self.c = np.nan
     self.kernel = kernel
-    self.params = params
+    self.kernel_params = params
+    self.nfolds = 5
 
   def train_(self, d):
     assert d.nclasses == 2
-    self.log.debug('Calculate kernel matrix')
+    self.log.debug('Calculating kernel matrix')
     K = build_kernel_matrix(d.X, d.X, kernel=self.kernel, 
-      **self.params)
-    labels = (d.Y[0] - d.Y[1]).astype(float)
-    alphas = cvxopt_svm(K, labels, self.C)
-    
-    # Calculate b in f(x) = wx + b
-    b = np.mean(labels - np.dot(labels * alphas, K))
+      **self.kernel_params)
+    labels = np.where(d.Y[1] > d.Y[0], 1, -1).astype(float)
+
+    # find c-parameter
+    #folds = np.arange(d.ninstances) % self.nfolds # FIXME
+    if self.C.size == 1:
+      self.c = self.C[0]
+    else:
+      raise NotImplementedException()
+    #else:
+    #  accs = []
+    #  for c in self.C:
+    #    self.log.debug('Evaluating c=%.3f' % c)
+    #    preds = np.zeros(d.ninstances) * np.nan
+    #    for fi in np.arange(self.nfolds):
+    #      self.log.debug('CV fold %d/%d...' % (fi, self.nfolds))
+    #      K_tr, K_te = kernel_cv_fold(K, folds, fi)
+    #      tr_lab = labels[folds!=fi]
+    #      alphas, b = cvxopt_svm(K_tr, tr_lab, c)
+    #      print alphas.size, K_te.shape
+    #      pred = np.dot(alphas * tr_lab, K_te) + b
+    #      preds[folds==fi] = np.sign(pred)
+    #      print preds
+    #    accs.append(np.mean(labels == pred))
+    #  self.c = np.argmax(accs)
+
+    # train final SVM
+    alphas, b = cvxopt_svm(K, labels, self.c)
 
     # Extract support vectors
     svs = d[alphas != 0]
@@ -79,13 +105,13 @@ class SVM(BaseNode):
     self.w = (labels * alphas)[:, alphas > 0]
 
   def apply_(self, d):
-    # Eq. 7.25: f(x) = sign(sum_i(y_i a_i k(x, x_i) + b), we do not sign!
-    K = build_kernel_matrix(self.svs.X, d.X, self.kernel, **self.params)
+    # Eq. 7.25: f(x) = sign(sum_i(y_i a_i k(x, x_i) + b), but we do not sign!
+    K = build_kernel_matrix(self.svs.X, d.X, self.kernel, **self.kernel_params)
     preds = np.atleast_2d(np.dot(self.w, K) + self.b)
 
     # Transform into two-column hyperplane distance format
-    return DataSet(X=np.vstack([preds, -preds]), default=d)
+    return DataSet(X=np.vstack([-preds, preds]), default=d)
 
   def __str__(self):
-    return 'SVM (C=%g, kernel=%s, params=%s)' % (self.C, self.kernel, 
-      str(self.params))
+    return 'SVM (c=%g, kernel=%s, params=%s)' % (self.c, self.kernel, 
+      str(self.kernel_params))

@@ -2,6 +2,7 @@ import numpy as np
 
 def build_kernel_matrix(X_row, X_col, kernel=None, **params):
   '''Build Gramm-matrix or kernel-matrix'''
+  X_row, X_col = np.atleast_2d(X_row, X_col)
   if kernel == None or kernel == 'linear':
     kernel_matrix = np.dot(X_row.T, X_col)
   elif kernel=='poly':
@@ -34,3 +35,28 @@ def build_kernel_matrix(X_row, X_col, kernel=None, **params):
   assert kernel_matrix.dtype in (np.float32, np.float64)
   assert np.all(np.isfinite(kernel_matrix))
   return kernel_matrix
+
+def kernel_cv_fold(K, folds, fi):
+  '''
+  Return kernel for training and kernel for testing for fold fi:
+  >>> K = np.arange(5*5).reshape(5, 5)
+  >>> K
+  array([[ 0,  1,  2,  3,  4],
+         [ 5,  6,  7,  8,  9],
+         [10, 11, 12, 13, 14],
+         [15, 16, 17, 18, 19],
+         [20, 21, 22, 23, 24]])
+
+  >>> K_tr, K_te = kernel_cv_fold(K, [0, 0, 1, 1, 0], 1)
+  >>> K_tr
+  array([[ 0,  1,  4],
+         [ 5,  6,  9],
+         [20, 21, 24]])
+  >>> K_te
+  array([[10, 11, 14],
+         [15, 16, 19]])
+  '''
+  folds = np.atleast_1d(folds)
+  tr = K[folds!=fi][:, folds!=fi]
+  te = K[folds==fi][:, folds!=fi]
+  return tr, te

@@ -8,34 +8,42 @@ from ..nodes import SVM
 class TestSVM(unittest.TestCase):
   def test_linear(self): 
     '''Test simple linear SVM'''
-    # Make data
-    X = np.array([[-1., -1, 0, 0, 1, 1, 2, 2], [0, 1, 0, 1, 0, 1, 0, 1]])
+    # make data
+    '''
+       0  1  2  3
+    0  o  o  +  +
+    1  o  o  +  +
+    '''
+    X = np.array([[0., 0, 1, 1, 2, 2, 3, 3], [0, 1, 0, 1, 0, 1, 0, 1]])
     Y = helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1])
     d = DataSet(X=X, Y=Y)
 
-    # Train SVM
-    C = 100
-    svm = SVM(C=C)
+    # train SVM
+    c = 100
+    svm = SVM(C=[c])
     svm.train(d)
+
+    # verify alphas
+    alphas = svm.alphas.flatten()
+    np.testing.assert_almost_equal(alphas, [0, 0, 1, 1, 1, 1, 0, 0])
+
+    # extract hyperplane using \vec{w} = X diag(\vec{y}) \vec{\alpha}:
+    A = [d.X, np.diag(np.where(Y[0] == 1, -1, 1)), alphas.reshape(-1, 1)]
+    w = reduce(np.dot, A)
+    b = svm.b
+
+    # verify w, b using known values:
+    np.testing.assert_almost_equal(w.T, [[2, 0]])
+    np.testing.assert_almost_equal(b, -3, decimal=4)
     
-    # Test if the instances are correctly classified
-    self.assertEqual(perf.accuracy(svm.apply(d)), 1)
+    # test classification by SVM itself
+    np.testing.assert_almost_equal(svm.apply(d).X, np.dot(
+      np.atleast_2d([-1, 1]).T, 
+      np.atleast_2d([-3, -3, -1, -1, 1, 1, 3, 3])),
+      decimal=4)
     
-    # Check if the right Support Vectors are found
+    # check sparsity of solution
     np.testing.assert_equal(svm.svs.X, d.X[:,2:6])
-
-    # Check if the alphas satisfy the constraints
-    # 0 <= all alphas <= C/m where m is the number of instances
-    self.assert_((0 <= svm.alphas).all())
-    self.assert_((svm.alphas <= C/d.ninstances).all())
-
-    # Test b in f(x) = ax + b by classifying points on hyperplane
-    hyperplane_d = DataSet(X=np.array([[.5, .5], [0, 1]]), Y=np.zeros((2, 2)))
-    np.testing.assert_almost_equal(svm.apply(hyperplane_d).X, hyperplane_d.Y)
-
-    # Test SVs
-    sv_d = d[2:6]
-    np.testing.assert_almost_equal(svm.apply(sv_d).X, sv_d.Y * 2. - 1)
   
   def test_nonlinear(self): 
     '''Test simple RBF SVM on a XOR problem'''
@@ -45,8 +53,8 @@ class TestSVM(unittest.TestCase):
     d = DataSet(X=X, Y=Y)
 
     # Train SVM
-    C = 100
-    svm = SVM(C=C, kernel='rbf', sigma=0.5)
+    c = 100
+    svm = SVM(C=[c], kernel='rbf', sigma=0.5)
     svm.train(d)
 
     # Test if the instances are correctly classified
@@ -58,7 +66,7 @@ class TestSVM(unittest.TestCase):
     # Check if the alphas satisfy the constraints
     # 0 < all alphas < C/m where m is the number of instances
     self.assert_((0 < svm.alphas).all())
-    self.assert_((svm.alphas < C/d.ninstances).all())
+    self.assert_((svm.alphas < c/d.ninstances).all())
 
 class TestSVMPlot(unittest.TestCase):
   def test_svm_plot(self):
