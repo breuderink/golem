@@ -19,7 +19,7 @@ class TestSVM(unittest.TestCase):
     d = DataSet(X=X, Y=Y)
 
     # train SVM
-    c = 1e10
+    c = 1e2
     svm = SVM(c=[c])
     svm.train(d)
 
