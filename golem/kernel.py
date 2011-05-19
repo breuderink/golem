@@ -47,16 +47,17 @@ def kernel_cv_fold(K, folds, fi):
          [15, 16, 17, 18, 19],
          [20, 21, 22, 23, 24]])
 
-  >>> K_tr, K_te = kernel_cv_fold(K, [0, 0, 1, 1, 0], 1)
+  >>> K_tr, K_te = kernel_cv_fold(K, [0, 0, 1, 1, 2], 1)
   >>> K_tr
   array([[ 0,  1,  4],
          [ 5,  6,  9],
          [20, 21, 24]])
   >>> K_te
-  array([[10, 11, 14],
-         [15, 16, 19]])
+  array([[ 2,  3],
+         [ 7,  8],
+         [22, 23]])
   '''
   folds = np.atleast_1d(folds)
   tr = K[folds!=fi][:, folds!=fi]
-  te = K[folds==fi][:, folds!=fi]
+  te = K[folds!=fi][:, folds==fi]
   return tr, te

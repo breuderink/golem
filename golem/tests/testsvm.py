@@ -53,7 +53,7 @@ class TestSVM(unittest.TestCase):
     d = DataSet(X=X, Y=Y)
 
     # Train SVM
-    c = 100
+    c = 1e2
     svm = SVM(c=[c], kernel='rbf', sigma=0.5)
     svm.train(d)
 
@@ -74,9 +74,9 @@ class TestSVMPlot(unittest.TestCase):
     np.random.seed(0) # use same seed to make this test reproducible
     d = data.gaussian_dataset([50, 50])
 
-    svm = SVM(c=1e2, kernel='rbf', sigma=1.5)
+    svm = SVM(c=np.logspace(-3, 5, 10), kernel='rbf', sigma=1.5)
     svm.train(d)
-    self.assertEqual(svm.svs.ninstances, 40)
+    self.assertEqual(svm.svs.ninstances, 33)
 
     # Plot SVs and scatter
     SVs = svm.svs.X

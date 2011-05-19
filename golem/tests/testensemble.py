@@ -15,7 +15,7 @@ class TestOneVsOne(unittest.TestCase):
     self.assertEqual(d.nclasses, 4)
     
     # Cross-validate and test for perfect classification
-    cl = nodes.OneVsOne(nodes.SVM())
+    cl = nodes.OneVsOne(nodes.SVM(c=1e2))
     accs = [perf.accuracy(r) for r in 
       cv.cross_validate(cv.strat_splits(d, 2), cl)]
     self.assertEqual(np.mean(accs), 1)
@@ -32,7 +32,7 @@ class TestOneVsRest(unittest.TestCase):
     self.assertEqual(d.nclasses, 4)
     
     # Cross-validate and test for perfect classification
-    cl = nodes.OneVsRest(nodes.SVM())
+    cl = nodes.OneVsRest(nodes.SVM(c=1e2))
     accs = [perf.accuracy(r) for r in 
       cv.cross_validate(cv.strat_splits(d, 2), cl)]
     self.assertEqual(np.mean(accs), 1)

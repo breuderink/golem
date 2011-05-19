@@ -38,8 +38,6 @@ def cvxopt_svm(K, labels, c):
   A = cvx.matrix(labels)
   r = cvx.matrix(0.)
 
-  print G, h
-
   log.debug('Solving QP')
   cvxopt.solvers.options['show_progress'] = False
   sol = cvxopt.solvers.qp(P, q, G, h, A, r)
@@ -54,7 +52,7 @@ def cvxopt_svm(K, labels, c):
   return alphas.flatten(), bias
 
 class SVM(BaseNode):
-  def __init__(self, c=[2.], kernel=None, **params):
+  def __init__(self, c=np.logspace(-3, 5, 10), kernel=None, **params):
     BaseNode.__init__(self)
     self.c = np.atleast_1d(c)
     self.c_star = np.nan
@@ -79,26 +77,18 @@ class SVM(BaseNode):
     if self.c.size == 1:
       self.c_star = self.c[0]
     else:
-      assert False
-      folds = np.arange(d.ninstances) % self.nfolds
       accs = []
-      for c in self.C:
-        self.log.debug('Evaluating c=%.3f' % c)
-        preds = np.zeros(d.ninstances) * np.nan
-        for fi in np.arange(self.nfolds):
-          self.log.debug('CV fold %d/%d...' % (fi, self.nfolds))
-          K_tr, K_te = kernel_cv_fold(K, folds, fi)
-          tr_lab = labels[folds!=fi]
-          alphas, b = cvxopt_svm(K_tr, tr_lab, c)
-          print alphas.size, K_te.shape
-          pred = np.dot(alphas * tr_lab, K_te) + b
-          preds[folds==fi] = np.sign(pred)
-          print preds
-        accs.append(np.mean(labels == pred))
-      self.c = np.argmax(accs)
+      folds = np.arange(d.ninstances) % self.nfolds
+      for c in self.c:
+        self.log.debug('Evaluating c=%.3g' % c)
+        preds = svm_crossval(K, labels, c, folds)
+        accs.append(np.mean(labels == np.sign(preds)))
+        self.log.debug('CV accuracy: %.3f' % accs[-1])
+      self.c_star = self.c[np.argmax(accs)]
+      self.log.info('Selected c=%.3g' % self.c_star)
 
     # train final SVM
-    alphas, b = cvxopt_svm(K, labels, self.c)
+    alphas, b = cvxopt_svm(K, labels, self.c_star)
 
     # extract support vectors
     svs = d[alphas != 0]
@@ -120,5 +110,19 @@ class SVM(BaseNode):
     return DataSet(X=np.vstack([-preds, preds]), default=d)
 
   def __str__(self):
-    return 'SVM (c=%g, kernel=%s, params=%s)' % (self.c, self.kernel, 
+    return 'SVM (c=%g, kernel=%s, params=%s)' % (self.c_star, self.kernel, 
       str(self.kernel_params))
+
+
+def svm_crossval(K, labels, c, folds):
+  ''' Low-level SVM cross-validation procedure '''
+  preds = np.zeros(K.shape[0]) * np.nan
+  for fi in np.unique(folds):
+    # get kernels and labels for fold
+    K_tr, K_te = kernel_cv_fold(K, folds, fi)
+    tr_lab = labels[folds!=fi]
+
+    # train SVM
+    alphas, b = cvxopt_svm(K_tr, tr_lab, c)
+    preds[folds==fi] = np.dot(alphas * tr_lab, K_te) + b
+  return preds
