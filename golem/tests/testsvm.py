@@ -54,7 +54,7 @@ class TestSVM(unittest.TestCase):
 
     # Train SVM
     c = 100
-    svm = SVM(C=[c], kernel='rbf', sigma=0.5)
+    svm = SVM(c=[c], kernel='rbf', sigma=0.5)
     svm.train(d)
 
     # Test if the instances are correctly classified
@@ -74,7 +74,7 @@ class TestSVMPlot(unittest.TestCase):
     np.random.seed(0) # use same seed to make this test reproducible
     d = data.gaussian_dataset([50, 50])
 
-    svm = SVM(C=1e2, kernel='rbf', sigma=1.5)
+    svm = SVM(c=1e2, kernel='rbf', sigma=1.5)
     svm.train(d)
     self.assertEqual(svm.svs.ninstances, 40)
 
