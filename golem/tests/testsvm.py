@@ -14,13 +14,13 @@ class TestSVM(unittest.TestCase):
     0  o  o  +  +
     1  o  o  +  +
     '''
-    X = np.array([[0., 0, 1, 1, 2, 2, 3, 3], [0, 1, 0, 1, 0, 1, 0, 1]])
+    X = np.array([[0, 0, 1, 1, 2, 2, 3, 3], [0, 1, 0, 1, 0, 1, 0, 1]], float)
     Y = helpers.to_one_of_n([0, 0, 0, 0, 1, 1, 1, 1])
     d = DataSet(X=X, Y=Y)
 
     # train SVM
-    c = 100
-    svm = SVM(C=[c])
+    c = 1e10
+    svm = SVM(c=[c])
     svm.train(d)
 
     # verify alphas
