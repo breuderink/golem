@@ -11,11 +11,14 @@ from ..dataset import DataSet
 
 ALPHA_RTOL = 1e-5
 
-def cvxopt_svm(K, labels, c):
-  # See "Learning with Kernels", Schölkopf and Smola, p.205
+def cvxopt_svm(K, labels, c, D=None):
   log = logging.getLogger('golem.nodes.svm.cvxopt_svm')
   c = float(c)
   m = K.shape[0]
+  if D == None: # normal SVM
+    D = cvx.spmatrix(1, range(m), range(m))
+  else: # latent error SVM with spread matrix D
+    D = cvx.matrix(D)
   labels = np.atleast_2d(labels)
 
   assert np.all(np.unique(labels) == [-1, 1])
@@ -32,7 +35,7 @@ def cvxopt_svm(K, labels, c):
   # (3) sum(a_i * y_i) = 0, using Aa = b
   # (2) is solved in two parts, first 0 < alphas, then alphas < c / m
   G1 = cvx.spmatrix(-1, range(m), range(m))
-  G2 = cvx.spmatrix(1, range(m), range(m))
+  G2 = D.T
   G = cvx.sparse([G1, G2])
   h = cvx.matrix([0. for i in range(m)] + [c/m for i in range(m)])
   A = cvx.matrix(labels)
