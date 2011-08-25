@@ -68,6 +68,18 @@ class TestSVM(unittest.TestCase):
     self.assert_((0 < svm.alphas).all())
     self.assert_((svm.alphas < c/d.ninstances).all())
 
+  def test_nonfloat_labels(self):
+    '''Test if boolean labels work (bug report by Marijn van Vliet)'''
+    X = np.array([[0., 1.]])
+    Y = np.array([[True, False], [False, True]]) # boolean labels
+    I = np.array([[1,2]])
+
+    d = DataSet(X=X, Y=Y, I=I)
+
+    svm = SVM(c=2)
+    svm.train(d)
+    
+
 class TestSVMPlot(unittest.TestCase):
   def test_svm_plot(self):
     '''Create hyperplane plot for SVM'''
